@@ -1,26 +1,89 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace logic
 {
     public interface ISsRepository
     {
-        void Add(SsResource ssResource);
+        void NewResource(SsResource ssResource);
         List<SsResource> GetAll();
+        bool Lock(SsResource resource, SsUser user);
+        void NewUser(SsUser user);
+        bool IsLocked(SsResource res);
+        bool Release(SsResource resource, SsUser user);
     }
 
     public class InMemorySsRepository : ISsRepository
     {
-        private readonly List<SsResource> _resources = new List<SsResource>();
+        private static readonly object _resourceLock = new object();
 
-        public void Add(SsResource ssResource)
+        private readonly List<SsResource> _resources = new List<SsResource>();
+        private readonly List<SsUser> _users = new List<SsUser>();
+        private readonly ConcurrentDictionary<SsResource, SsUser> _usages = new ConcurrentDictionary<SsResource, SsUser>();
+
+        public void NewResource(SsResource resource)
         {
-            _resources.Add(ssResource);
+            lock (_resourceLock)
+            {
+                if (_resources.Contains(resource))
+                    throw new ArgumentException("Resource already exists", nameof(resource));
+                _resources.Add(resource);
+            }
+        }
+
+        public void NewUser(SsUser user)
+        {
+            lock(_resourceLock)
+            {
+                if (_users.Contains(user))
+                    throw new ArgumentException("User already exists", nameof(user));
+                _users.Add(user);
+            }
         }
 
         public List<SsResource> GetAll()
         {
-            return _resources.ToList();
+            lock (_resourceLock)
+            {
+                return _resources.ToList();
+            }
+        }
+
+        public bool Lock(SsResource resource, SsUser user)
+        {
+            lock (_resourceLock)
+            {
+                if (!_resources.Contains(resource))
+                    throw new ArgumentException("Unknown resource!", nameof(resource));
+
+                if (_usages.ContainsKey(resource))
+                    return false;
+
+                _usages[resource] = user;
+                return true;
+            }
+        }
+
+        public bool Release(SsResource resource, SsUser user)
+        {
+            lock(_resourceLock)
+            {
+                if (_usages[resource] != user)
+                    return false;
+
+                _usages.Remove(resource, out var _);
+                return true;
+            }
+        }
+
+        public bool IsLocked(SsResource res)
+        {
+            lock (_resourceLock)
+            {
+                return _usages.ContainsKey(res);
+            }
         }
     }
 }

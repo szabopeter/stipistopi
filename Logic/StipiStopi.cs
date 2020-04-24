@@ -17,19 +17,34 @@ namespace logic
             return SsRepository.GetAll();
         }
 
-        public bool LockResource(SsResource resource)
-        {
-            return false;
-        }
-
         public void NewResource(SsResource ssResource)
         {
-            SsRepository.Add(ssResource);
+            SsRepository.NewResource(ssResource);
         }
 
-        public void ReleaseResource(SsResource resource)
+        public void NewUser(SsUser user)
         {
+            SsRepository.NewUser(user);
+        }
 
+        public bool LockResource(SsResource resource, SsUser user)
+        {
+            return SsRepository.Lock(resource, user);
+        }
+
+        public bool ReleaseResource(SsResource resource, SsUser user)
+        {
+            return SsRepository.Release(resource, user);
+        }
+
+        public bool IsLocked(SsResource res)
+        {
+            return SsRepository.IsLocked(res);
+        }
+
+        public bool IsFree(SsResource res)
+        {
+            return !IsLocked(res);
         }
     }
 }
