@@ -9,10 +9,11 @@ namespace logic
     {
         void NewResource(SsResource ssResource);
         List<SsResource> GetAll();
-        bool Lock(SsResource resource, SsUser user);
+        bool Lock(SsResource resource, SsUserSecret user);
         void NewUser(SsUser user);
         bool IsLocked(SsResource res);
-        bool Release(SsResource resource, SsUser user);
+        bool Release(SsResource resource, SsUserSecret user);
+        SsUserSecret Authenticated(SsUser user);
     }
 
     public class InMemorySsRepository : ISsRepository
@@ -20,14 +21,14 @@ namespace logic
         private static readonly object _resourceLock = new object();
 
         private readonly List<SsResource> _resources = new List<SsResource>();
-        private readonly List<SsUser> _users = new List<SsUser>();
-        private readonly ConcurrentDictionary<SsResource, SsUser> _usages = new ConcurrentDictionary<SsResource, SsUser>();
+        private readonly List<SsUserSecret> _users = new List<SsUserSecret>();
+        private readonly ConcurrentDictionary<SsResource, SsUserSecret> _usages = new ConcurrentDictionary<SsResource, SsUserSecret>();
 
         public void NewResource(SsResource resource)
         {
             lock (_resourceLock)
             {
-                if (_resources.Contains(resource))
+                if (_resources.Any(resource.IsSame))
                     throw new ArgumentException("Resource already exists", nameof(resource));
                 _resources.Add(resource);
             }
@@ -37,9 +38,23 @@ namespace logic
         {
             lock(_resourceLock)
             {
-                if (_users.Contains(user))
+                if (_users.Any(u => u.HasName(user.UserName)))
                     throw new ArgumentException("User already exists", nameof(user));
-                _users.Add(user);
+                var userSecret = new SsUserSecret(user);
+                _users.Add(userSecret);
+            }
+        }
+
+        public SsUserSecret Authenticated(SsUser user)
+        {
+            lock(_resourceLock)
+            {
+                var userSecret = _users.SingleOrDefault(u => u.HasName(user.UserName));
+                if (userSecret == null)
+                    throw new ArgumentException("User does not exist", nameof(user.UserName));
+                if (!userSecret.IsValid(user))
+                    throw new ArgumentException("Password does not match", nameof(user.Password));
+                return userSecret;
             }
         }
 
@@ -51,7 +66,7 @@ namespace logic
             }
         }
 
-        public bool Lock(SsResource resource, SsUser user)
+        public bool Lock(SsResource resource, SsUserSecret user)
         {
             lock (_resourceLock)
             {
@@ -66,7 +81,7 @@ namespace logic
             }
         }
 
-        public bool Release(SsResource resource, SsUser user)
+        public bool Release(SsResource resource, SsUserSecret user)
         {
             lock(_resourceLock)
             {

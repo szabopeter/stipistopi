@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace logic
 {
@@ -17,24 +16,33 @@ namespace logic
             return SsRepository.GetAll();
         }
 
-        public void NewResource(SsResource ssResource)
+        public SsResource NewResource(string shortName, string address)
         {
+            var ssResource = new SsResource(shortName, address);
             SsRepository.NewResource(ssResource);
+            return ssResource;
         }
 
-        public void NewUser(SsUser user)
+        public SsUser NewUser(string username, string password)
         {
+            var user = new SsUser(username, password);
             SsRepository.NewUser(user);
+            return user;
+        }
+
+        private SsUserSecret Authenticated(SsUser user)
+        {
+            return SsRepository.Authenticated(user);
         }
 
         public bool LockResource(SsResource resource, SsUser user)
         {
-            return SsRepository.Lock(resource, user);
+            return SsRepository.Lock(resource, Authenticated(user));
         }
 
         public bool ReleaseResource(SsResource resource, SsUser user)
         {
-            return SsRepository.Release(resource, user);
+            return SsRepository.Release(resource, Authenticated(user));
         }
 
         public bool IsLocked(SsResource res)
