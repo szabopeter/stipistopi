@@ -1,4 +1,6 @@
 using logic;
+using Logic.Dto;
+using Logic.Repository;
 using System;
 using Xunit;
 

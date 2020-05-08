@@ -1,4 +1,4 @@
-﻿namespace logic
+﻿namespace Logic.Dto
 {
     public class SsResource
     {

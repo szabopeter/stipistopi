@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace logic
+namespace Logic.Dto
 {
     /// <summary>
     /// Used internally, persistent
     /// </summary>
     public class SsUserSecret
     {
-        public string UserName { get;}
+        public string UserName { get; }
         public string Salt { get; }
-        public string PasswordHash { get;}
+        public string PasswordHash { get; }
 
         public SsUserSecret(SsUser ssUser)
         {

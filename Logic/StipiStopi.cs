@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Logic.Dto;
+using Logic.Interface;
+using System.Collections.Generic;
 
 namespace logic
 {

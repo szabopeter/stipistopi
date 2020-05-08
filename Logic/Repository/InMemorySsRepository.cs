@@ -1,20 +1,12 @@
-﻿using System;
+﻿using Logic.Dto;
+using Logic.Interface;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace logic
+namespace Logic.Repository
 {
-    public interface ISsRepository
-    {
-        void NewResource(SsResource ssResource);
-        List<SsResource> GetAll();
-        bool Lock(SsResource resource, SsUserSecret user);
-        void NewUser(SsUser user);
-        bool IsLocked(SsResource res);
-        bool Release(SsResource resource, SsUserSecret user);
-        SsUserSecret Authenticated(SsUser user);
-    }
 
     public class InMemorySsRepository : ISsRepository
     {
@@ -36,7 +28,7 @@ namespace logic
 
         public void NewUser(SsUser user)
         {
-            lock(_resourceLock)
+            lock (_resourceLock)
             {
                 if (_users.Any(u => u.HasName(user.UserName)))
                     throw new ArgumentException("User already exists", nameof(user));
@@ -47,7 +39,7 @@ namespace logic
 
         public SsUserSecret Authenticated(SsUser user)
         {
-            lock(_resourceLock)
+            lock (_resourceLock)
             {
                 var userSecret = _users.SingleOrDefault(u => u.HasName(user.UserName));
                 if (userSecret == null)
@@ -83,7 +75,7 @@ namespace logic
 
         public bool Release(SsResource resource, SsUserSecret user)
         {
-            lock(_resourceLock)
+            lock (_resourceLock)
             {
                 if (_usages[resource] != user)
                     return false;
