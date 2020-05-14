@@ -1,7 +1,7 @@
 ﻿using Logic.Dto;
 using System.Collections.Generic;
 
-namespace Logic.Interface
+namespace Logic.Interfaces
 {
     public interface ISsRepository
     {

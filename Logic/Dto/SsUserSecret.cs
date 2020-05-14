@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
+using System.Globalization;
 
 namespace Logic.Dto
 {
@@ -13,6 +16,8 @@ namespace Logic.Dto
 
         public SsUserSecret(SsUser ssUser)
         {
+            Contract.Requires(ssUser != null);
+
             UserName = ssUser.UserName;
             Salt = Guid.NewGuid().ToString();
             PasswordHash = HashPassword(ssUser.Password, Salt);
@@ -20,6 +25,8 @@ namespace Logic.Dto
 
         public bool IsValid(SsUser user)
         {
+            Contract.Requires(user != null);
+
             if (!HasName(user.UserName))
                 return false;
 
@@ -27,10 +34,11 @@ namespace Logic.Dto
             return hash == PasswordHash;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1822")]
         public string HashPassword(string password, string salt)
         {
             var combined = password + salt;
-            return combined.GetHashCode().ToString();
+            return combined.GetHashCode(StringComparison.InvariantCulture).ToString(CultureInfo.InvariantCulture);
         }
 
         public bool HasName(string userName)

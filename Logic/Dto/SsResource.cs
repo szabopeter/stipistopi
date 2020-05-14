@@ -13,7 +13,7 @@
 
         public bool IsSame(SsResource other)
         {
-            return string.Equals(ShortName, other.ShortName, System.StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(ShortName, other?.ShortName, System.StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

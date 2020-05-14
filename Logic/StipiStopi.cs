@@ -1,5 +1,5 @@
 ﻿using Logic.Dto;
-using Logic.Interface;
+using Logic.Interfaces;
 using System.Collections.Generic;
 
 namespace logic
