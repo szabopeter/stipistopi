@@ -5,7 +5,7 @@
         public string ShortName { get; }
         public string Address { get; }
 
-        public SsResource(string shortName, string address)
+        internal SsResource(string shortName, string address)
         {
             ShortName = shortName;
             Address = address;

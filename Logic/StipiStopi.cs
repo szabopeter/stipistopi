@@ -11,6 +11,14 @@ namespace logic
             SsRepository = ssRepository;
         }
 
+        public void Populate()
+        {
+            var testuser = NewUser("test", "test");
+            var ncu139 = NewResource("ncu1", "10.10.148.8");
+            var ncu140 = NewResource("ncu2", "10.10.148.9");
+            LockResource(ncu140, testuser);
+        }
+
         public ISsRepository SsRepository { get; }
 
         public List<SsResource> GetResources()
