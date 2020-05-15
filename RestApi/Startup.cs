@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using logic;
+using Logic.Interfaces;
+using Logic.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,6 +29,8 @@ namespace RestApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton<ISsRepository>(_ => new InMemorySsRepository());
+            services.AddSingleton<StipiStopi>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

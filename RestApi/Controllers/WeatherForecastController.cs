@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using logic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -17,10 +18,12 @@ namespace RestApi.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly StipiStopi stipiStopi;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, StipiStopi stipiStopi)
         {
             _logger = logger;
+            this.stipiStopi = stipiStopi;
         }
 
         [HttpGet]
@@ -30,7 +33,7 @@ namespace RestApi.Controllers
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
+                TemperatureC = stipiStopi.GetResources().Count,
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
