@@ -50,14 +50,34 @@
         };
         window.resourceActions = resourceActions;
 
+        function SendResourceAction(action, resourceName) {
+            let lockParameter = {
+                resourceName: resourceName,
+                user: {userName: "test", password: "test"},
+            };
+
+            let xhttp = new XMLHttpRequest();
+            xhttp.responseType = "json";
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    DownloadResourceList();
+                }
+            };
+            xhttp.open("POST", "./stipistopi/" + action);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify(lockParameter));
+        }
+
         let resourceList = document.getElementById("resourceList");
         function UpdateResourceList(resources) {
             resourceActions.clear();
             resources.forEach(resource => {
                 let label = resource.isAvailable ? "Lock" : "Release";
+                let resourceAction = resource.isAvailable ? "lock" : "release";
+                let execute = function () { SendResourceAction(resourceAction, resource.shortName); };
                 let action = resourceActions.create(
                     label,
-                    function () { console.log(label + " action clicked!"); }
+                    execute
                     );
                 resource.actions = [action];
             });
