@@ -1,7 +1,64 @@
+<!DOCTYPE html>
 <html>
+
+<head>
+    <title>StipiStopi</title>
+    <meta charset="utf-8" />
+    <link href="style.css" rel="stylesheet" />
+    <script src="handlebars.min-v4.7.6.js"></script>
+    <script id="resourcelist-template" text="text/x-handlebars-template">
+        <h1>Resources</h1>
+            <table>
+                <thead>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Available</th>
+                </thead>
+                {{#each this}}
+                    {{> resourceLineInList}}
+                {{/ each}}
+        </table>
+        <div class="resourceListButtons">
+            <div id="buttonRefreshResourceList" class="button">Refresh</div>
+        </div>
+    </script>
+    <script id="resource-line-in-list-partial" type="text/x-handlebars-template">
+        <tr class="resourceLineInList {{#if isAvailable}}resourceAvailable{{else}}resourceNotAvailable{{/if}}">
+            <td>{{shortName}}</td>
+            <td>{{address}}</td>
+            <td>{{isAvailable}}</td>
+        </tr>
+    </script>
+
+    <script type="module">
+        Handlebars.registerPartial("resourceLineInList", document.getElementById("resource-line-in-list-partial").innerHTML);
+        let resourceListTemplate = Handlebars.compile(document.getElementById("resourcelist-template").innerHTML);
+
+        let resourceList = document.getElementById("resourceList");
+        function UpdateResourceList(resources) {
+            resourceList.innerHTML = resourceListTemplate(resources);
+            document.getElementById("buttonRefreshResourceList").addEventListener("click", DownloadResourceList);
+        }
+
+        UpdateResourceList([]);
+
+        function DownloadResourceList() {
+            let xhttp = new XMLHttpRequest();
+            xhttp.responseType = "json";
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    UpdateResourceList(xhttp.response);
+                }
+            };
+            xhttp.open("GET", "./stipistopi/resources", true);
+            xhttp.send();
+        }
+
+    </script>
+</head>
+
 <body>
-    <h1>
-        Hello
-    </h1>
+    <div id="resourceList" />
 </body>
+
 </html>
