@@ -28,5 +28,6 @@ TABLE {
     width: 100px;
     border: 1px solid lightgray;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 5px;
+    background-color: beige;
 }

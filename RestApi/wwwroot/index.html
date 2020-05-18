@@ -13,20 +13,26 @@
                     <th>Name</th>
                     <th>Address</th>
                     <th>Available</th>
+                    <th>Action</th>
                 </thead>
-                {{#each this}}
-                    {{> resourceLineInList}}
+                {{#each this }}
+                {{> resourceLineInList}}
                 {{/ each}}
         </table>
-        <div class="resourceListButtons">
-            <div id="buttonRefreshResourceList" class="button">Refresh</div>
-        </div>
+            <div class="resourceListButtons">
+                <div id="buttonRefreshResourceList" class="button">Refresh</div>
+            </div>
     </script>
     <script id="resource-line-in-list-partial" type="text/x-handlebars-template">
         <tr class="resourceLineInList {{#if isAvailable}}resourceAvailable{{else}}resourceNotAvailable{{/if}}">
             <td>{{shortName}}</td>
             <td>{{address}}</td>
             <td>{{isAvailable}}</td>
+            <td>
+                {{#each actions}}
+                    <div class="button" onclick="window.resourceActions.execute({{id}});" >{{label}}</div>
+                {{/each}}
+            </td>
         </tr>
     </script>
 
@@ -34,8 +40,27 @@
         Handlebars.registerPartial("resourceLineInList", document.getElementById("resource-line-in-list-partial").innerHTML);
         let resourceListTemplate = Handlebars.compile(document.getElementById("resourcelist-template").innerHTML);
 
+        var resourceActions = { actions: [] };
+        resourceActions.execute = function (index) { resourceActions.actions[index].execute(); };
+        resourceActions.clear = function () { resourceActions.actions = []; };
+        resourceActions.create = function(label, fn) {
+            let action = {label: label, execute: fn, id: resourceActions.actions.length};
+            resourceActions.actions.push(action);
+            return action;
+        };
+        window.resourceActions = resourceActions;
+
         let resourceList = document.getElementById("resourceList");
         function UpdateResourceList(resources) {
+            resourceActions.clear();
+            resources.forEach(resource => {
+                let label = resource.isAvailable ? "Lock" : "Release";
+                let action = resourceActions.create(
+                    label,
+                    function () { console.log(label + " action clicked!"); }
+                    );
+                resource.actions = [action];
+            });
             resourceList.innerHTML = resourceListTemplate(resources);
             document.getElementById("buttonRefreshResourceList").addEventListener("click", DownloadResourceList);
         }
