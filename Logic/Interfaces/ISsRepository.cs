@@ -12,5 +12,6 @@ namespace Logic.Interfaces
         bool IsLocked(SsResource res);
         bool Release(SsResource resource, SsUserSecret user);
         SsUserSecret Authenticated(SsUser user);
+        SsUser GetLockedBy(SsResource ssr);
     }
 }

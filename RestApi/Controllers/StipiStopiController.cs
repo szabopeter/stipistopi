@@ -30,7 +30,8 @@ namespace RestApi.Controllers
             {
                 ShortName = ssr.ShortName,
                 Address = ssr.Address,
-                IsAvailable = stipiStopi.IsFree(ssr)
+                IsAvailable = stipiStopi.IsFree(ssr),
+                LockedBy = stipiStopi.GetLockedBy(ssr)?.UserName,
             });
         }
 
@@ -53,7 +54,7 @@ namespace RestApi.Controllers
         {
             _logger.LogInformation($"Trying to lock {@lock.ResourceName} for {@lock.User.UserName}");
             var resource = stipiStopi.GetResources()
-                .SingleOrDefault(r=>string.Equals(r.ShortName, @lock.ResourceName, StringComparison.InvariantCultureIgnoreCase));
+                .SingleOrDefault(r => string.Equals(r.ShortName, @lock.ResourceName, StringComparison.InvariantCultureIgnoreCase));
             _logger.LogInformation($"Identified resource {resource.ShortName} @ {resource.Address}");
             return stipiStopi.LockResource(resource, new SsUser(@lock.User.UserName, @lock.User.Password));
         }
@@ -71,24 +72,25 @@ namespace RestApi.Controllers
 
     public class ResourceParameter
     {
-        public string ShortName { get;set; }
-        public string Address { get;set; }
+        public string ShortName { get; set; }
+        public string Address { get; set; }
     }
 
     public class UserParameter
     {
-        public string UserName { get;set; }
-        public string Password { get;set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 
     public class LockParameter
     {
-        public UserParameter User { get;set; }
-        public string ResourceName { get;set; }
+        public UserParameter User { get; set; }
+        public string ResourceName { get; set; }
     }
 
-    public class ResourceInfo: ResourceParameter
+    public class ResourceInfo : ResourceParameter
     {
-        public bool IsAvailable { get;set; }
+        public bool IsAvailable { get; set; }
+        public string LockedBy { get; set; }
     }
 }

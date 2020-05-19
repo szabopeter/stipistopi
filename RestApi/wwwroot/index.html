@@ -13,6 +13,7 @@
                     <th>Name</th>
                     <th>Address</th>
                     <th>Available</th>
+                    <th>Locked by</th>
                     <th>Action</th>
                 </thead>
                 {{#each this }}
@@ -28,6 +29,7 @@
             <td>{{shortName}}</td>
             <td>{{address}}</td>
             <td>{{isAvailable}}</td>
+            <td>{{lockedBy}}</td>
             <td>
                 {{#each actions}}
                     <div class="button" onclick="window.resourceActions.execute({{id}});" >{{label}}</div>

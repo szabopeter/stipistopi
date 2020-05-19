@@ -40,6 +40,11 @@ namespace logic
             return user;
         }
 
+        public SsUser GetLockedBy(SsResource ssr)
+        {
+            return SsRepository.GetLockedBy(ssr);
+        }
+
         private SsUserSecret Authenticated(SsUser user)
         {
             return SsRepository.Authenticated(user);
