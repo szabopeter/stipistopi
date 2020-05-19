@@ -1,0 +1,5 @@
+openssl.exe genrsa 4096 >private.pem
+openssl req -x509 -new -key private.pem -out public.pem
+# openssl pkcs12 -export -in public.pem -inkey private.pem -out mycert.pfx
+winpty openssl pkcs12 -export -in public.pem -inkey private.pem -out mycert.pfx
+# cp mycert.pfx ../RestApi/bin/Debug/netcoreapp3.1/publish/stipistopicert.pfx
