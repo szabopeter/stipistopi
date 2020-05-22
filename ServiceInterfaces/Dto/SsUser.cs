@@ -1,4 +1,4 @@
-﻿namespace Logic.Dto
+﻿namespace ServiceInterfaces.Dto
 {
     /// <summary>
     /// Used on the public interface, transient

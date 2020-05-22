@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using logic;
-using Logic.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ServiceInterfaces.Dto;
 
 namespace RestApi.Controllers
 {

@@ -10,7 +10,4 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ServiceInterfaces\ServiceInterfaces.csproj" />
-  </ItemGroup>
 </Project>

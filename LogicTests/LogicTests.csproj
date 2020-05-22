@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Logic\Logic.csproj" />
+    <ProjectReference Include="..\InMemorySsRepositoryService\InMemorySsRepositoryService.csproj" />
   </ItemGroup>
 
 </Project>

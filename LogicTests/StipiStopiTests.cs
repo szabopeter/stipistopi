@@ -1,6 +1,6 @@
 using logic;
-using Logic.Dto;
 using Logic.Repository;
+using ServiceInterfaces.Dto;
 using System;
 using Xunit;
 

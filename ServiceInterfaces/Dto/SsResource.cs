@@ -1,11 +1,11 @@
-﻿namespace Logic.Dto
+﻿namespace ServiceInterfaces.Dto
 {
     public class SsResource
     {
         public string ShortName { get; }
         public string Address { get; }
 
-        internal SsResource(string shortName, string address)
+        public SsResource(string shortName, string address)
         {
             ShortName = shortName;
             Address = address;

@@ -1,6 +1,6 @@
-﻿using Logic.Dto;
-using Logic.Interfaces;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ServiceInterfaces;
+using ServiceInterfaces.Dto;
 
 namespace logic
 {

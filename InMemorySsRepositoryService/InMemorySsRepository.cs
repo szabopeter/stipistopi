@@ -1,6 +1,6 @@
-﻿using Logic.Dto;
-using Logic.Interfaces;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
+using ServiceInterfaces;
+using ServiceInterfaces.Dto;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
