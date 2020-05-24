@@ -59,20 +59,6 @@ namespace Logic.Repository
             _users[SsUserSecret.NormalizeUserName(user.UserName)] = user;
         }
 
-        public SsUserSecret Authenticated(SsUser user)
-        {
-            Contract.Requires(user != null);
-            lock (_resourceLock)
-            {
-                var userSecret = GetUser(user.UserName);
-                if (userSecret == null)
-                    throw new UserDoesNotExistException(user.UserName);
-                if (!userSecret.IsValid(user))
-                    throw new InvalidPasswordException(user.UserName);
-                return userSecret;
-            }
-        }
-
         public List<SsResource> GetAll()
         {
             lock (_resourceLock)

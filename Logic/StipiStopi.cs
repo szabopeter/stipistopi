@@ -18,13 +18,13 @@ namespace logic
         {
             SsRepository.Transaction(() =>
             {
-                var testuser = new SsUser("test", "test");
-                SsRepository.SaveUser(new SsUserSecret(testuser));
+                var testuser = new SsUserSecret(new SsUser("test", "test"));
+                SsRepository.SaveUser(testuser);
                 var ncu139 = new SsResource("ncu1", "10.10.148.8");
                 SsRepository.SaveResource(ncu139);
                 var ncu140 = new SsResource("ncu2", "10.10.148.9");
                 SsRepository.SaveResource(ncu140);
-                SsRepository.Lock(ncu140, SsRepository.Authenticated(testuser));
+                SsRepository.Lock(ncu140, testuser);
             });
         }
 
@@ -73,7 +73,20 @@ namespace logic
 
         private SsUserSecret Authenticated(SsUser user)
         {
-            return SsRepository.Authenticated(user);
+            SsUserSecret authenticated = null;
+            SsRepository.Transaction(() =>
+            {
+                var userSecret = SsRepository.GetUser(user.UserName);
+                if (userSecret == null)
+                    throw new UserDoesNotExistException(user.UserName);
+
+                if (!userSecret.IsValid(user))
+                    throw new InvalidPasswordException(user.UserName);
+                
+                authenticated = userSecret;
+            });
+
+            return authenticated;
         }
 
         public bool LockResource(SsResource resource, SsUser user)

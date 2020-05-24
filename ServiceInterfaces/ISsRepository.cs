@@ -10,7 +10,6 @@ namespace ServiceInterfaces
         bool Lock(SsResource resource, SsUserSecret user);
         bool IsLocked(SsResource res);
         bool Release(SsResource resource, SsUserSecret user);
-        SsUserSecret Authenticated(SsUser user);
         SsUser GetLockedBy(SsResource ssr);
         void Transaction(Action action);
         SsResource GetResource(string shortName);

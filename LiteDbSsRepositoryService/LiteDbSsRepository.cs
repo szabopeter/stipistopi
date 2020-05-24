@@ -7,11 +7,6 @@ namespace LiteDbSsRepositoryService
 {
     public class LiteDbSsRepository : ISsRepository
     {
-        public SsUserSecret Authenticated(SsUser user)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<SsResource> GetAll()
         {
             throw new NotImplementedException();
@@ -38,11 +33,6 @@ namespace LiteDbSsRepositoryService
         }
 
         public void SaveResource(SsResource ssResource)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NewUser(SsUser user)
         {
             throw new NotImplementedException();
         }
