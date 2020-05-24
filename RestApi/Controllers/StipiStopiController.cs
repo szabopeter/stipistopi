@@ -22,7 +22,7 @@ namespace RestApi.Controllers
             _logger = logger;
             this.stipiStopi = stipiStopi;
             if (stipiStopi.GetResources().Count == 0)
-                stipiStopi.Populate((ssRepository as InMemorySsRepository)?.AdminUser);
+                stipiStopi.Populate();
         }
 
         [HttpGet("resources")]

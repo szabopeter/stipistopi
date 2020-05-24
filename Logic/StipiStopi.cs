@@ -7,20 +7,26 @@ namespace logic
 {
     public class StipiStopi
     {
+        private ISsRepository SsRepository { get; }
+
         public StipiStopi(ISsRepository ssRepository)
         {
             SsRepository = ssRepository;
         }
 
-        public void Populate(SsUser adminUser)
+        public void Populate()
         {
-            var testuser = NewUser("test", "test");
-            var ncu139 = NewResource("ncu1", "10.10.148.8", adminUser);
-            var ncu140 = NewResource("ncu2", "10.10.148.9", adminUser);
-            LockResource(ncu140, testuser);
+            SsRepository.Transaction(() =>
+            {
+                var testuser = new SsUser("test", "test");
+                SsRepository.NewUser(testuser);
+                var ncu139 = new SsResource("ncu1", "10.10.148.8");
+                SsRepository.NewResource(ncu139);
+                var ncu140 = new SsResource("ncu2", "10.10.148.9");
+                SsRepository.NewResource(ncu140);
+                SsRepository.Lock(ncu140, SsRepository.Authenticated(testuser));
+            });
         }
-
-        public ISsRepository SsRepository { get; }
 
         public List<SsResource> GetResources()
         {
