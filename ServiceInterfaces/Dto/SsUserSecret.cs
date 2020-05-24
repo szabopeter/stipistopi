@@ -13,12 +13,14 @@ namespace ServiceInterfaces.Dto
         public string UserName { get; }
         public string Salt { get; }
         public string PasswordHash { get; }
+        public UserRole Role { get; }
 
         public SsUserSecret(SsUser ssUser)
         {
             Contract.Requires(ssUser != null);
 
             UserName = ssUser.UserName;
+            Role = ssUser.Role;
             Salt = Guid.NewGuid().ToString();
             PasswordHash = HashPassword(ssUser.Password, Salt);
         }

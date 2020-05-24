@@ -1,6 +1,7 @@
 ﻿using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using ServiceInterfaces.Exceptions;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -125,6 +126,13 @@ namespace Logic.Repository
                     return null;
                 return new SsUser(lockedBy.UserName, null);
             }
+        }
+
+        public void Transaction(Action action)
+        {
+            Contract.Requires(action != null);
+            lock (_resourceLock)
+                action();
         }
     }
 }

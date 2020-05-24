@@ -27,7 +27,7 @@ namespace LogicTest
         public void Create_Resource()
         {
             var regularUser = Sut.NewUser("Bob", "pass");
-            // Assert.ThrowsAny<Exception>(() => Sut.NewResource("NCU", "192.168.42.42", regularUser));
+            Assert.ThrowsAny<Exception>(() => Sut.NewResource("NCU", "192.168.42.42", regularUser));
             var sameResource = Sut.NewResource("NCU", "127.0.0.1", AdminUser);
             Assert.ThrowsAny<Exception>(() => Sut.NewResource("NCU", "192.168.42.42", AdminUser));
             Assert.Single(Sut.GetResources());

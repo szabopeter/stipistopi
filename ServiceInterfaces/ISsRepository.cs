@@ -1,4 +1,5 @@
 ﻿using ServiceInterfaces.Dto;
+using System;
 using System.Collections.Generic;
 
 namespace ServiceInterfaces
@@ -13,5 +14,6 @@ namespace ServiceInterfaces
         bool Release(SsResource resource, SsUserSecret user);
         SsUserSecret Authenticated(SsUser user);
         SsUser GetLockedBy(SsResource ssr);
+        void Transaction(Action action);
     }
 }

@@ -46,5 +46,10 @@ namespace LiteDbSsRepositoryService
         {
             throw new NotImplementedException();
         }
+
+        public void Transaction(Action action)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

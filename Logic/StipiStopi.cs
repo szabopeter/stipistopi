@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
+using ServiceInterfaces.Exceptions;
 
 namespace logic
 {
@@ -28,8 +29,15 @@ namespace logic
 
         public SsResource NewResource(string shortName, string address, SsUser user)
         {
+            // TODO why not pass an SsResource?
             var ssResource = new SsResource(shortName, address);
-            SsRepository.NewResource(ssResource);
+            SsRepository.Transaction(() => 
+            {
+                if (Authenticated(user).Role != UserRole.Admin)
+                    // TODO Create new Exception type
+                    throw new UserDoesNotExistException(user.UserName);
+                SsRepository.NewResource(ssResource);
+            });
             return ssResource;
         }
 
