@@ -17,16 +17,6 @@ namespace LiteDbSsRepositoryService
             throw new NotImplementedException();
         }
 
-        public bool IsLocked(SsResource res)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Lock(SsResource resource, SsUserSecret user)
-        {
-            throw new NotImplementedException();
-        }
-
         public SsResource GetResource(string shortName)
         {
             throw new NotImplementedException();

@@ -82,14 +82,6 @@ namespace Logic.Repository
                 _usages[resource] = user;
         }
 
-        public bool IsLocked(SsResource res)
-        {
-            lock (_resourceLock)
-            {
-                return _usages.ContainsKey(res);
-            }
-        }
-
         public SsUser GetLockedBy(SsResource res)
         {
             lock (_resourceLock)

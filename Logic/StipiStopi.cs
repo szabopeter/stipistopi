@@ -141,7 +141,8 @@ namespace logic
 
         public bool IsLocked(SsResource res)
         {
-            return SsRepository.IsLocked(res);
+            // TODO: this operation should require a valid user
+            return SsRepository.GetLockingUser(res) != null;
         }
 
         public bool IsFree(SsResource res)
