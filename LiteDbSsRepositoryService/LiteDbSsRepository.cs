@@ -12,11 +12,6 @@ namespace LiteDbSsRepositoryService
             throw new NotImplementedException();
         }
 
-        public SsUser GetLockedBy(SsResource ssr)
-        {
-            throw new NotImplementedException();
-        }
-
         public SsResource GetResource(string shortName)
         {
             throw new NotImplementedException();

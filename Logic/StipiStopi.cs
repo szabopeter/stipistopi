@@ -68,7 +68,14 @@ namespace logic
 
         public SsUser GetLockedBy(SsResource ssr)
         {
-            return SsRepository.GetLockedBy(ssr);
+            // TODO Returning the username only should be sufficient
+            // TODO Request should require a valid user
+            SsUser lockingUser = null;
+            SsRepository.Transaction(() => {
+                var user = SsRepository.GetLockingUser(ssr);
+                lockingUser = new SsUser(user.UserName, "", user.Role);
+            });
+            return lockingUser;
         }
 
         private SsUserSecret Authenticated(SsUser user)

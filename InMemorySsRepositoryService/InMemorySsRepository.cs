@@ -82,17 +82,6 @@ namespace Logic.Repository
                 _usages[resource] = user;
         }
 
-        public SsUser GetLockedBy(SsResource res)
-        {
-            lock (_resourceLock)
-            {
-                var lockedBy = _usages.GetValueOrDefault(res, null);
-                if (lockedBy == null)
-                    return null;
-                return new SsUser(lockedBy.UserName, null);
-            }
-        }
-
         public void Transaction(Action action)
         {
             Contract.Requires(action != null);
