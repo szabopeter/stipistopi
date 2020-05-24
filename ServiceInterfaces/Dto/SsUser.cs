@@ -8,10 +8,13 @@
         public string UserName { get; }
         public string Password { get; }
 
-        public SsUser(string userName, string password)
+        public UserRole Role { get; }
+
+        public SsUser(string userName, string password, UserRole role = UserRole.Regular)
         {
             UserName = userName;
             Password = password;
+            Role = role;
         }
     }
 }

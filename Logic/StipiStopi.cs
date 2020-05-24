@@ -11,11 +11,11 @@ namespace logic
             SsRepository = ssRepository;
         }
 
-        public void Populate()
+        public void Populate(SsUser adminUser)
         {
             var testuser = NewUser("test", "test");
-            var ncu139 = NewResource("ncu1", "10.10.148.8");
-            var ncu140 = NewResource("ncu2", "10.10.148.9");
+            var ncu139 = NewResource("ncu1", "10.10.148.8", adminUser);
+            var ncu140 = NewResource("ncu2", "10.10.148.9", adminUser);
             LockResource(ncu140, testuser);
         }
 
@@ -26,7 +26,7 @@ namespace logic
             return SsRepository.GetAll();
         }
 
-        public SsResource NewResource(string shortName, string address)
+        public SsResource NewResource(string shortName, string address, SsUser user)
         {
             var ssResource = new SsResource(shortName, address);
             SsRepository.NewResource(ssResource);

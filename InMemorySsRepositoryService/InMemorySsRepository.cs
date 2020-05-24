@@ -11,8 +11,19 @@ namespace Logic.Repository
 
     public class InMemorySsRepository : ISsRepository
     {
-        public InMemorySsRepository()
+        public SsUser AdminUser { get; }
+
+        public InMemorySsRepository() : this(new SsUser("admin", "admin", UserRole.Admin))
         {
+        }
+
+        public InMemorySsRepository(SsUser adminUser)
+        {
+            Contract.Requires(adminUser != null);
+            Contract.Requires(adminUser.Role == UserRole.Admin);
+            AdminUser = adminUser;
+            var userSecret = new SsUserSecret(adminUser);
+            _users.Add(userSecret);
         }
 
         private static readonly object _resourceLock = new object();
@@ -69,6 +80,7 @@ namespace Logic.Repository
 
         public bool Lock(SsResource resource, SsUserSecret user)
         {
+            // TODO authentication needs to happen inside the locked block!
             Contract.Requires(resource != null);
             Contract.Requires(user != null);
             lock (_resourceLock)

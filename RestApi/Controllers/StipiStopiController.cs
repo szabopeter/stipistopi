@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using logic;
+using Logic.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 
 namespace RestApi.Controllers
@@ -15,12 +17,12 @@ namespace RestApi.Controllers
         private readonly ILogger<StipiStopiController> _logger;
         private readonly StipiStopi stipiStopi;
 
-        public StipiStopiController(ILogger<StipiStopiController> logger, StipiStopi stipiStopi)
+        public StipiStopiController(ILogger<StipiStopiController> logger, StipiStopi stipiStopi, ISsRepository ssRepository)
         {
             _logger = logger;
             this.stipiStopi = stipiStopi;
             if (stipiStopi.GetResources().Count == 0)
-                stipiStopi.Populate();
+                stipiStopi.Populate((ssRepository as InMemorySsRepository)?.AdminUser);
         }
 
         [HttpGet("resources")]
@@ -46,7 +48,7 @@ namespace RestApi.Controllers
         public SsResource NewResource(ResourceParameter resource)
         {
             _logger.LogInformation($"New resource: {resource.ShortName} @ {resource.Address}");
-            return stipiStopi.NewResource(resource.ShortName, resource.Address);
+            return stipiStopi.NewResource(resource.ShortName, resource.Address, new SsUser("any", "any"));
         }
 
         [HttpPost("lock")]
