@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Localization;
-using ServiceInterfaces;
+﻿using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using ServiceInterfaces.Exceptions;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -13,27 +11,8 @@ namespace Logic.Repository
 
     public class InMemorySsRepository : ISsRepository
     {
-        private const string UserDoesNotExist = "User does not exist";
-        private const string PasswordDoesNotMatch = "Password does not match";
-        private const string ResourceAlreadyExists = "Resource already exists";
-        private const string UserAlreadyExists = "User already exists";
-        private const string UnknownResource = "Unknown resource!";
-
         public InMemorySsRepository()
         {
-            var defaultLocalizer = new DefaultStringLocalizer();
-            defaultLocalizer.Add(UserDoesNotExist);
-            defaultLocalizer.Add(PasswordDoesNotMatch);
-            defaultLocalizer.Add(ResourceAlreadyExists);
-            defaultLocalizer.Add(UserAlreadyExists);
-            defaultLocalizer.Add(UnknownResource);
-            Localizer = defaultLocalizer;
-        }
-
-        public InMemorySsRepository(IStringLocalizer localizer)
-        {
-            Contract.Requires(localizer != null);
-            Localizer = localizer;
         }
 
         private static readonly object _resourceLock = new object();
@@ -41,7 +20,6 @@ namespace Logic.Repository
         private readonly List<SsResource> _resources = new List<SsResource>();
         private readonly List<SsUserSecret> _users = new List<SsUserSecret>();
         private readonly ConcurrentDictionary<SsResource, SsUserSecret> _usages = new ConcurrentDictionary<SsResource, SsUserSecret>();
-        private readonly IStringLocalizer Localizer;
 
         public void NewResource(SsResource resource)
         {
@@ -76,7 +54,7 @@ namespace Logic.Repository
                 if (userSecret == null)
                     throw new UserDoesNotExistException(user.UserName);
                 if (!userSecret.IsValid(user))
-                    throw new ArgumentException(Localizer[PasswordDoesNotMatch], nameof(user));
+                    throw new InvalidPasswordException(user.UserName);
                 return userSecret;
             }
         }
@@ -96,7 +74,7 @@ namespace Logic.Repository
             lock (_resourceLock)
             {
                 if (!_resources.Contains(resource))
-                    throw new ArgumentException(Localizer[UnknownResource], nameof(resource));
+                    throw new ResourceDoesNotExistException(resource?.ShortName);
 
                 if (_usages.ContainsKey(resource))
                     return false;
