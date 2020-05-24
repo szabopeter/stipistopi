@@ -45,7 +45,12 @@ namespace ServiceInterfaces.Dto
 
         public bool HasName(string userName)
         {
-            return string.Equals(userName, UserName, StringComparison.InvariantCultureIgnoreCase);
+            return NormalizeUserName(UserName).Equals(NormalizeUserName(userName));
+        }
+
+        public static string NormalizeUserName(string userName)
+        {
+            return userName.ToLowerInvariant();
         }
     }
 }

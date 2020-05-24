@@ -24,37 +24,39 @@ namespace Logic.Repository
             Contract.Requires(adminUser.Role == UserRole.Admin);
             AdminUser = adminUser;
             var userSecret = new SsUserSecret(adminUser);
-            _users.Add(userSecret);
+            _users[userSecret.UserName] = userSecret;
         }
 
         private static readonly object _resourceLock = new object();
 
-        private readonly List<SsResource> _resources = new List<SsResource>();
-        private readonly List<SsUserSecret> _users = new List<SsUserSecret>();
+        private readonly Dictionary<string, SsResource> _resources = new Dictionary<string, SsResource>();
+        private readonly Dictionary<string, SsUserSecret> _users = new Dictionary<string, SsUserSecret>();
         private readonly ConcurrentDictionary<SsResource, SsUserSecret> _usages = new ConcurrentDictionary<SsResource, SsUserSecret>();
 
-        public void NewResource(SsResource resource)
+        public SsResource GetResource(string shortName)
         {
-            Contract.Requires(resource != null);
-
-            lock (_resourceLock)
-            {
-                if (_resources.Any(resource.IsSame))
-                    throw new ResourceAlreadyExistsException(resource.ShortName);
-                _resources.Add(resource);
-            }
+            if (_resources.TryGetValue(SsResource.NormalizeShortName(shortName), out var resource))
+                return resource;
+            return null;
         }
 
-        public void NewUser(SsUser user)
+        public void SaveResource(SsResource resource)
+        {
+            Contract.Requires(resource != null);
+            _resources[SsResource.NormalizeShortName(resource.ShortName)] = resource;
+        }
+
+        public SsUserSecret GetUser(string userName)
+        {
+            if (_users.TryGetValue(SsUserSecret.NormalizeUserName(userName), out var user))
+                return user;
+            return null;
+        }
+
+        public void SaveUser(SsUserSecret user)
         {
             Contract.Requires(user != null);
-            lock (_resourceLock)
-            {
-                if (_users.Any(u => u.HasName(user.UserName)))
-                    throw new UserAlreadyExistsException(user.UserName);
-                var userSecret = new SsUserSecret(user);
-                _users.Add(userSecret);
-            }
+            _users[SsUserSecret.NormalizeUserName(user.UserName)] = user;
         }
 
         public SsUserSecret Authenticated(SsUser user)
@@ -62,7 +64,7 @@ namespace Logic.Repository
             Contract.Requires(user != null);
             lock (_resourceLock)
             {
-                var userSecret = _users.SingleOrDefault(u => u.HasName(user.UserName));
+                var userSecret = GetUser(user.UserName);
                 if (userSecret == null)
                     throw new UserDoesNotExistException(user.UserName);
                 if (!userSecret.IsValid(user))
@@ -75,7 +77,7 @@ namespace Logic.Repository
         {
             lock (_resourceLock)
             {
-                return _resources.ToList();
+                return _resources.Values.ToList();
             }
         }
 
@@ -86,7 +88,8 @@ namespace Logic.Repository
             Contract.Requires(user != null);
             lock (_resourceLock)
             {
-                if (!_resources.Contains(resource))
+                var dbResource = GetResource(resource.ShortName);
+                if (dbResource == null)
                     throw new ResourceDoesNotExistException(resource?.ShortName);
 
                 if (_usages.ContainsKey(resource))

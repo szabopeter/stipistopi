@@ -19,11 +19,11 @@ namespace logic
             SsRepository.Transaction(() =>
             {
                 var testuser = new SsUser("test", "test");
-                SsRepository.NewUser(testuser);
+                SsRepository.SaveUser(new SsUserSecret(testuser));
                 var ncu139 = new SsResource("ncu1", "10.10.148.8");
-                SsRepository.NewResource(ncu139);
+                SsRepository.SaveResource(ncu139);
                 var ncu140 = new SsResource("ncu2", "10.10.148.9");
-                SsRepository.NewResource(ncu140);
+                SsRepository.SaveResource(ncu140);
                 SsRepository.Lock(ncu140, SsRepository.Authenticated(testuser));
             });
         }
@@ -33,23 +33,36 @@ namespace logic
             return SsRepository.GetAll();
         }
 
-        public SsResource NewResource(string shortName, string address, SsUser user)
+        public SsResource NewResource(string shortName, string address, SsUser creator)
         {
             // TODO why not pass an SsResource?
             var ssResource = new SsResource(shortName, address);
-            SsRepository.Transaction(() => 
+            SsRepository.Transaction(() =>
             {
-                if (Authenticated(user).Role != UserRole.Admin)
-                    throw new InsufficientRoleException(user.UserName);
-                SsRepository.NewResource(ssResource);
+                if (Authenticated(creator)?.Role != UserRole.Admin)
+                    throw new InsufficientRoleException(creator.UserName);
+
+                if (SsRepository.GetResource(shortName) != null)
+                    throw new ResourceAlreadyExistsException(shortName);
+
+                SsRepository.SaveResource(ssResource);
             });
             return ssResource;
         }
 
-        public SsUser NewUser(string username, string password)
+        public SsUser NewUser(string username, string password, SsUser creator)
         {
             var user = new SsUser(username, password);
-            SsRepository.NewUser(user);
+            SsRepository.Transaction(() =>
+            {
+                if (Authenticated(creator)?.Role != UserRole.Admin)
+                    throw new InsufficientRoleException(creator.UserName);
+
+                if (SsRepository.GetUser(username) != null)
+                    throw new UserAlreadyExistsException(username);
+
+                SsRepository.SaveUser(new SsUserSecret(user));
+            });
             return user;
         }
 

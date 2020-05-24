@@ -1,4 +1,6 @@
-﻿namespace ServiceInterfaces.Dto
+﻿using System;
+
+namespace ServiceInterfaces.Dto
 {
     public class SsResource
     {
@@ -11,9 +13,9 @@
             Address = address;
         }
 
-        public bool IsSame(SsResource other)
+        public static string NormalizeShortName(string shortName)
         {
-            return string.Equals(ShortName, other?.ShortName, System.StringComparison.InvariantCultureIgnoreCase);
+            return shortName.ToLowerInvariant();
         }
     }
 }

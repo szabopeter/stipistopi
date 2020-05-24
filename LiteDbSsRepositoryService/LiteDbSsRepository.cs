@@ -32,7 +32,12 @@ namespace LiteDbSsRepositoryService
             throw new NotImplementedException();
         }
 
-        public void NewResource(SsResource ssResource)
+        public SsResource GetResource(string shortName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveResource(SsResource ssResource)
         {
             throw new NotImplementedException();
         }
@@ -48,6 +53,16 @@ namespace LiteDbSsRepositoryService
         }
 
         public void Transaction(Action action)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SsUserSecret GetUser(string userName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveUser(SsUserSecret user)
         {
             throw new NotImplementedException();
         }
