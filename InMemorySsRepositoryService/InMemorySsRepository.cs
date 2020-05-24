@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
+using ServiceInterfaces.Exceptions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace Logic.Repository
             lock (_resourceLock)
             {
                 if (_resources.Any(resource.IsSame))
-                    throw new ArgumentException(Localizer[ResourceAlreadyExists], nameof(resource));
+                    throw new ResourceAlreadyExistsException(resource.ShortName);
                 _resources.Add(resource);
             }
         }
@@ -60,7 +61,7 @@ namespace Logic.Repository
             lock (_resourceLock)
             {
                 if (_users.Any(u => u.HasName(user.UserName)))
-                    throw new ArgumentException(Localizer[UserAlreadyExists], nameof(user));
+                    throw new UserAlreadyExistsException(user.UserName);
                 var userSecret = new SsUserSecret(user);
                 _users.Add(userSecret);
             }
@@ -73,7 +74,7 @@ namespace Logic.Repository
             {
                 var userSecret = _users.SingleOrDefault(u => u.HasName(user.UserName));
                 if (userSecret == null)
-                    throw new ArgumentException(Localizer[UserDoesNotExist], nameof(user));
+                    throw new UserDoesNotExistException(user.UserName);
                 if (!userSecret.IsValid(user))
                     throw new ArgumentException(Localizer[PasswordDoesNotMatch], nameof(user));
                 return userSecret;
