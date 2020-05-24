@@ -40,8 +40,7 @@ namespace logic
             SsRepository.Transaction(() => 
             {
                 if (Authenticated(user).Role != UserRole.Admin)
-                    // TODO Create new Exception type
-                    throw new UserDoesNotExistException(user.UserName);
+                    throw new InsufficientRoleException(user.UserName);
                 SsRepository.NewResource(ssResource);
             });
             return ssResource;
