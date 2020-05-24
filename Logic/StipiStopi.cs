@@ -97,6 +97,7 @@ namespace logic
             SsRepository.Transaction(() => {
                 var authenticated = Authenticated(user);
 
+                // TODO Should extract a GetResource
                 SsResource dbResource = SsRepository.GetResource(shortName);
                 if (dbResource == null)
                     throw new ResourceDoesNotExistException(shortName);
@@ -115,7 +116,27 @@ namespace logic
 
         public bool ReleaseResource(SsResource resource, SsUser user)
         {
-            return SsRepository.Release(resource, Authenticated(user));
+            var shortName = resource?.ShortName;
+            // TODO shortname should be sufficient
+            bool success = false;
+            SsRepository.Transaction(() => {
+                var authenticated = Authenticated(user);
+
+                // TODO Should extract a GetResource
+                SsResource dbResource = SsRepository.GetResource(shortName);
+                if (dbResource == null)
+                    throw new ResourceDoesNotExistException(shortName);
+                
+                var lockedBy = SsRepository.GetLockingUser(dbResource);
+                if (lockedBy.Equals(authenticated))
+                {
+                    SsRepository.SetLockingUser(dbResource, null);
+                    success = true;
+                } else {
+                    success = false;
+                }
+            });
+            return success;
         }
 
         public bool IsLocked(SsResource res)

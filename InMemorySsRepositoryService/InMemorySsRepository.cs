@@ -76,19 +76,10 @@ namespace Logic.Repository
 
         public void SetLockingUser(SsResource resource, SsUserSecret user)
         {
-            _usages[resource] = user;
-        }
-
-        public bool Release(SsResource resource, SsUserSecret user)
-        {
-            lock (_resourceLock)
-            {
-                if (_usages[resource] != user)
-                    return false;
-
+            if (user == null)
                 _usages.Remove(resource, out var _);
-                return true;
-            }
+            else
+                _usages[resource] = user;
         }
 
         public bool IsLocked(SsResource res)

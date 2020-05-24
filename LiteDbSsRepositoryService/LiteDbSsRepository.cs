@@ -37,11 +37,6 @@ namespace LiteDbSsRepositoryService
             throw new NotImplementedException();
         }
 
-        public bool Release(SsResource resource, SsUserSecret user)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Transaction(Action action)
         {
             throw new NotImplementedException();
@@ -53,6 +48,16 @@ namespace LiteDbSsRepositoryService
         }
 
         public void SaveUser(SsUserSecret user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SsUserSecret GetLockingUser(SsResource resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetLockingUser(SsResource resource, SsUserSecret user)
         {
             throw new NotImplementedException();
         }

@@ -8,7 +8,6 @@ namespace ServiceInterfaces
     {
         List<SsResource> GetAll();
         bool IsLocked(SsResource res);
-        bool Release(SsResource resource, SsUserSecret user);
         SsUser GetLockedBy(SsResource ssr);
         void Transaction(Action action);
         SsResource GetResource(string shortName);
