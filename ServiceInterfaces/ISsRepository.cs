@@ -7,7 +7,6 @@ namespace ServiceInterfaces
     public interface ISsRepository
     {
         List<SsResource> GetAll();
-        bool Lock(SsResource resource, SsUserSecret user);
         bool IsLocked(SsResource res);
         bool Release(SsResource resource, SsUserSecret user);
         SsUser GetLockedBy(SsResource ssr);
@@ -16,5 +15,7 @@ namespace ServiceInterfaces
         void SaveResource(SsResource resource);
         SsUserSecret GetUser(string userName);
         void SaveUser(SsUserSecret user);
+        SsUserSecret GetLockingUser(SsResource resource);
+        void SetLockingUser(SsResource resource, SsUserSecret user);
     }
 }

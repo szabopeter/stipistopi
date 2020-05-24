@@ -24,7 +24,7 @@ namespace logic
                 SsRepository.SaveResource(ncu139);
                 var ncu140 = new SsResource("ncu2", "10.10.148.9");
                 SsRepository.SaveResource(ncu140);
-                SsRepository.Lock(ncu140, testuser);
+                SsRepository.SetLockingUser(ncu140, testuser);
             });
         }
 
@@ -91,7 +91,26 @@ namespace logic
 
         public bool LockResource(SsResource resource, SsUser user)
         {
-            return SsRepository.Lock(resource, Authenticated(user));
+            var shortName = resource?.ShortName;
+            // TODO shortName would be sufficient
+            bool success = false;
+            SsRepository.Transaction(() => {
+                var authenticated = Authenticated(user);
+
+                SsResource dbResource = SsRepository.GetResource(shortName);
+                if (dbResource == null)
+                    throw new ResourceDoesNotExistException(shortName);
+                
+                var lockedBy = SsRepository.GetLockingUser(dbResource);
+                if (lockedBy != null)
+                    success = false;
+                else
+                {
+                    SsRepository.SetLockingUser(dbResource, authenticated);
+                    success = true;
+                }
+            });
+            return success;
         }
 
         public bool ReleaseResource(SsResource resource, SsUser user)

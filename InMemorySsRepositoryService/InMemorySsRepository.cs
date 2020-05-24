@@ -67,23 +67,16 @@ namespace Logic.Repository
             }
         }
 
-        public bool Lock(SsResource resource, SsUserSecret user)
+        public SsUserSecret GetLockingUser(SsResource resource)
         {
-            // TODO authentication needs to happen inside the locked block!
-            Contract.Requires(resource != null);
-            Contract.Requires(user != null);
-            lock (_resourceLock)
-            {
-                var dbResource = GetResource(resource.ShortName);
-                if (dbResource == null)
-                    throw new ResourceDoesNotExistException(resource?.ShortName);
+            if (_usages.TryGetValue(resource, out var lockingUser))
+                return lockingUser;
+            return null;
+        }
 
-                if (_usages.ContainsKey(resource))
-                    return false;
-
-                _usages[resource] = user;
-                return true;
-            }
+        public void SetLockingUser(SsResource resource, SsUserSecret user)
+        {
+            _usages[resource] = user;
         }
 
         public bool Release(SsResource resource, SsUserSecret user)
