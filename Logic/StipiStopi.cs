@@ -73,7 +73,8 @@ namespace logic
             SsUser lockingUser = null;
             SsRepository.Transaction(() => {
                 var user = SsRepository.GetLockingUser(ssr);
-                lockingUser = new SsUser(user.UserName, "", user.Role);
+                if (user != null)
+                    lockingUser = new SsUser(user.UserName, "", user.Role);
             });
             return lockingUser;
         }

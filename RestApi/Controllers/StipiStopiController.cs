@@ -28,6 +28,7 @@ namespace RestApi.Controllers
         [HttpGet("resources")]
         public IEnumerable<ResourceInfo> GetResources()
         {
+            // TODO Avoid repeated queries
             return stipiStopi.GetResources().Select(ssr => new ResourceInfo
             {
                 ShortName = ssr.ShortName,
@@ -38,19 +39,25 @@ namespace RestApi.Controllers
         }
 
         [HttpPost("register")]
-        public SsUser NewUser(UserParameter user)
+        public SsUser NewUser(NewUserParameter newUser)
         {
-            // TODO Creator parameter
-            _logger.LogInformation($"Registering {user.UserName} with a password of length {user.Password.Length}");
-            return stipiStopi.NewUser(user.UserName, user.Password, new SsUser("any", "any"));
+            _logger.LogInformation($"Registering {newUser.User.UserName} with a password of length {newUser.User.Password.Length}");
+            // TODO Could pass an SsUser
+            return stipiStopi.NewUser(
+                newUser.User.UserName, 
+                newUser.User.Password,
+                newUser.Creator);
         }
 
         [HttpPost("resource")]
-        public SsResource NewResource(ResourceParameter resource)
+        public SsResource NewResource(NewResourceParameter newResource)
         {
-            // TODO Creator parameter
-            _logger.LogInformation($"New resource: {resource.ShortName} @ {resource.Address}");
-            return stipiStopi.NewResource(resource.ShortName, resource.Address, new SsUser("any", "any"));
+            _logger.LogInformation($"New resource: {newResource.Resource.ShortName} @ {newResource.Resource.Address}");
+            // TODO Could pass an SsResource
+            return stipiStopi.NewResource(
+                newResource.Resource.ShortName, 
+                newResource.Resource.Address, 
+                newResource.Creator);
         }
 
         [HttpPost("lock")]
@@ -72,6 +79,18 @@ namespace RestApi.Controllers
             _logger.LogInformation($"Identified resource {resource.ShortName} @ {resource.Address}");
             return stipiStopi.ReleaseResource(resource, new SsUser(@lock.User.UserName, @lock.User.Password));
         }
+    }
+
+    public class NewResourceParameter
+    {
+        public ResourceParameter Resource { get; set; }
+        public SsUser Creator { get; set; }
+    }
+
+    public class NewUserParameter
+    {
+        public SsUser User { get; set; }
+        public SsUser Creator { get; set; }
     }
 
     public class ResourceParameter
