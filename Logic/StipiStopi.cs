@@ -30,7 +30,10 @@ namespace logic
 
         public List<SsResource> GetResources()
         {
-            return SsRepository.GetAll();
+            List<SsResource> resources = null;
+            SsRepository.Transaction(() => 
+                resources = SsRepository.GetAll());
+            return resources;
         }
 
         public SsResource NewResource(string shortName, string address, SsUser creator)
@@ -82,8 +85,8 @@ namespace logic
         private SsUserSecret Authenticated(SsUser user)
         {
             SsUserSecret authenticated = null;
-            SsRepository.Transaction(() =>
-            {
+            // SsRepository.Transaction(() =>
+            // {
                 var userSecret = SsRepository.GetUser(user.UserName);
                 if (userSecret == null)
                     throw new UserDoesNotExistException(user.UserName);
@@ -92,7 +95,7 @@ namespace logic
                     throw new InvalidPasswordException(user.UserName);
                 
                 authenticated = userSecret;
-            });
+            // });
 
             return authenticated;
         }
@@ -150,7 +153,9 @@ namespace logic
         public bool IsLocked(SsResource res)
         {
             // TODO: this operation should require a valid user
-            return SsRepository.GetLockingUser(res) != null;
+            bool result = false;
+            SsRepository.Transaction(() => result = SsRepository.GetLockingUser(res) != null);
+            return result;
         }
 
         public bool IsFree(SsResource res)

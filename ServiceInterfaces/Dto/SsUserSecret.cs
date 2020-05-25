@@ -10,10 +10,31 @@ namespace ServiceInterfaces.Dto
     /// </summary>
     public class SsUserSecret
     {
-        public string UserName { get; }
-        public string Salt { get; }
-        public string PasswordHash { get; }
-        public UserRole Role { get; }
+        // TODO Make these read-only again
+        public string UserName { get; set; }
+        public string Salt { get; set; }
+        public string PasswordHash { get; set; }
+        public UserRole Role { get; set; }
+
+        [Obsolete("Only for LiteDB")]
+        public SsUserSecret()
+        {
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            
+            return ((SsUserSecret)obj).UserName.Equals(UserName);
+        }
+        
+        public override int GetHashCode()
+        {
+            return UserName.GetHashCode();
+        }
 
         public SsUserSecret(SsUser ssUser)
         {

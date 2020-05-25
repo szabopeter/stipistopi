@@ -15,7 +15,9 @@ namespace LogicTest
         public StipiStopiTestBase(Func<SsUser, ISsRepository> ssRepositoryFactory, SsUser adminUser)
         {
             AdminUser = adminUser;
-            Sut = new StipiStopi(ssRepositoryFactory(adminUser));
+            var repository = ssRepositoryFactory(adminUser);
+            Sut = new StipiStopi(repository);
+            repository.Transaction(() => repository.SaveUser(new SsUserSecret(adminUser)));
         }
 
         [Fact]
@@ -28,7 +30,7 @@ namespace LogicTest
         public void Create_Resource()
         {
             var regularUser = CreateUser();
-            Assert.ThrowsAny<Exception>(() => Sut.NewResource("NCU", "192.168.42.42", regularUser));
+           Assert.ThrowsAny<Exception>(() => Sut.NewResource("NCU", "192.168.42.42", regularUser));
             var sameResource = Sut.NewResource("NCU", "127.0.0.1", AdminUser);
             Assert.ThrowsAny<Exception>(() => Sut.NewResource("NCU", "192.168.42.42", AdminUser));
             Assert.Single(Sut.GetResources());

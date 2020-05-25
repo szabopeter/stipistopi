@@ -6,7 +6,8 @@ namespace LogicTest
     public class LiteDbTests : StipiStopiTestBase
     {
         public LiteDbTests() : base(
-            admin => new LiteDbSsRepository(),
+            // TODO Use a memorystream
+            admin => new LiteDbSsRepository(System.IO.Path.GetTempFileName()+".litedb"),
             new SsUser("testadmin", "testadmin", UserRole.Admin)
         )
         {

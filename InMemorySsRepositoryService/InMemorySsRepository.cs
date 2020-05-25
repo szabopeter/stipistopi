@@ -11,19 +11,8 @@ namespace Logic.Repository
 
     public class InMemorySsRepository : ISsRepository
     {
-        public SsUser AdminUser { get; }
-
-        public InMemorySsRepository() : this(new SsUser("admin", "admin", UserRole.Admin))
+        public InMemorySsRepository()
         {
-        }
-
-        public InMemorySsRepository(SsUser adminUser)
-        {
-            Contract.Requires(adminUser != null);
-            Contract.Requires(adminUser.Role == UserRole.Admin);
-            AdminUser = adminUser;
-            var userSecret = new SsUserSecret(adminUser);
-            _users[userSecret.UserName] = userSecret;
         }
 
         private static readonly object _resourceLock = new object();
