@@ -1,20 +1,21 @@
-using logic;
-using Logic.Repository;
+﻿using logic;
+using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using System;
 using Xunit;
 
 namespace LogicTest
 {
-    public class StipiStopiTests
+
+    public abstract class StipiStopiTestBase
     {
         public StipiStopi Sut { get; }
         public SsUser AdminUser { get; }
 
-        public StipiStopiTests()
+        public StipiStopiTestBase(Func<SsUser, ISsRepository> ssRepositoryFactory, SsUser adminUser)
         {
-            AdminUser = new SsUser("testadmin", "testadmin", UserRole.Admin);
-            Sut = new StipiStopi(new InMemorySsRepository(AdminUser));
+            AdminUser = adminUser;
+            Sut = new StipiStopi(ssRepositoryFactory(adminUser));
         }
 
         [Fact]
