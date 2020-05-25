@@ -12,7 +12,7 @@
 
         public SsUser(string userName, string password, UserRole role = UserRole.Regular)
         {
-            UserName = userName;
+            UserName = SsUserSecret.NormalizeUserName(userName);
             Password = password;
             Role = role;
         }

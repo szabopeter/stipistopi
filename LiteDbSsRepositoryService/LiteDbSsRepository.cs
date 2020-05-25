@@ -9,7 +9,7 @@ namespace LiteDbSsRepositoryService
     {
         public List<SsResource> GetAll()
         {
-            throw new NotImplementedException();
+            return new List<SsResource>();
         }
 
         public SsResource GetResource(string shortName)

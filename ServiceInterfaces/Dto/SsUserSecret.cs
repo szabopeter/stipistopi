@@ -19,7 +19,7 @@ namespace ServiceInterfaces.Dto
         {
             Contract.Requires(ssUser != null);
 
-            UserName = ssUser.UserName;
+            UserName = NormalizeUserName(ssUser.UserName);
             Role = ssUser.Role;
             Salt = Guid.NewGuid().ToString();
             PasswordHash = HashPassword(ssUser.Password, Salt);
@@ -29,23 +29,18 @@ namespace ServiceInterfaces.Dto
         {
             Contract.Requires(user != null);
 
-            if (!HasName(user.UserName))
+            if (!UserName.Equals(user.UserName))
                 return false;
 
             var hash = HashPassword(user.Password, Salt);
             return hash == PasswordHash;
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1822")]
+        // [SuppressMessage("Microsoft.Design", "CA1822")]
         public string HashPassword(string password, string salt)
         {
             var combined = password + salt;
             return combined.GetHashCode(StringComparison.InvariantCulture).ToString(CultureInfo.InvariantCulture);
-        }
-
-        public bool HasName(string userName)
-        {
-            return NormalizeUserName(UserName).Equals(NormalizeUserName(userName));
         }
 
         public static string NormalizeUserName(string userName)

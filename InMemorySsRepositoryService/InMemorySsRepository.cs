@@ -1,6 +1,5 @@
 ﻿using ServiceInterfaces;
 using ServiceInterfaces.Dto;
-using ServiceInterfaces.Exceptions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -43,7 +42,7 @@ namespace Logic.Repository
         public void SaveResource(SsResource resource)
         {
             Contract.Requires(resource != null);
-            _resources[SsResource.NormalizeShortName(resource.ShortName)] = resource;
+            _resources[resource.ShortName] = resource;
         }
 
         public SsUserSecret GetUser(string userName)
@@ -56,7 +55,7 @@ namespace Logic.Repository
         public void SaveUser(SsUserSecret user)
         {
             Contract.Requires(user != null);
-            _users[SsUserSecret.NormalizeUserName(user.UserName)] = user;
+            _users[user.UserName] = user;
         }
 
         public List<SsResource> GetAll()

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ServiceInterfaces.Dto
+﻿namespace ServiceInterfaces.Dto
 {
     public class SsResource
     {
@@ -9,7 +7,7 @@ namespace ServiceInterfaces.Dto
 
         public SsResource(string shortName, string address)
         {
-            ShortName = shortName;
+            ShortName = NormalizeShortName(shortName);
             Address = address;
         }
 
