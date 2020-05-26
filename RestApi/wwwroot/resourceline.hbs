@@ -1,0 +1,11 @@
+<tr class="resourceLineInList {{#if isAvailable}}resourceAvailable{{else}}resourceNotAvailable{{/if}}">
+    <td>{{shortName}}</td>
+    <td>{{address}}</td>
+    <td>{{isAvailable}}</td>
+    <td>{{lockedBy}}</td>
+    <td>
+        {{#each actions}}
+            <div class="button" onclick="window.resourceActions.execute({{id}});" >{{label}}</div>
+        {{/each}}
+    </td>
+</tr>

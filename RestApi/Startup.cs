@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,6 +45,13 @@ namespace RestApi
             app.UseHttpsRedirection();
 
             app.UseFileServer();
+            var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
+            fileExtensionContentTypeProvider.Mappings[".hbs"] = "text/plain";
+            var opts = new StaticFileOptions
+            { 
+                ContentTypeProvider = fileExtensionContentTypeProvider,
+            };
+            app.UseStaticFiles(opts);
 
             app.UseRouting();
 

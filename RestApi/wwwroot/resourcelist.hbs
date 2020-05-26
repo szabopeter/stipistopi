@@ -1,0 +1,16 @@
+<h1>Resources</h1>
+<table>
+    <thead>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Available</th>
+        <th>Locked by</th>
+        <th>Action</th>
+    </thead>
+    {{#each this }}
+        {{> resourceLineInList}}
+    {{/ each}}
+</table>
+<div class="resourceListButtons">
+    <div id="buttonRefreshResourceList" class="button">Refresh</div>
+</div>

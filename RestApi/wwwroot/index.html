@@ -6,105 +6,10 @@
     <meta charset="utf-8" />
     <link href="style.css" rel="stylesheet" />
     <script src="handlebars.min-v4.7.6.js"></script>
-    <script id="resourcelist-template" text="text/x-handlebars-template">
-        <h1>Resources</h1>
-            <table>
-                <thead>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Available</th>
-                    <th>Locked by</th>
-                    <th>Action</th>
-                </thead>
-                {{#each this }}
-                {{> resourceLineInList}}
-                {{/ each}}
-        </table>
-            <div class="resourceListButtons">
-                <div id="buttonRefreshResourceList" class="button">Refresh</div>
-            </div>
-    </script>
-    <script id="resource-line-in-list-partial" type="text/x-handlebars-template">
-        <tr class="resourceLineInList {{#if isAvailable}}resourceAvailable{{else}}resourceNotAvailable{{/if}}">
-            <td>{{shortName}}</td>
-            <td>{{address}}</td>
-            <td>{{isAvailable}}</td>
-            <td>{{lockedBy}}</td>
-            <td>
-                {{#each actions}}
-                    <div class="button" onclick="window.resourceActions.execute({{id}});" >{{label}}</div>
-                {{/each}}
-            </td>
-        </tr>
-    </script>
-
-    <script type="module">
-        Handlebars.registerPartial("resourceLineInList", document.getElementById("resource-line-in-list-partial").innerHTML);
-        let resourceListTemplate = Handlebars.compile(document.getElementById("resourcelist-template").innerHTML);
-
-        var resourceActions = { actions: [] };
-        resourceActions.execute = function (index) { resourceActions.actions[index].execute(); };
-        resourceActions.clear = function () { resourceActions.actions = []; };
-        resourceActions.create = function(label, fn) {
-            let action = {label: label, execute: fn, id: resourceActions.actions.length};
-            resourceActions.actions.push(action);
-            return action;
-        };
-        window.resourceActions = resourceActions;
-
-        function SendResourceAction(action, resourceName) {
-            let lockParameter = {
-                resourceName: resourceName,
-                user: {userName: "test", password: "test"},
-            };
-
-            let xhttp = new XMLHttpRequest();
-            xhttp.responseType = "json";
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    DownloadResourceList();
-                }
-            };
-            xhttp.open("POST", "./stipistopi/" + action);
-            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhttp.send(JSON.stringify(lockParameter));
-        }
-
-        let resourceList = document.getElementById("resourceList");
-        function UpdateResourceList(resources) {
-            resourceActions.clear();
-            resources.forEach(resource => {
-                let label = resource.isAvailable ? "Lock" : "Release";
-                let resourceAction = resource.isAvailable ? "lock" : "release";
-                let execute = function () { SendResourceAction(resourceAction, resource.shortName); };
-                let action = resourceActions.create(
-                    label,
-                    execute
-                    );
-                resource.actions = [action];
-            });
-            resourceList.innerHTML = resourceListTemplate(resources);
-            document.getElementById("buttonRefreshResourceList").addEventListener("click", DownloadResourceList);
-        }
-
-        UpdateResourceList([]);
-
-        function DownloadResourceList() {
-            let xhttp = new XMLHttpRequest();
-            xhttp.responseType = "json";
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    UpdateResourceList(xhttp.response);
-                }
-            };
-            xhttp.open("GET", "./stipistopi/resources", true);
-            xhttp.send();
-        }
-
-    </script>
+    <script type="module" src="main.js"></script>
 </head>
 
-<body>
+<body onload="window.PageLoaded()">
     <div id="resourceList" />
 </body>
 
