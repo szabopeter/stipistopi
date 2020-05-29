@@ -1,15 +1,13 @@
 using Logic.Repository;
-using ServiceInterfaces.Dto;
+using ServiceInterfaces;
 
 namespace LogicTest
 {
     public class InMemoryTests : StipiStopiTestBase
     {
-        public InMemoryTests() : base(
-            () => new InMemorySsRepository(),
-            new SsUser("testadmin", "testadmin", UserRole.Admin)
-        )
+        protected override ISsRepository CreateRepository()
         {
+            return new InMemorySsRepository();
         }
     }
 }

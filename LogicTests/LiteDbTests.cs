@@ -1,16 +1,14 @@
 using LiteDbSsRepositoryService;
-using ServiceInterfaces.Dto;
+using ServiceInterfaces;
 
 namespace LogicTest
 {
     public class LiteDbTests : StipiStopiTestBase
     {
-        public LiteDbTests() : base(
-            // TODO Remove temp file
-            () => new LiteDbSsRepository(System.IO.Path.GetTempFileName()+".litedb"),
-            new SsUser("testadmin", "testadmin", UserRole.Admin)
-        )
+        override protected ISsRepository CreateRepository()
         {
+            // TODO Remove temp file on Dispose
+            return new LiteDbSsRepository(System.IO.Path.GetTempFileName()+".litedb");
         }
     }
 }
