@@ -27,10 +27,10 @@ namespace ServiceInterfaces.Dto
             {
                 return false;
             }
-            
+
             return ((SsUserSecret)obj).UserName.Equals(UserName);
         }
-        
+
         public override int GetHashCode()
         {
             return UserName.GetHashCode();
@@ -57,8 +57,8 @@ namespace ServiceInterfaces.Dto
             return hash == PasswordHash;
         }
 
-        // [SuppressMessage("Microsoft.Design", "CA1822")]
-        public string HashPassword(string password, string salt)
+        // TODO Extract hashing to another class
+        public static string HashPassword(string password, string salt)
         {
             var combined = password + salt;
             return combined.GetHashCode(StringComparison.InvariantCulture).ToString(CultureInfo.InvariantCulture);

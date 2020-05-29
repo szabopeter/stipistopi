@@ -45,22 +45,23 @@ namespace RestApi
             app.UseHttpsRedirection();
 
             app.UseFileServer();
-            var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
-            fileExtensionContentTypeProvider.Mappings[".hbs"] = "text/plain";
-            var opts = new StaticFileOptions
-            { 
-                ContentTypeProvider = fileExtensionContentTypeProvider,
-            };
-            app.UseStaticFiles(opts);
+            app.UseStaticFiles(ExtendedOptionsForHandlebarsTemplates());
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+        }
+
+        private static StaticFileOptions ExtendedOptionsForHandlebarsTemplates()
+        {
+            var fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
+            fileExtensionContentTypeProvider.Mappings[".hbs"] = "text/plain";
+            return new StaticFileOptions
             {
-                endpoints.MapControllers();
-            });
+                ContentTypeProvider = fileExtensionContentTypeProvider,
+            };
         }
     }
 }

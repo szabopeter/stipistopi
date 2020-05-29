@@ -46,9 +46,8 @@ namespace LiteDbSsRepositoryService
                 }
                 else
                 {
-                    using (var db = new LiteDatabase(Filename))
+                    using (Db = new LiteDatabase(Filename))
                     {
-                        Db = db;
                         try
                         {
                             action();

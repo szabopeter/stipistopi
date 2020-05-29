@@ -31,7 +31,7 @@ namespace logic
         public List<SsResource> GetResources()
         {
             List<SsResource> resources = null;
-            SsRepository.Transaction(() => 
+            SsRepository.Transaction(() =>
                 resources = SsRepository.GetAll());
             return resources;
         }
@@ -74,7 +74,8 @@ namespace logic
             // TODO Returning the username only should be sufficient
             // TODO Request should require a valid user
             SsUser lockingUser = null;
-            SsRepository.Transaction(() => {
+            SsRepository.Transaction(() =>
+            {
                 var user = SsRepository.GetLockingUser(ssr);
                 if (user != null)
                     lockingUser = new SsUser(user.UserName, "", user.Role);
@@ -84,20 +85,14 @@ namespace logic
 
         private SsUserSecret Authenticated(SsUser user)
         {
-            SsUserSecret authenticated = null;
-            // SsRepository.Transaction(() =>
-            // {
-                var userSecret = SsRepository.GetUser(user.UserName);
-                if (userSecret == null)
-                    throw new UserDoesNotExistException(user.UserName);
+            var userSecret = SsRepository.GetUser(user.UserName);
+            if (userSecret == null)
+                throw new UserDoesNotExistException(user.UserName);
 
-                if (!userSecret.IsValid(user))
-                    throw new InvalidPasswordException(user.UserName);
-                
-                authenticated = userSecret;
-            // });
+            if (!userSecret.IsValid(user))
+                throw new InvalidPasswordException(user.UserName);
 
-            return authenticated;
+            return userSecret;
         }
 
         public bool LockResource(SsResource resource, SsUser user)
@@ -105,17 +100,20 @@ namespace logic
             var shortName = resource?.ShortName;
             // TODO shortName would be sufficient
             bool success = false;
-            SsRepository.Transaction(() => {
+            SsRepository.Transaction(() =>
+            {
                 var authenticated = Authenticated(user);
 
                 // TODO Should extract a GetResource
                 SsResource dbResource = SsRepository.GetResource(shortName);
                 if (dbResource == null)
                     throw new ResourceDoesNotExistException(shortName);
-                
+
                 var lockedBy = SsRepository.GetLockingUser(dbResource);
                 if (lockedBy != null)
+                {
                     success = false;
+                }
                 else
                 {
                     SsRepository.SetLockingUser(dbResource, authenticated);
@@ -130,20 +128,23 @@ namespace logic
             var shortName = resource?.ShortName;
             // TODO shortname should be sufficient
             bool success = false;
-            SsRepository.Transaction(() => {
+            SsRepository.Transaction(() =>
+            {
                 var authenticated = Authenticated(user);
 
                 // TODO Should extract a GetResource
                 SsResource dbResource = SsRepository.GetResource(shortName);
                 if (dbResource == null)
                     throw new ResourceDoesNotExistException(shortName);
-                
+
                 var lockedBy = SsRepository.GetLockingUser(dbResource);
                 if (lockedBy.Equals(authenticated))
                 {
                     SsRepository.SetLockingUser(dbResource, null);
                     success = true;
-                } else {
+                }
+                else
+                {
                     success = false;
                 }
             });

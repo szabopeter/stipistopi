@@ -17,7 +17,7 @@ namespace RestApi.Controllers
         private readonly ILogger<StipiStopiController> _logger;
         private readonly StipiStopi stipiStopi;
 
-        public StipiStopiController(ILogger<StipiStopiController> logger, StipiStopi stipiStopi, ISsRepository ssRepository)
+        public StipiStopiController(ILogger<StipiStopiController> logger, StipiStopi stipiStopi)
         {
             _logger = logger;
             this.stipiStopi = stipiStopi;
@@ -44,7 +44,7 @@ namespace RestApi.Controllers
             _logger.LogInformation($"Registering {newUser.User.UserName} with a password of length {newUser.User.Password.Length}");
             // TODO Could pass an SsUser
             return stipiStopi.NewUser(
-                newUser.User.UserName, 
+                newUser.User.UserName,
                 newUser.User.Password,
                 newUser.Creator);
         }
@@ -55,8 +55,8 @@ namespace RestApi.Controllers
             _logger.LogInformation($"New resource: {newResource.Resource.ShortName} @ {newResource.Resource.Address}");
             // TODO Could pass an SsResource
             return stipiStopi.NewResource(
-                newResource.Resource.ShortName, 
-                newResource.Resource.Address, 
+                newResource.Resource.ShortName,
+                newResource.Resource.Address,
                 newResource.Creator);
         }
 

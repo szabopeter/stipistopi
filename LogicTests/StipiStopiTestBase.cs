@@ -6,16 +6,17 @@ using Xunit;
 
 namespace LogicTest
 {
-
     public abstract class StipiStopiTestBase
     {
         public StipiStopi Sut { get; }
         public SsUser AdminUser { get; }
 
-        public StipiStopiTestBase(Func<SsUser, ISsRepository> ssRepositoryFactory, SsUser adminUser)
+        protected StipiStopiTestBase(Func<ISsRepository> ssRepositoryFactory, SsUser adminUser)
         {
+            // TODO admin should not be needed any longer
+            // TODO Create Sut on-demand in non-static context
             AdminUser = adminUser;
-            var repository = ssRepositoryFactory(adminUser);
+            var repository = ssRepositoryFactory();
             Sut = new StipiStopi(repository);
             repository.Transaction(() => repository.SaveUser(new SsUserSecret(adminUser)));
         }

@@ -6,7 +6,7 @@ namespace LogicTest
     public class InMemoryTests : StipiStopiTestBase
     {
         public InMemoryTests() : base(
-            admin => new InMemorySsRepository(),
+            () => new InMemorySsRepository(),
             new SsUser("testadmin", "testadmin", UserRole.Admin)
         )
         {

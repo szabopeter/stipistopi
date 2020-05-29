@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace Logic.Repository
 {
-
     public class InMemorySsRepository : ISsRepository
     {
         public InMemorySsRepository()
