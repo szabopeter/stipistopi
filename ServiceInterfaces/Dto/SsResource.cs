@@ -1,4 +1,6 @@
-﻿namespace ServiceInterfaces.Dto
+﻿using System.Diagnostics.Contracts;
+
+namespace ServiceInterfaces.Dto
 {
     public class SsResource
     {
@@ -13,7 +15,8 @@
 
         public static string NormalizeShortName(string shortName)
         {
-            return shortName.ToLowerInvariant();
+            Contract.Requires(shortName != null);
+            return shortName.ToUpperInvariant();
         }
     }
 }

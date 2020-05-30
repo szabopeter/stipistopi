@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using LiteDB;
 using ServiceInterfaces;
@@ -46,8 +47,9 @@ namespace LiteDbSsRepositoryService
                 }
                 else
                 {
-                    using (Db = new LiteDatabase(Filename))
+                    using (var db = new LiteDatabase(Filename))
                     {
+                        Db = db;
                         try
                         {
                             action();
@@ -61,6 +63,7 @@ namespace LiteDbSsRepositoryService
             }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1307")] // LiteDb requires field.Equals 
         public SsUserSecret GetUser(string userName)
         {
             return Db.GetCollection<SsUserSecret>("users")
@@ -74,6 +77,7 @@ namespace LiteDbSsRepositoryService
             Db.GetCollection<SsUserSecret>("users").Upsert(user);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1307")] // LiteDb requires field.Equals 
         public SsUserSecret GetLockingUser(SsResource resource)
         {
             var usage = Db.GetCollection<ResourceUsage>()
@@ -87,6 +91,7 @@ namespace LiteDbSsRepositoryService
 
         public void SetLockingUser(SsResource resource, SsUserSecret user)
         {
+            Contract.Requires(resource != null);
             if (user != null)
             {
                 Db.GetCollection<ResourceUsage>().Insert(new ResourceUsage

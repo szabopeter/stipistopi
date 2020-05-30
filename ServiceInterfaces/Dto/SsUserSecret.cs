@@ -10,30 +10,31 @@ namespace ServiceInterfaces.Dto
     /// </summary>
     public class SsUserSecret
     {
-        // TODO Make these read-only again
         public string UserName { get; set; }
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
 
-        [Obsolete("Only for LiteDB")]
+        /// <summary>
+        /// Only for serialization
+        /// </summary>
         public SsUserSecret()
         {
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
+            if (!(obj is SsUserSecret other) || GetType() != other.GetType())
             {
                 return false;
             }
 
-            return ((SsUserSecret)obj).UserName.Equals(UserName);
+            return string.Equals(other.UserName, UserName, StringComparison.InvariantCulture);
         }
 
         public override int GetHashCode()
         {
-            return UserName.GetHashCode();
+            return string.GetHashCode(UserName, StringComparison.InvariantCulture);
         }
 
         public SsUserSecret(SsUser ssUser)
@@ -50,7 +51,7 @@ namespace ServiceInterfaces.Dto
         {
             Contract.Requires(user != null);
 
-            if (!UserName.Equals(user.UserName))
+            if (!string.Equals(UserName, user.UserName, StringComparison.InvariantCulture))
                 return false;
 
             var hash = HashPassword(user.Password, Salt);
@@ -66,7 +67,8 @@ namespace ServiceInterfaces.Dto
 
         public static string NormalizeUserName(string userName)
         {
-            return userName.ToLowerInvariant();
+            Contract.Requires(userName != null);
+            return userName.ToUpperInvariant();
         }
     }
 }
