@@ -4,12 +4,24 @@ namespace ServiceInterfaces.Dto
 {
     public class SsResource
     {
-        public string ShortName { get; }
-        public string Address { get; }
+        public string ShortName
+        {
+            get => shortName;
+            set => shortName = NormalizeShortName(value);
+        }
+
+        private string shortName;
+
+        public string Address { get; set; }
+
+        /// <summary>For serialization</summary>
+        public SsResource()
+        {
+        }
 
         public SsResource(string shortName, string address)
         {
-            ShortName = NormalizeShortName(shortName);
+            ShortName = shortName;
             Address = address;
         }
 

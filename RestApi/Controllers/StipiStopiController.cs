@@ -77,7 +77,7 @@ namespace RestApi.Controllers
 
     public class NewResourceParameter
     {
-        public ResourceParameter Resource { get; set; }
+        public SsResource Resource { get; set; }
         public SsUser Creator { get; set; }
     }
 
@@ -87,25 +87,13 @@ namespace RestApi.Controllers
         public SsUser Creator { get; set; }
     }
 
-    public class ResourceParameter
-    {
-        public string ShortName { get; set; }
-        public string Address { get; set; }
-    }
-
-    public class UserParameter
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-    }
-
     public class LockParameter
     {
-        public UserParameter User { get; set; }
+        public SsUser User { get; set; }
         public string ResourceName { get; set; }
     }
 
-    public class ResourceInfo : ResourceParameter
+    public class ResourceInfo : SsResource
     {
         public bool IsAvailable { get; set; }
         public string LockedBy { get; set; }

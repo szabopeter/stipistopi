@@ -5,14 +5,25 @@
     /// </summary>
     public class SsUser
     {
-        public string UserName { get; }
-        public string Password { get; }
+        public string UserName
+        {
+            get => userName;
+            set => userName = SsUserSecret.NormalizeUserName(value);
+        }
+        private string userName;
 
-        public UserRole Role { get; }
+        public string Password { get; set; }
+
+        public UserRole Role { get; set; }
+
+        /// <summary>For serialization</summary>
+        public SsUser()
+        {
+        }
 
         public SsUser(string userName, string password, UserRole role = UserRole.Regular)
         {
-            UserName = SsUserSecret.NormalizeUserName(userName);
+            UserName = userName;
             Password = password;
             Role = role;
         }
