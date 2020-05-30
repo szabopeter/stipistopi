@@ -1,17 +1,22 @@
 function PageLoaded() {
-    function DownloadTemplate(filename, loadAction) {
+    function AjaxLoad(url, responseType, onSuccess, onFailure)
+    {
         let xhttp = new XMLHttpRequest();
-        xhttp.responseType = "text";
+        xhttp.responseType = responseType;
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                console.log("Just loaded " + filename);
-                console.log(xhttp);
-                loadAction(xhttp.response);
+                onSuccess(xhttp.response);
+            } else {
+                onFailure();
             }
-            // TODO or else?
         };
-        xhttp.open("GET", filename, true);
+        xhttp.open("GET", url, true);
         xhttp.send();
+    }
+
+    function DownloadTemplate(filename, loadAction) {
+        // TODO: on failure
+        AjaxLoad(filename, "text", loadAction, function() {});
     }
 
     function LoadTemplates(templateFiles, loadAction) {
@@ -90,16 +95,8 @@ function PageLoaded() {
         UpdateResourceList([]);
 
         function DownloadResourceList() {
-            let xhttp = new XMLHttpRequest();
-            xhttp.responseType = "json";
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    UpdateResourceList(xhttp.response);
-                }
-                // TODO or else?
-            }
-            xhttp.open("GET", "./stipistopi/resources", true);
-            xhttp.send();
+            // TODO: on failure
+            AjaxLoad("./stipistopi/resources", "json", UpdateResourceList, function() {});
         }
     });
 }
