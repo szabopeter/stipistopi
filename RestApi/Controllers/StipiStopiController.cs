@@ -42,21 +42,15 @@ namespace RestApi.Controllers
         public SsUser NewUser(NewUserParameter newUser)
         {
             _logger.LogInformation($"Registering {newUser.User.UserName} with a password of length {newUser.User.Password.Length}");
-            // TODO Could pass an SsUser
-            return stipiStopi.NewUser(
-                newUser.User.UserName,
-                newUser.User.Password,
-                newUser.Creator);
+            return stipiStopi.NewUser(newUser.User, newUser.Creator);
         }
 
         [HttpPost("resource")]
         public SsResource NewResource(NewResourceParameter newResource)
         {
             _logger.LogInformation($"New resource: {newResource.Resource.ShortName} @ {newResource.Resource.Address}");
-            // TODO Could pass an SsResource
             return stipiStopi.NewResource(
-                newResource.Resource.ShortName,
-                newResource.Resource.Address,
+                new SsResource(newResource.Resource.ShortName, newResource.Resource.Address),
                 newResource.Creator);
         }
 

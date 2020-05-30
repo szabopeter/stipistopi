@@ -8,6 +8,7 @@ namespace ServiceInterfaces
     {
         List<SsResource> GetAll();
         void Transaction(Action action);
+        // TODO: Create a Transaction<T>(Func<T> action) alternative
         SsResource GetResource(string shortName);
         void SaveResource(SsResource resource);
         SsUserSecret GetUser(string userName);

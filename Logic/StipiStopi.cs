@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using ServiceInterfaces.Exceptions;
@@ -36,37 +37,35 @@ namespace logic
             return resources;
         }
 
-        public SsResource NewResource(string shortName, string address, SsUser creator)
+        public SsResource NewResource(SsResource ssResource, SsUser creator)
         {
-            // TODO why not pass an SsResource?
-            var ssResource = new SsResource(shortName, address);
+            Contract.Requires(ssResource != null);
             SsRepository.Transaction(() =>
             {
                 if (Authenticated(creator)?.Role != UserRole.Admin)
                     throw new InsufficientRoleException(creator.UserName);
 
-                if (SsRepository.GetResource(shortName) != null)
-                    throw new ResourceAlreadyExistsException(shortName);
+                if (SsRepository.GetResource(ssResource.ShortName) != null)
+                    throw new ResourceAlreadyExistsException(ssResource.ShortName);
 
                 SsRepository.SaveResource(ssResource);
             });
             return ssResource;
         }
 
-        public SsUser NewUser(string username, string password, SsUser creator)
+        public SsUser NewUser(SsUser newUser, SsUser creator)
         {
-            var user = new SsUser(username, password);
             SsRepository.Transaction(() =>
             {
                 if (Authenticated(creator)?.Role != UserRole.Admin)
                     throw new InsufficientRoleException(creator.UserName);
 
-                if (SsRepository.GetUser(username) != null)
-                    throw new UserAlreadyExistsException(username);
+                if (SsRepository.GetUser(newUser.UserName) != null)
+                    throw new UserAlreadyExistsException(newUser.UserName);
 
-                SsRepository.SaveUser(new SsUserSecret(user));
+                SsRepository.SaveUser(new SsUserSecret(newUser));
             });
-            return user;
+            return newUser;
         }
 
         public SsUser GetLockedBy(SsResource ssr)
