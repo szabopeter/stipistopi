@@ -1,52 +1,64 @@
 import { AjaxLoad } from "./util.js";
 
-function DownloadTemplate(filename, loadAction) {
-    // TODO: on failure
-    AjaxLoad(filename, "text", loadAction, function () { });
-}
-
-/**
- * Will call loadAction with all the loaded templates in a hashmap
- * - loads all templates
- * - collects them in a hashmap
- * - calls loadAction when all of them have been loaded, passing the hashmap
- * @param {string[]} templateFiles 
- * @param {function(contents)} loadAction 
- */
-function LoadTemplates(templateFiles, loadAction) {
-    let contents = {};
-    let toLoadCount = templateFiles.length;
-    templateFiles.forEach(function (fn) {
-        let filename = fn;
-        DownloadTemplate(filename, function (content) {
-            contents[filename] = content;
-            console.log("stored " + filename)
-            toLoadCount -= 1;
-
-            if (toLoadCount == 0)
-                loadAction(contents);
-        });
-    });
-}
-
 function TemplateManager() {
     let names = {
         resourceLine: "resourceline.hbs",
         resourceList: "resourcelist.hbs",
     };
 
-    var templateManager = {
-        // names: names,
-        templates: {},
+    function DownloadTemplate(filename, loadAction, failAction) {
+        AjaxLoad(filename, "text", loadAction, failAction);
+    }
+    
+    /**
+     * Will call loadAction with all the loaded templates in a hashmap
+     * - loads all templates
+     * - collects them in a hashmap
+     * - calls loadAction when all of them have been loaded, passing the hashmap
+     * @param {string[]} templateFiles 
+     * @param {function(contents)} loadAction 
+     */
+    function LoadTemplates(templateFiles, loadAction, failAction) {
+        let contents = {};
+        let toLoadCount = templateFiles.length;
+        templateFiles.forEach(function (fn) {
+            let filename = fn;
+            DownloadTemplate(filename, function (content) {
+                contents[filename] = content;
+                console.log("stored " + filename)
+                toLoadCount -= 1;
+    
+                if (toLoadCount == 0)
+                    loadAction(contents);
+            }, failAction);
+        });
+    }
+
+    let fileNames = []
+    for (let key in names) {
+        fileNames.push(names[key]);
+    }
+
+    let internals = {
         resourceListTemplate: null,
+        // templates: {},
+    }
+
+    let templateManager = {
+        ApplyResourceListTemplate: function(data) { return internals.resourceListTemplate(data);},
+        LoadTemplates: function(loadAction) {
+            // TODO: on failure
+            LoadTemplates(fileNames, loadAction, function () { });
+        },
         Load: function (contents) {
             Handlebars.registerPartial("resourceLineInList", contents[names.resourceLine]);
-            this.resourceListTemplate = Handlebars.compile(contents["resourcelist.hbs"]);
-            this.templates = contents;
+            internals.resourceListTemplate = Handlebars.compile(contents[names.resourceList]);
+            // TODO : there is probably no need for this
+            // internals.templates = contents;
         },
     };
 
-    return templateManager
+    return templateManager;
 }
 
 function ResourceActions() {
@@ -64,9 +76,10 @@ function ResourceActions() {
 }
 
 function StipiStopi() {
+    let templateManager = TemplateManager();
     let stipistopi = {
         resourceActions: ResourceActions(),
-        templateManager: TemplateManager(),
+        templateManager: templateManager,
     }
 
     stipistopi.SendResourceAction = function SendResourceAction(action, resourceName) {
@@ -102,7 +115,7 @@ function StipiStopi() {
             resource.actions = [action];
         });
         let resourceList = document.getElementById("resourceList");
-        resourceList.innerHTML = stipistopi.templateManager.resourceListTemplate(resources);
+        resourceList.innerHTML = stipistopi.templateManager.ApplyResourceListTemplate(resources);
         console.log("Setting resourceList inner html...");
         // console.log(resourceList.innerHTML);
         document.getElementById("buttonRefreshResourceList").addEventListener("click", stipistopi.DownloadResourceList);
@@ -127,7 +140,7 @@ function PageLoaded() {
     let stipistopi = StipiStopi();
     window.resourceActions = stipistopi.resourceActions;
     console.log("window.resourceActions has been set");
-    LoadTemplates(["resourceline.hbs", "resourcelist.hbs"], stipistopi.OnTemplatesLoaded);
+    stipistopi.templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
 }
 
 // document.addEventListener("DOMContentLoaded", PageLoaded);
