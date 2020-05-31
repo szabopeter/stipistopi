@@ -24,14 +24,8 @@ function ResourceActions() {
     return resourceActions;
 }
 
-function StipiStopi() {
-    let templateManager = TemplateManager();
-    let stipistopi = {
-        resourceActions: ResourceActions(),
-        templateManager: templateManager,
-    }
-
-    stipistopi.SendResourceAction = function SendResourceAction(action, resourceName) {
+function Backend() {
+    function sendResourceAction(action, resourceName, onSuccess) {
         let lockParameter = {
             resourceName: resourceName,
             user: { userName: "test", password: "test" },
@@ -41,7 +35,7 @@ function StipiStopi() {
         xhttp.responseType = "json";
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                stipistopi.DownloadResourceList();
+                onSuccess();
             }
             // TODO : on failure?
         };
@@ -50,19 +44,39 @@ function StipiStopi() {
         xhttp.send(JSON.stringify(lockParameter));
     };
 
+    return {
+        sendResourceAction: sendResourceAction
+    };
+}
+
+function StipiStopi() {
+    let stipistopi = {
+        resourceActions: ResourceActions(),
+        templateManager: TemplateManager(),
+        backend: Backend(),
+    }
+
     stipistopi.UpdateResourceList = function UpdateResourceList(resources) {
+        // Update internal state (resourceActions)
         let resourceActions = stipistopi.resourceActions;
         resourceActions.clear();
         resources.forEach(resource => {
             let label = resource.isAvailable ? "Lock" : "Release";
             let resourceAction = resource.isAvailable ? "lock" : "release";
-            let execute = function () { stipistopi.SendResourceAction(resourceAction, resource.shortName); };
+            function onSuccess() {
+                stipistopi.DownloadResourceList();
+            }
+            let execute = function () {
+                stipistopi.backend.sendResourceAction(resourceAction, resource.shortName, onSuccess);
+            };
             let action = resourceActions.create(
                 label,
                 execute
             );
             resource.actions = [action];
         });
+
+        // Update UI
         let resourceList = document.getElementById("resourceList");
         resourceList.innerHTML = stipistopi.templateManager.ApplyResourceListTemplate(resources);
         console.log("Setting resourceList inner html...");
