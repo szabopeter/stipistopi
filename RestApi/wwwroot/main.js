@@ -1,36 +1,7 @@
 import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { TemplateManager } from "./templatemanager.js";
+import { ResourceActions } from "./resourceactions.js"
 
-
-function ResourceActions() {
-    let internals = {
-        actions: [],
-    };
-
-    function registerAction(action) {
-        action.id = internals.actions.length;
-        internals.actions.push(action);
-    }
-
-    function update(resources) {
-        internals.actions.length = 0;
-        resources.forEach(resource => {
-            resource.actions.forEach(registerAction);
-        });    
-    }
-
-    var resourceActions = {
-        /**
-         * Will be called from resourceline template
-         * @param {Number} index 
-         */
-        executeByNr: function (index) { internals.actions[index].execute(); },
-        registerAction: registerAction,
-        update: update,
-    };
-
-    return resourceActions;
-}
 
 function Backend() {
     function sendResourceAction(action, resourceName, onSuccess) {
@@ -54,35 +25,28 @@ function StipiStopi() {
         backend: Backend(),
     }
 
-    stipistopi.UpdateResourceList = function UpdateResourceList(resources) {
-        let resourceActions = stipistopi.resourceActions;
-
-        // Update internal state (resourceActions)
-        function onSuccess() {
-            stipistopi.DownloadResourceList();
-        }
-
-        function extendResource(resource) {
-            function getMainAction(resource) {
-                let label = resource.isAvailable ? "Lock" : "Release";
-                let backendAction = resource.isAvailable ? "lock" : "release";
-                let execute = function () {
-                    stipistopi.backend.sendResourceAction(backendAction, resource.shortName, onSuccess);
-                };
-
-                return {
-                    label: label,
-                    backendAction: backendAction,
-                    execute: execute,
-                    id: -1,
-                }
+    function extendResource(resource) {
+        function getMainAction(resource) {
+            let label = resource.isAvailable ? "Lock" : "Release";
+            let backendAction = resource.isAvailable ? "lock" : "release";
+            let execute = function () {
+                stipistopi.backend.sendResourceAction(backendAction, resource.shortName, stipistopi.DownloadResourceList);
             };
 
-            resource.actions = [getMainAction(resource)];
-        }
+            return {
+                label: label,
+                backendAction: backendAction,
+                execute: execute,
+                id: -1,
+            }
+        };
 
+        resource.actions = [getMainAction(resource)];
+    }
+
+    stipistopi.UpdateResourceList = function UpdateResourceList(resources) {
         resources.forEach(extendResource);
-        resourceActions.update(resources);
+        stipistopi.resourceActions.update(resources);
 
         // Update UI
         let resourceList = document.getElementById("resourceList");
