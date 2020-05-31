@@ -38,6 +38,12 @@ namespace RestApi.Controllers
             });
         }
 
+        [HttpPost("users")]
+        public IEnumerable<SsUser> GetUsers(SsUser user)
+        {
+            return stipiStopi.GetUsers(user);
+        }
+
         [HttpPost("register")]
         public SsUser NewUser(NewUserParameter newUser)
         {

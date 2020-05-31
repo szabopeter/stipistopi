@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using LiteDB;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
@@ -15,9 +16,17 @@ namespace LiteDbSsRepositoryService
         {
             Filename = filename;
         }
-        public List<SsResource> GetAll()
+        public List<SsResource> GetResources()
         {
             return Db.GetCollection<SsResource>("resources").Query().ToList();
+        }
+
+        public IEnumerable<SsUser> GetUsers()
+        {
+            return Db.GetCollection<SsUserSecret>("users")
+                .Query()
+                .ToList()
+                .Select(user => new SsUser(user.UserName, "*", user.Role));
         }
 
         public SsResource GetResource(string shortName)

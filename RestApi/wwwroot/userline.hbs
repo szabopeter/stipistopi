@@ -1,0 +1,9 @@
+<tr class="userLineInList">
+    <td>{{userName}}</td>
+    <td>{{role}}</td>
+    <td>
+        {{#each actions}}
+            <div class="button" onclick="window.userActions.executeByNr({{id}});" >{{label}}</div>
+        {{/each}}
+    </td>
+</tr>

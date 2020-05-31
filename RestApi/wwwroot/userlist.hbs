@@ -1,0 +1,15 @@
+<h1>Users</h1>
+<table>
+    <thead>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Action</th>
+    </thead>
+    {{#each this}}
+        {{> userLineInList}}
+    {{/ each}}
+</table>
+<div class="userListButtons">
+    <div id="buttonRefreshUserList" class="button">Refresh</div>
+    <div id="buttonCreateUser" class="button">Create new</div>
+</div>

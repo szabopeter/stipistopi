@@ -26,7 +26,7 @@ function AjaxPost(url, data, onSuccess, onFailure) {
     xhttp.responseType = "json";
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            onSuccess();
+            onSuccess(xhttp.response);
         } else {
             onFailure();
         }

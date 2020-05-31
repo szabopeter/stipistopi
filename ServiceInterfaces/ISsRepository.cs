@@ -6,7 +6,7 @@ namespace ServiceInterfaces
 {
     public interface ISsRepository
     {
-        List<SsResource> GetAll();
+        List<SsResource> GetResources();
         void Transaction(Action action);
         // TODO: Create a Transaction<T>(Func<T> action) alternative
         SsResource GetResource(string shortName);
@@ -15,5 +15,6 @@ namespace ServiceInterfaces
         void SaveUser(SsUserSecret user);
         SsUserSecret GetLockingUser(SsResource resource);
         void SetLockingUser(SsResource resource, SsUserSecret user);
+        IEnumerable<SsUser> GetUsers();
     }
 }

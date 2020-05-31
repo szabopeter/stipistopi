@@ -11,10 +11,20 @@ function Backend() {
             user: { userName: "test", password: "test" },
         };
         AjaxPost(url, lockParameter, onSuccess, Noop)
-    };
+    }
+
+    function createUserAction(onSuccess) {
+        let newUserParameter = {
+            user: {userName: "newuser", password: ""},
+            creator: {username: "test", password: "test"},
+        };
+        // TODO: on failure
+        AjaxPost("./stipistopi/register", newUserParameter, onSuccess, Noop)
+    }
 
     return {
-        sendResourceAction: sendResourceAction
+        sendResourceAction: sendResourceAction,
+        createUserAction: createUserAction,
     };
 }
 
@@ -32,6 +42,10 @@ function StipiStopi(resourceActions, templateManager) {
          * Issue an ajax request to download resources
          */
         DownloadResourceList: () => { },
+        /**
+         * Issue an ajax request to download users
+         */
+        DownloadUserList: () => { },
     };
 
     function extendResource(resource) {
@@ -65,21 +79,42 @@ function StipiStopi(resourceActions, templateManager) {
         document.getElementById("buttonRefreshResourceList").addEventListener("click", stipistopi.DownloadResourceList);
     };
 
+    function CreateUser() {
+        backend.createUserAction(stipistopi.DownloadUserList);
+    }
+
+    function UpdateUserList(users) {
+        users.forEach(function(user){
+            user.actions = [{id: 1, label: "Edit"}]
+        });
+        let userList = document.getElementById("userList");
+        userList.innerHTML = templateManager.ApplyUserListTemplate(users);
+        document.getElementById("buttonRefreshUserList").addEventListener("click", stipistopi.DownloadUserList);
+        document.getElementById("buttonCreateUser").addEventListener("click", CreateUser);
+    }
+
     function DownloadResourceList() {
         // TODO: on failure
         AjaxLoad("./stipistopi/resources", "json", UpdateResourceList, function () { });
     };
+
+    function DownloadUserList() {
+        // TODO: on failure
+        AjaxPost("./stipistopi/users", {userName: "test", password: "test"}, UpdateUserList, function () { });
+    }
 
     function OnTemplatesLoaded(contents) {
         console.log("Everything should be loaded by now...");
         // console.log(contents);
         templateManager.Load(contents);
         stipistopi.DownloadResourceList();
+        stipistopi.DownloadUserList();
     };
 
     // Some methods need to be exposed
     stipistopi.OnTemplatesLoaded = OnTemplatesLoaded;
     stipistopi.DownloadResourceList = DownloadResourceList;
+    stipistopi.DownloadUserList = DownloadUserList;
 
     return stipistopi;
 }

@@ -46,11 +46,19 @@ namespace Logic.Repository
             _users[user.UserName] = user;
         }
 
-        public List<SsResource> GetAll()
+        public List<SsResource> GetResources()
         {
             lock (_resourceLock)
             {
                 return _resources.Values.ToList();
+            }
+        }
+
+        public IEnumerable<SsUser> GetUsers()
+        {
+            lock(_resourceLock)
+            {
+                return _users.Values.Select(user => new SsUser(user.UserName, "*", user.Role));
             }
         }
 

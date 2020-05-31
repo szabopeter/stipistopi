@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
@@ -19,7 +20,7 @@ namespace logic
         {
             SsRepository.Transaction(() =>
             {
-                var testuser = new SsUserSecret(new SsUser("test", "test"));
+                var testuser = new SsUserSecret(new SsUser("test", "test", UserRole.Admin));
                 SsRepository.SaveUser(testuser);
                 var ncu139 = new SsResource("ncu1", "10.10.148.8");
                 SsRepository.SaveResource(ncu139);
@@ -31,10 +32,23 @@ namespace logic
 
         public List<SsResource> GetResources()
         {
+            // TODO : only for Authenticated users!
             List<SsResource> resources = null;
             SsRepository.Transaction(() =>
-                resources = SsRepository.GetAll());
+                resources = SsRepository.GetResources());
             return resources;
+        }
+
+        public IEnumerable<SsUser> GetUsers(SsUser user)
+        {
+            IEnumerable<SsUser> users = new SsUser[0];
+            SsRepository.Transaction(() => {
+                if (Authenticated(user) == null)
+                    return;
+
+                users = SsRepository.GetUsers();
+            });
+            return users;
         }
 
         public SsResource NewResource(SsResource ssResource, SsUser creator)
