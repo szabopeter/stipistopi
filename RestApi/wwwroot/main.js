@@ -7,18 +7,26 @@ function ResourceActions() {
         actions: [],
     };
 
+    function registerAction(action) {
+        action.id = internals.actions.length;
+        internals.actions.push(action);
+    }
+
+    function update(resources) {
+        internals.actions.length = 0;
+        resources.forEach(resource => {
+            resource.actions.forEach(registerAction);
+        });    
+    }
+
     var resourceActions = {
         /**
          * Will be called from resourceline template
          * @param {Number} index 
          */
         executeByNr: function (index) { internals.actions[index].execute(); },
-        clear: function () { internals.actions = []; },
-        create: function (label, fn) {
-            let action = { label: label, execute: fn, id: internals.actions.length };
-            internals.actions.push(action);
-            return action;
-        },
+        registerAction: registerAction,
+        update: update,
     };
 
     return resourceActions;
@@ -47,24 +55,34 @@ function StipiStopi() {
     }
 
     stipistopi.UpdateResourceList = function UpdateResourceList(resources) {
-        // Update internal state (resourceActions)
         let resourceActions = stipistopi.resourceActions;
-        resourceActions.clear();
-        resources.forEach(resource => {
-            let label = resource.isAvailable ? "Lock" : "Release";
-            let resourceAction = resource.isAvailable ? "lock" : "release";
-            function onSuccess() {
-                stipistopi.DownloadResourceList();
-            }
-            let execute = function () {
-                stipistopi.backend.sendResourceAction(resourceAction, resource.shortName, onSuccess);
+
+        // Update internal state (resourceActions)
+        function onSuccess() {
+            stipistopi.DownloadResourceList();
+        }
+
+        function extendResource(resource) {
+            function getMainAction(resource) {
+                let label = resource.isAvailable ? "Lock" : "Release";
+                let backendAction = resource.isAvailable ? "lock" : "release";
+                let execute = function () {
+                    stipistopi.backend.sendResourceAction(backendAction, resource.shortName, onSuccess);
+                };
+
+                return {
+                    label: label,
+                    backendAction: backendAction,
+                    execute: execute,
+                    id: -1,
+                }
             };
-            let action = resourceActions.create(
-                label,
-                execute
-            );
-            resource.actions = [action];
-        });
+
+            resource.actions = [getMainAction(resource)];
+        }
+
+        resources.forEach(extendResource);
+        resourceActions.update(resources);
 
         // Update UI
         let resourceList = document.getElementById("resourceList");
