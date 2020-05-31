@@ -18,19 +18,28 @@ function Backend() {
     };
 }
 
-function StipiStopi() {
+function StipiStopi(resourceActions, templateManager) {
+    let backend = Backend();
+
     let stipistopi = {
-        resourceActions: ResourceActions(),
-        templateManager: TemplateManager(),
-        backend: Backend(),
-    }
+        // Declarations of public methods, definitions will follow below
+        /**
+         * Called initially when all templates have been loaded
+         * @param contents Hashmap of name -> content
+         */
+        OnTemplatesLoaded: contents => { },
+        /**
+         * Issue an ajax request to download resources
+         */
+        DownloadResourceList: () => { },
+    };
 
     function extendResource(resource) {
         function getMainAction(resource) {
             let label = resource.isAvailable ? "Lock" : "Release";
             let backendAction = resource.isAvailable ? "lock" : "release";
             let execute = function () {
-                stipistopi.backend.sendResourceAction(backendAction, resource.shortName, stipistopi.DownloadResourceList);
+                backend.sendResourceAction(backendAction, resource.shortName, stipistopi.DownloadResourceList);
             };
 
             return {
@@ -44,38 +53,43 @@ function StipiStopi() {
         resource.actions = [getMainAction(resource)];
     }
 
-    stipistopi.UpdateResourceList = function UpdateResourceList(resources) {
+    function UpdateResourceList(resources) {
         resources.forEach(extendResource);
-        stipistopi.resourceActions.update(resources);
+        resourceActions.update(resources);
 
         // Update UI
         let resourceList = document.getElementById("resourceList");
-        resourceList.innerHTML = stipistopi.templateManager.ApplyResourceListTemplate(resources);
+        resourceList.innerHTML = templateManager.ApplyResourceListTemplate(resources);
         console.log("Setting resourceList inner html...");
         // console.log(resourceList.innerHTML);
         document.getElementById("buttonRefreshResourceList").addEventListener("click", stipistopi.DownloadResourceList);
     };
 
-    stipistopi.DownloadResourceList = function DownloadResourceList() {
+    function DownloadResourceList() {
         // TODO: on failure
-        AjaxLoad("./stipistopi/resources", "json", stipistopi.UpdateResourceList, function () { });
+        AjaxLoad("./stipistopi/resources", "json", UpdateResourceList, function () { });
     };
 
-    stipistopi.OnTemplatesLoaded = function OnTemplatesLoaded(contents) {
+    function OnTemplatesLoaded(contents) {
         console.log("Everything should be loaded by now...");
         // console.log(contents);
-        stipistopi.templateManager.Load(contents);
+        templateManager.Load(contents);
         stipistopi.DownloadResourceList();
     };
+
+    // Some methods need to be exposed
+    stipistopi.OnTemplatesLoaded = OnTemplatesLoaded;
+    stipistopi.DownloadResourceList = DownloadResourceList;
 
     return stipistopi;
 }
 
 function PageLoaded() {
-    let stipistopi = StipiStopi();
-    window.resourceActions = stipistopi.resourceActions;
+    window.resourceActions = ResourceActions();
     console.log("window.resourceActions has been set");
-    stipistopi.templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
+    let templateManager = TemplateManager();
+    let stipistopi = StipiStopi(window.resourceActions, templateManager);
+    templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
 }
 
 // document.addEventListener("DOMContentLoaded", PageLoaded);
