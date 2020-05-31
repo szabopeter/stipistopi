@@ -3,16 +3,24 @@ import { TemplateManager } from "./templatemanager.js";
 
 
 function ResourceActions() {
+    let internals = {
+        actions: [],
+    };
+
     var resourceActions = {
-        actions: []
+        /**
+         * Will be called from resourceline template
+         * @param {Number} index 
+         */
+        executeByNr: function (index) { internals.actions[index].execute(); },
+        clear: function () { internals.actions = []; },
+        create: function (label, fn) {
+            let action = { label: label, execute: fn, id: internals.actions.length };
+            internals.actions.push(action);
+            return action;
+        },
     };
-    resourceActions.execute = function (index) { resourceActions.actions[index].execute(); };
-    resourceActions.clear = function () { resourceActions.actions = []; };
-    resourceActions.create = function (label, fn) {
-        let action = { label: label, execute: fn, id: resourceActions.actions.length };
-        resourceActions.actions.push(action);
-        return action;
-    };
+
     return resourceActions;
 }
 
