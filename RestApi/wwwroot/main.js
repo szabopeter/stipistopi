@@ -1,4 +1,4 @@
-import { AjaxLoad } from "./util.js";
+import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { TemplateManager } from "./templatemanager.js";
 
 
@@ -26,22 +26,12 @@ function ResourceActions() {
 
 function Backend() {
     function sendResourceAction(action, resourceName, onSuccess) {
+        let url = "./stipistopi/" + action;
         let lockParameter = {
             resourceName: resourceName,
             user: { userName: "test", password: "test" },
         };
-
-        let xhttp = new XMLHttpRequest();
-        xhttp.responseType = "json";
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                onSuccess();
-            }
-            // TODO : on failure?
-        };
-        xhttp.open("POST", "./stipistopi/" + action);
-        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhttp.send(JSON.stringify(lockParameter));
+        AjaxPost(url, lockParameter, onSuccess, Noop)
     };
 
     return {

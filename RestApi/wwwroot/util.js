@@ -1,3 +1,5 @@
+function Noop() { }
+
 function AjaxLoad(url, responseType, onSuccess, onFailure) {
     let xhttp = new XMLHttpRequest();
     xhttp.responseType = responseType;
@@ -10,6 +12,28 @@ function AjaxLoad(url, responseType, onSuccess, onFailure) {
     };
     xhttp.open("GET", url, true);
     xhttp.send();
+}
+
+/**
+ * Issue a POST request with JSON content
+ * @param {string} url 
+ * @param {object} data Will turn this to JSON string
+ * @param {function} onSuccess 
+ * @param {function} onFailure 
+ */
+function AjaxPost(url, data, onSuccess, onFailure) {
+    let xhttp = new XMLHttpRequest();
+    xhttp.responseType = "json";
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            onSuccess();
+        } else {
+            onFailure();
+        }
+    };
+    xhttp.open("POST", url);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.send(JSON.stringify(data));
 }
 
 function DownloadTemplate(filename, loadAction, failAction) {
@@ -41,4 +65,4 @@ function LoadTemplates(templateFiles, loadAction, failAction) {
 }
 
 
-export { AjaxLoad, LoadTemplates };
+export { Noop, AjaxLoad, AjaxPost, LoadTemplates };
