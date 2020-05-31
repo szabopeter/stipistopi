@@ -1,65 +1,6 @@
 import { AjaxLoad } from "./util.js";
+import { TemplateManager } from "./templatemanager.js";
 
-function TemplateManager() {
-    let names = {
-        resourceLine: "resourceline.hbs",
-        resourceList: "resourcelist.hbs",
-    };
-
-    function DownloadTemplate(filename, loadAction, failAction) {
-        AjaxLoad(filename, "text", loadAction, failAction);
-    }
-    
-    /**
-     * Will call loadAction with all the loaded templates in a hashmap
-     * - loads all templates
-     * - collects them in a hashmap
-     * - calls loadAction when all of them have been loaded, passing the hashmap
-     * @param {string[]} templateFiles 
-     * @param {function(contents)} loadAction 
-     */
-    function LoadTemplates(templateFiles, loadAction, failAction) {
-        let contents = {};
-        let toLoadCount = templateFiles.length;
-        templateFiles.forEach(function (fn) {
-            let filename = fn;
-            DownloadTemplate(filename, function (content) {
-                contents[filename] = content;
-                console.log("stored " + filename)
-                toLoadCount -= 1;
-    
-                if (toLoadCount == 0)
-                    loadAction(contents);
-            }, failAction);
-        });
-    }
-
-    let fileNames = []
-    for (let key in names) {
-        fileNames.push(names[key]);
-    }
-
-    let internals = {
-        resourceListTemplate: null,
-        // templates: {},
-    }
-
-    let templateManager = {
-        ApplyResourceListTemplate: function(data) { return internals.resourceListTemplate(data);},
-        LoadTemplates: function(loadAction) {
-            // TODO: on failure
-            LoadTemplates(fileNames, loadAction, function () { });
-        },
-        Load: function (contents) {
-            Handlebars.registerPartial("resourceLineInList", contents[names.resourceLine]);
-            internals.resourceListTemplate = Handlebars.compile(contents[names.resourceList]);
-            // TODO : there is probably no need for this
-            // internals.templates = contents;
-        },
-    };
-
-    return templateManager;
-}
 
 function ResourceActions() {
     var resourceActions = {

@@ -12,4 +12,33 @@ function AjaxLoad(url, responseType, onSuccess, onFailure) {
     xhttp.send();
 }
 
-export { AjaxLoad };
+function DownloadTemplate(filename, loadAction, failAction) {
+    AjaxLoad(filename, "text", loadAction, failAction);
+}
+
+/**
+ * Will call loadAction with all the loaded templates in a hashmap
+ * - loads all templates
+ * - collects them in a hashmap
+ * - calls loadAction when all of them have been loaded, passing the hashmap
+ * @param {string[]} templateFiles 
+ * @param {function(contents)} loadAction 
+ */
+function LoadTemplates(templateFiles, loadAction, failAction) {
+    let contents = {};
+    let toLoadCount = templateFiles.length;
+    templateFiles.forEach(function (fn) {
+        let filename = fn;
+        DownloadTemplate(filename, function (content) {
+            contents[filename] = content;
+            console.log("stored " + filename)
+            toLoadCount -= 1;
+
+            if (toLoadCount == 0)
+                loadAction(contents);
+        }, failAction);
+    });
+}
+
+
+export { AjaxLoad, LoadTemplates };
