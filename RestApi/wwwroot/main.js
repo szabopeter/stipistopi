@@ -4,19 +4,24 @@ import { ResourceActions } from "./resourceactions.js"
 
 
 function Backend() {
+    let myUser = {
+        userName: "test",
+        password: "test",
+    };
+
     function sendResourceAction(action, resourceName, onSuccess) {
         let url = "./stipistopi/" + action;
         let lockParameter = {
             resourceName: resourceName,
-            user: { userName: "test", password: "test" },
+            user: myUser,
         };
         AjaxPost(url, lockParameter, onSuccess, Noop)
     }
 
-    function createUserAction(onSuccess) {
+    function createUserAction(userName, password, role, onSuccess) {
         let newUserParameter = {
-            user: {userName: "newuser", password: ""},
-            creator: {username: "test", password: "test"},
+            user: { userName: userName, password: password, role: role },
+            creator: myUser,
         };
         // TODO: on failure
         AjaxPost("./stipistopi/register", newUserParameter, onSuccess, Noop)
@@ -28,7 +33,7 @@ function Backend() {
     };
 }
 
-function StipiStopi(resourceActions, templateManager) {
+function StipiStopi(resourceActions, userActions, templateManager) {
     let backend = Backend();
 
     let stipistopi = {
@@ -79,18 +84,41 @@ function StipiStopi(resourceActions, templateManager) {
         document.getElementById("buttonRefreshResourceList").addEventListener("click", stipistopi.DownloadResourceList);
     };
 
-    function CreateUser() {
-        backend.createUserAction(stipistopi.DownloadUserList);
+    function extendUser(user) {
+        user.isEditing = false;
+        user.actions = [{
+            label: "Edit",
+            execute: function() { console.log("TODO: toggle isEditing for the row"); },
+            id: -1,
+        }];
     }
 
     function UpdateUserList(users) {
-        users.forEach(function(user){
-            user.actions = [{id: 1, label: "Edit"}]
-        });
+        users.forEach(extendUser);
+        let newUser = {
+            userName: "",
+            isEditing: true,
+            roles: [
+                { role: "Regular" },
+                { role: "Admin" },
+            ],
+            actions: [{ 
+                id: -1, 
+                label: "Save", 
+                execute: function() {
+                    let newUserName = document.getElementById("userName").value;
+                    let newUserPassword = document.getElementById("userPassword").value;
+                    let newUserRole = document.getElementById("userRole").value;
+                    backend.createUserAction(newUserName, newUserPassword, newUserRole, stipistopi.DownloadUserList);
+                }
+            }],
+        };
+        users.splice(0, 0, newUser);
+        userActions.update(users);
+
         let userList = document.getElementById("userList");
         userList.innerHTML = templateManager.ApplyUserListTemplate(users);
         document.getElementById("buttonRefreshUserList").addEventListener("click", stipistopi.DownloadUserList);
-        document.getElementById("buttonCreateUser").addEventListener("click", CreateUser);
     }
 
     function DownloadResourceList() {
@@ -100,7 +128,7 @@ function StipiStopi(resourceActions, templateManager) {
 
     function DownloadUserList() {
         // TODO: on failure
-        AjaxPost("./stipistopi/users", {userName: "test", password: "test"}, UpdateUserList, function () { });
+        AjaxPost("./stipistopi/users", { userName: "test", password: "test" }, UpdateUserList, function () { });
     }
 
     function OnTemplatesLoaded(contents) {
@@ -121,9 +149,11 @@ function StipiStopi(resourceActions, templateManager) {
 
 function PageLoaded() {
     window.resourceActions = ResourceActions();
+    // TODO Rename ResourceActions to ActionRegistry
+    window.userActions = ResourceActions();
     console.log("window.resourceActions has been set");
     let templateManager = TemplateManager();
-    let stipistopi = StipiStopi(window.resourceActions, templateManager);
+    let stipistopi = StipiStopi(window.resourceActions, window.userActions, templateManager);
     templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
 }
 

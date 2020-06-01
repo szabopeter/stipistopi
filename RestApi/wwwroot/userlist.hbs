@@ -6,10 +6,13 @@
         <th>Action</th>
     </thead>
     {{#each this}}
-        {{> userLineInList}}
+        {{#if isEditing}}
+            {{> userEditLineInList}}
+        {{else}}
+            {{> userLineInList}}
+        {{/if}}
     {{/ each}}
 </table>
 <div class="userListButtons">
     <div id="buttonRefreshUserList" class="button">Refresh</div>
-    <div id="buttonCreateUser" class="button">Create new</div>
 </div>

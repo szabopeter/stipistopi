@@ -7,6 +7,7 @@ export function TemplateManager() {
         resourceList: "resourcelist.hbs",
         userList: "userlist.hbs",
         userLine: "userline.hbs",
+        userEditLine: "usereditline.hbs",
     };
 
     let fileNames = []
@@ -29,6 +30,7 @@ export function TemplateManager() {
         Load: function (contents) {
             Handlebars.registerPartial("resourceLineInList", contents[names.resourceLine]);
             Handlebars.registerPartial("userLineInList", contents[names.userLine]);
+            Handlebars.registerPartial("userEditLineInList", contents[names.userEditLine]);
             internals.resourceListTemplate = Handlebars.compile(contents[names.resourceList]);
             internals.userListTemplate = Handlebars.compile(contents[names.userList]);
             // TODO : there is probably no need for this
