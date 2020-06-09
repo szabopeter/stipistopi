@@ -1,21 +1,26 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
     <title>StipiStopi</title>
     <meta charset="utf-8" />
     <link href="style.css" rel="stylesheet" />
-    <script src="handlebars.min-v4.7.6.js"></script>
+    <script src="knockout-3.5.1.js"></script>
     <script type="module" src="main.js"></script>
 </head>
 
 <body onload="window.PageLoaded()">
-    <div id="screenSelector"></div>
-    <div id="screens">
-        <div id="auth"></div>
-        <div id="resourceList"></div>
-        <div id="userList"></div>
+    <div data-bind="with: pageSelectorVm()">
+        <div data-bind="component: {name: 'page-selector', params: $data}"></div>
+        <page-selector params=22></page-selector>
     </div>
+    <div data-bind="with: mainContent()">
+        <div data-bind="component: {
+             name: componentName, 
+             params: componentParams
+             }"></div>
+    </div>
+    <button data-bind="click: debug">Debug</button>
 </body>
 
 </html>

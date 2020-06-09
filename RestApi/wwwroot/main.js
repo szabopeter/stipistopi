@@ -157,5 +157,121 @@ function PageLoaded() {
     templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
 }
 
-// document.addEventListener("DOMContentLoaded", PageLoaded);
-window.PageLoaded = PageLoaded;
+window.PageLoaded = function () {
+}
+
+function UnauthenticatedMainContentViewModel(params) {
+    if (params == null) {
+        this.userName = ko.observable("");
+        this.password = ko.observable("");
+    } else {
+        this.userName = params.userName;
+        this.password = params.password;
+    };
+
+    this.submitAction = function () {
+        console.log("TODO1: log in " + this.userName() + " " + this.password());
+    };
+}
+
+function AuthenticatedMainContentViewModel(params) {
+    if (params == null) {
+        this.userName = ko.observable("");
+        this.password = ko.observable("");
+    } else {
+        this.userName = params.userName;
+        this.password = params.password;
+    };
+
+    this.submitAction = function () {
+        console.log("TODO1: log in " + this.userName() + " " + this.password());
+    };
+}
+
+function ComponentSelector(label, componentName, componentVm) {
+    this.label = ko.observable(label);
+    this.componentName = ko.observable(componentName);
+    this.componentParams = ko.observable(componentVm);
+    this.activate = function () {
+        console.log("Clicked " + this.label);
+    };
+}
+
+function PageSelector(pageSelector) {
+    console.log(pageSelector);
+    if (pageSelector == null) {
+        this.selectables = ko.observableArray();
+        this.selected = ko.observable();
+    } else {
+        this.selectables = pageSelector.selectables;
+        this.selected = pageSelector.selected;
+    }
+    this.add = function (item) {
+        this.selectables().push(item);
+        if (this.selected() == null)
+            this.selected(item);
+    };
+}
+
+function MainWindowViewModel() {
+    this.mainContent = ko.observable();
+    this.pageSelector = new PageSelector();
+    this.pageSelectorVm = ko.observable();
+    this.unauthenticatedMainContentVm = new UnauthenticatedMainContentViewModel();
+    this.authenticatedMainContentVm = new AuthenticatedMainContentViewModel();
+    this.debug = function () {
+        console.log("Current state of mainViewModel:");
+        console.log(this.unauthenticatedMainContentVm.userName());
+        console.log(this.unauthenticatedMainContentVm.password());
+    };
+}
+
+let mainWindowVm = new MainWindowViewModel();
+mainWindowVm.unauthenticatedMainContentVm.userName("prefill name");
+mainWindowVm.authenticatedMainContentVm.userName("other one");
+mainWindowVm.pageSelector.selected = mainWindowVm.mainContent;
+
+AjaxLoad("./unauthenticatedmaincontent.html", "text", function (content) {
+    let unauthenticatedMainContentWidget = {
+        viewModel: UnauthenticatedMainContentViewModel,
+        template: content,
+    };
+
+    ko.components.register("unauthenticated-main-content-widget", unauthenticatedMainContentWidget);
+    let componentSelector = new ComponentSelector(
+        "Credentials",
+        "unauthenticated-main-content-widget",
+        mainWindowVm.unauthenticatedMainContentVm
+    );
+    componentSelector.activate = () => mainWindowVm.mainContent(componentSelector);
+    mainWindowVm.pageSelector.add(componentSelector);
+}, Noop);
+
+AjaxLoad("./authenticatedmaincontent.html", "text", function (content) {
+    let authenticatedMainContentWidget = {
+        viewModel: UnauthenticatedMainContentViewModel,
+        template: content,
+    };
+
+    ko.components.register("authenticated-main-content-widget", authenticatedMainContentWidget);
+    let componentSelector = new ComponentSelector(
+        "Dummy",
+        "authenticated-main-content-widget",
+        mainWindowVm.authenticatedMainContentVm,
+    );
+    componentSelector.activate = () => mainWindowVm.mainContent(componentSelector);
+    mainWindowVm.pageSelector.add(componentSelector);
+}, Noop);
+
+AjaxLoad("./pageselector.html", "text", function (content) {
+    let pageSelectorWidget = {
+        viewModel: PageSelector,
+        template: content,
+    };
+
+    ko.components.register("page-selector", pageSelectorWidget);
+    mainWindowVm.pageSelectorVm(mainWindowVm.pageSelector);
+}, Noop);
+
+
+ko.applyBindings(mainWindowVm);

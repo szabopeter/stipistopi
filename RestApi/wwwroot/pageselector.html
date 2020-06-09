@@ -1,0 +1,13 @@
+﻿<div id="screenSelector"></div>
+<!--
+<select data-bind="
+        options: selectables,
+        optionsText: 'label',
+        value: selected"></select>
+-->
+<ul id="screens" data-bind="foreach: selectables">
+    <li>
+        <span data-bind="if: $data == $parent.selected()">SELECTED</span>
+        <a data-bind="text: label, click: activate"></a>
+    </li>
+</ul>
