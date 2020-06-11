@@ -3,7 +3,7 @@ import { TemplateManager } from "./templatemanager.js";
 import { ResourceActions } from "./resourceactions.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 import { PageSelectorItemViewModel } from "./pageselectoritem.js";
-
+import { UnauthenticatedMainContentViewModel, unauthenticatedMainContentRegisterWidget } from "./credentialspage.js"
 
 function Backend() {
     let myUser = {
@@ -162,40 +162,12 @@ function PageLoaded() {
 window.PageLoaded = function () {
 }
 
-function UnauthenticatedMainContentViewModel(params) {
-    if (params == null) {
-        this.userName = ko.observable("");
-        this.password = ko.observable("");
-    } else {
-        this.userName = params.userName;
-        this.password = params.password;
-    };
-
-    this.submitAction = function () {
-        console.log("TODO1: log in " + this.userName() + " " + this.password());
-    };
-}
-
-function AuthenticatedMainContentViewModel(params) {
-    if (params == null) {
-        this.userName = ko.observable("");
-        this.password = ko.observable("");
-    } else {
-        this.userName = params.userName;
-        this.password = params.password;
-    };
-
-    this.submitAction = function () {
-        console.log("TODO1: log in " + this.userName() + " " + this.password());
-    };
-}
-
 function MainWindowViewModel() {
     this.mainContent = ko.observable();
     this.pageSelector = new PageSelectorViewModel();
     this.pageSelectorVm = ko.observable();
     this.unauthenticatedMainContentVm = new UnauthenticatedMainContentViewModel();
-    this.authenticatedMainContentVm = new AuthenticatedMainContentViewModel();
+    this.authenticatedMainContentVm = new UnauthenticatedMainContentViewModel();
     this.debug = function () {
         console.log("Current state of mainViewModel:");
         console.log(this.unauthenticatedMainContentVm.userName());
@@ -209,12 +181,7 @@ mainWindowVm.authenticatedMainContentVm.userName("other one");
 mainWindowVm.pageSelector.selected = mainWindowVm.mainContent;
 
 AjaxLoad("./unauthenticatedmaincontent.html", "text", function (content) {
-    let unauthenticatedMainContentWidget = {
-        viewModel: UnauthenticatedMainContentViewModel,
-        template: content,
-    };
-
-    ko.components.register("unauthenticated-main-content-widget", unauthenticatedMainContentWidget);
+    unauthenticatedMainContentRegisterWidget(content);
     let componentSelector = new PageSelectorItemViewModel(
         "Credentials",
         "unauthenticated-main-content-widget",
