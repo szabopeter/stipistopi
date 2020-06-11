@@ -2,6 +2,7 @@ import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { TemplateManager } from "./templatemanager.js";
 import { ResourceActions } from "./resourceactions.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
+import { PageSelectorItemViewModel } from "./pageselectoritem.js";
 
 
 function Backend() {
@@ -189,15 +190,6 @@ function AuthenticatedMainContentViewModel(params) {
     };
 }
 
-function ComponentSelector(label, componentName, componentVm) {
-    this.label = ko.observable(label);
-    this.componentName = ko.observable(componentName);
-    this.componentParams = ko.observable(componentVm);
-    this.activate = function () {
-        console.log("Clicked " + this.label);
-    };
-}
-
 function MainWindowViewModel() {
     this.mainContent = ko.observable();
     this.pageSelector = new PageSelectorViewModel();
@@ -223,7 +215,7 @@ AjaxLoad("./unauthenticatedmaincontent.html", "text", function (content) {
     };
 
     ko.components.register("unauthenticated-main-content-widget", unauthenticatedMainContentWidget);
-    let componentSelector = new ComponentSelector(
+    let componentSelector = new PageSelectorItemViewModel(
         "Credentials",
         "unauthenticated-main-content-widget",
         mainWindowVm.unauthenticatedMainContentVm
@@ -239,7 +231,7 @@ AjaxLoad("./authenticatedmaincontent.html", "text", function (content) {
     };
 
     ko.components.register("authenticated-main-content-widget", authenticatedMainContentWidget);
-    let componentSelector = new ComponentSelector(
+    let componentSelector = new PageSelectorItemViewModel(
         "Dummy",
         "authenticated-main-content-widget",
         mainWindowVm.authenticatedMainContentVm,
