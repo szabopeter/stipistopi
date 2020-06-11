@@ -13,11 +13,10 @@ BODY {
 #area-main {
     display: inline-block;
     vertical-align: top;
-    width: 60%;
+    width: 70%;
 }
 
 TABLE {
-    width: 50%;
     margin: 10px;
     margin: auto;
 }

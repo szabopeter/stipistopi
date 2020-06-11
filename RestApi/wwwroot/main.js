@@ -5,6 +5,9 @@ import { MainWindowViewModel } from "./mainwindow.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 import { PageSelectorItemViewModel } from "./pageselectoritem.js";
 import { CredentialsPageViewModel, credentialsPageRegisterWidget } from "./credentialspage.js"
+import { ResourcesPageViewModel, resourcesPageRegisterWidget } from "./resourcespage.js";
+import { ResourceLineViewModel, resourceLineRegisterWidget } from "./resourceline.js";
+
 
 function Backend() {
     let myUser = {
@@ -164,34 +167,30 @@ window.PageLoaded = function () {
 }
 
 let mainWindowVm = new MainWindowViewModel();
-mainWindowVm.unauthenticatedMainContentVm.userName("prefill name");
-mainWindowVm.authenticatedMainContentVm.userName("other one");
+mainWindowVm.credentialsPageVm.userName("prefill name");
+
 
 AjaxLoad("./credentialspage.html", "text", function (content) {
     let widgetName = credentialsPageRegisterWidget(content);
     let pageSelectorItem = new PageSelectorItemViewModel(
         "Credentials",
         widgetName,
-        mainWindowVm.unauthenticatedMainContentVm
+        mainWindowVm.credentialsPageVm
     );
     pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
     mainWindowVm.pageSelector.add(pageSelectorItem);
 }, Noop);
 
-AjaxLoad("./authenticatedmaincontent.html", "text", function (content) {
-    let authenticatedMainContentWidget = {
-        viewModel: CredentialsPageViewModel,
-        template: content,
-    };
-
-    ko.components.register("authenticated-main-content-widget", authenticatedMainContentWidget);
-    let componentSelector = new PageSelectorItemViewModel(
-        "Dummy",
-        "authenticated-main-content-widget",
-        mainWindowVm.authenticatedMainContentVm,
+AjaxLoad("./resourcespage.html", "text", function (content) {
+    let widgetName = resourcesPageRegisterWidget(content);
+    let pageSelectorItem = new PageSelectorItemViewModel(
+        "Resources",
+        widgetName,
+        mainWindowVm.resourcesPageVm,
     );
-    componentSelector.activate = () => mainWindowVm.mainContent(componentSelector);
-    mainWindowVm.pageSelector.add(componentSelector);
+    pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
+    mainWindowVm.pageSelector.add(pageSelectorItem);
+    mainWindowVm.pageSelector.selected(pageSelectorItem);
 }, Noop);
 
 
@@ -200,5 +199,9 @@ AjaxLoad("./pageselector.html", "text", function (content) {
     mainWindowVm.pageSelectorVm(mainWindowVm.pageSelector);
 }, Noop);
 
+AjaxLoad("./resourceline.html", "text", function (template) {
+    let widgetName = resourceLineRegisterWidget(template);
+    mainWindowVm.componentManager().register_loaded(widgetName);
+}, Noop);
 
 ko.applyBindings(mainWindowVm);

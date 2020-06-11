@@ -1,0 +1,14 @@
+<tr class="resourceLineInList"
+    data-bind="css: {
+        resourceAvailable: isAvailable,
+        resourceNotAvailable: !isAvailable,
+    }">
+    <td data-bind="text: shortName"></td>
+    <td data-bind="text: address"></td>
+    <td data-bind="text: isAvailable"></td>
+    <td data-bind="text: lockedBy"></td>
+    <td data-bind="foreach: actions">
+        <div class="button" 
+             data-bind="click: action, text: label" ></div>
+    </td>
+</tr>

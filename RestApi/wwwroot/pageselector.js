@@ -7,6 +7,7 @@
         this.selectables = pageSelector.selectables;
         this.selected = pageSelector.selected;
     }
+
     this.add = function (item) {
         this.selectables().push(item);
         if (this.selected() == null)
