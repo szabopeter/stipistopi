@@ -10,17 +10,19 @@
 </head>
 
 <body onload="window.PageLoaded()">
-    <div data-bind="with: pageSelectorVm()">
+    <div id="area-left" data-bind="with: pageSelectorVm()">
         <div data-bind="component: {name: 'page-selector', params: $data}"></div>
         <page-selector params=22></page-selector>
     </div>
-    <div data-bind="with: mainContent()">
-        <div data-bind="component: {
-             name: componentName, 
-             params: componentParams
-             }"></div>
+    <div id="area-main">
+        <div data-bind="with: mainContent()">
+            <div data-bind="component: {
+            name: componentName,
+            params: componentParams
+            }"></div>
+        </div>
+        <button data-bind="click: debug">Debug</button>
     </div>
-    <button data-bind="click: debug">Debug</button>
 </body>
 
 </html>

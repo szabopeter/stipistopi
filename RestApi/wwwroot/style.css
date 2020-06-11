@@ -4,6 +4,18 @@ BODY {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+#area-left {
+    display: inline-block;
+    vertical-align: top;
+    width: 20%;
+}
+
+#area-main {
+    display: inline-block;
+    vertical-align: top;
+    width: 60%;
+}
+
 TABLE {
     width: 50%;
     margin: 10px;
@@ -30,5 +42,13 @@ TABLE {
     border: 1px solid lightgray;
     cursor: pointer;
     border-radius: 5px;
+    background-color: beige;
+}
+
+#screenselector li {
+    list-style-type: none;
+}
+
+.screenselector_active_item {
     background-color: beige;
 }
