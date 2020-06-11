@@ -1,6 +1,7 @@
 import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { TemplateManager } from "./templatemanager.js";
 import { ResourceActions } from "./resourceactions.js";
+import { MainWindowViewModel } from "./mainwindow.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 import { PageSelectorItemViewModel } from "./pageselectoritem.js";
 import { UnauthenticatedMainContentViewModel, unauthenticatedMainContentRegisterWidget } from "./credentialspage.js"
@@ -162,23 +163,9 @@ function PageLoaded() {
 window.PageLoaded = function () {
 }
 
-function MainWindowViewModel() {
-    this.mainContent = ko.observable();
-    this.pageSelector = new PageSelectorViewModel();
-    this.pageSelectorVm = ko.observable();
-    this.unauthenticatedMainContentVm = new UnauthenticatedMainContentViewModel();
-    this.authenticatedMainContentVm = new UnauthenticatedMainContentViewModel();
-    this.debug = function () {
-        console.log("Current state of mainViewModel:");
-        console.log(this.unauthenticatedMainContentVm.userName());
-        console.log(this.unauthenticatedMainContentVm.password());
-    };
-}
-
 let mainWindowVm = new MainWindowViewModel();
 mainWindowVm.unauthenticatedMainContentVm.userName("prefill name");
 mainWindowVm.authenticatedMainContentVm.userName("other one");
-mainWindowVm.pageSelector.selected = mainWindowVm.mainContent;
 
 AjaxLoad("./unauthenticatedmaincontent.html", "text", function (content) {
     unauthenticatedMainContentRegisterWidget(content);
