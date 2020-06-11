@@ -1,6 +1,7 @@
 import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { TemplateManager } from "./templatemanager.js";
-import { ResourceActions } from "./resourceactions.js"
+import { ResourceActions } from "./resourceactions.js";
+import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 
 
 function Backend() {
@@ -197,25 +198,9 @@ function ComponentSelector(label, componentName, componentVm) {
     };
 }
 
-function PageSelector(pageSelector) {
-    console.log(pageSelector);
-    if (pageSelector == null) {
-        this.selectables = ko.observableArray();
-        this.selected = ko.observable();
-    } else {
-        this.selectables = pageSelector.selectables;
-        this.selected = pageSelector.selected;
-    }
-    this.add = function (item) {
-        this.selectables().push(item);
-        if (this.selected() == null)
-            this.selected(item);
-    };
-}
-
 function MainWindowViewModel() {
     this.mainContent = ko.observable();
-    this.pageSelector = new PageSelector();
+    this.pageSelector = new PageSelectorViewModel();
     this.pageSelectorVm = ko.observable();
     this.unauthenticatedMainContentVm = new UnauthenticatedMainContentViewModel();
     this.authenticatedMainContentVm = new AuthenticatedMainContentViewModel();
@@ -263,13 +248,9 @@ AjaxLoad("./authenticatedmaincontent.html", "text", function (content) {
     mainWindowVm.pageSelector.add(componentSelector);
 }, Noop);
 
-AjaxLoad("./pageselector.html", "text", function (content) {
-    let pageSelectorWidget = {
-        viewModel: PageSelector,
-        template: content,
-    };
 
-    ko.components.register("page-selector", pageSelectorWidget);
+AjaxLoad("./pageselector.html", "text", function (content) {
+    pageSelectorRegisterWidget(content);
     mainWindowVm.pageSelectorVm(mainWindowVm.pageSelector);
 }, Noop);
 
