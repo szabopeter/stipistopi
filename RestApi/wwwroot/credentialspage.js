@@ -1,4 +1,4 @@
-﻿function UnauthenticatedMainContentViewModel(params) {
+﻿function CredentialsPageViewModel(params) {
     if (params == null) {
         this.userName = ko.observable("");
         this.password = ko.observable("");
@@ -12,13 +12,13 @@
     };
 }
 
-function unauthenticatedMainContentRegisterWidget(template) {
-    let unauthenticatedMainContentWidget = {
-        viewModel: UnauthenticatedMainContentViewModel,
+function credentialsPageRegisterWidget(template) {
+    let widgetName = "credentials-page-widget";
+    ko.components.register(widgetName, {
+        viewModel: CredentialsPageViewModel,
         template: template,
-    };
-
-    ko.components.register("unauthenticated-main-content-widget", unauthenticatedMainContentWidget);
+    });
+    return widgetName;
 }
 
-export { UnauthenticatedMainContentViewModel, unauthenticatedMainContentRegisterWidget };
+export { CredentialsPageViewModel, credentialsPageRegisterWidget };

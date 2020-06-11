@@ -4,7 +4,7 @@ import { ResourceActions } from "./resourceactions.js";
 import { MainWindowViewModel } from "./mainwindow.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 import { PageSelectorItemViewModel } from "./pageselectoritem.js";
-import { UnauthenticatedMainContentViewModel, unauthenticatedMainContentRegisterWidget } from "./credentialspage.js"
+import { CredentialsPageViewModel, credentialsPageRegisterWidget } from "./credentialspage.js"
 
 function Backend() {
     let myUser = {
@@ -167,20 +167,20 @@ let mainWindowVm = new MainWindowViewModel();
 mainWindowVm.unauthenticatedMainContentVm.userName("prefill name");
 mainWindowVm.authenticatedMainContentVm.userName("other one");
 
-AjaxLoad("./unauthenticatedmaincontent.html", "text", function (content) {
-    unauthenticatedMainContentRegisterWidget(content);
-    let componentSelector = new PageSelectorItemViewModel(
+AjaxLoad("./credentialspage.html", "text", function (content) {
+    let widgetName = credentialsPageRegisterWidget(content);
+    let pageSelectorItem = new PageSelectorItemViewModel(
         "Credentials",
-        "unauthenticated-main-content-widget",
+        widgetName,
         mainWindowVm.unauthenticatedMainContentVm
     );
-    componentSelector.activate = () => mainWindowVm.mainContent(componentSelector);
-    mainWindowVm.pageSelector.add(componentSelector);
+    pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
+    mainWindowVm.pageSelector.add(pageSelectorItem);
 }, Noop);
 
 AjaxLoad("./authenticatedmaincontent.html", "text", function (content) {
     let authenticatedMainContentWidget = {
-        viewModel: UnauthenticatedMainContentViewModel,
+        viewModel: CredentialsPageViewModel,
         template: content,
     };
 
