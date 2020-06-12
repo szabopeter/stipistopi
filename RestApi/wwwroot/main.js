@@ -135,45 +135,46 @@ function PageLoaded() {
 
 function Initialize() {
     let mainWindowVm = new MainWindowViewModel();
+    ko.applyBindings(mainWindowVm);
+
     mainWindowVm.credentialsPageVm.userName("prefill name");
     mainWindowVm.resourcesPageVm.refresh();
 
-
     AjaxLoad("./credentialspage.html", "text", function (content) {
-        let widgetName = credentialsPageRegisterWidget(content);
+        let widgetName = credentialsPageRegisterWidget(content, mainWindowVm.credentialsPageVm);
+        mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
             "Credentials",
             widgetName,
             mainWindowVm.credentialsPageVm
         );
         pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
-        mainWindowVm.pageSelector.add(pageSelectorItem);
+        mainWindowVm.pageSelectorVm.add(pageSelectorItem);
     }, Noop);
 
     AjaxLoad("./resourcespage.html", "text", function (content) {
         let widgetName = resourcesPageRegisterWidget(content);
+        mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
             "Resources",
             widgetName,
             mainWindowVm.resourcesPageVm,
         );
         pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
-        mainWindowVm.pageSelector.add(pageSelectorItem);
-        mainWindowVm.pageSelector.selected(pageSelectorItem);
+        mainWindowVm.pageSelectorVm.add(pageSelectorItem);
+        mainWindowVm.pageSelectorVm.selected(pageSelectorItem);
     }, Noop);
 
 
     AjaxLoad("./pageselector.html", "text", function (content) {
-        pageSelectorRegisterWidget(content);
-        mainWindowVm.pageSelectorVm(mainWindowVm.pageSelector);
+        let widgetName = pageSelectorRegisterWidget(content, mainWindowVm.pageSelectorVm);
+        mainWindowVm.componentManager().register_loaded(widgetName);
     }, Noop);
 
     AjaxLoad("./resourceline.html", "text", function (template) {
         let widgetName = resourceLineRegisterWidget(template);
         mainWindowVm.componentManager().register_loaded(widgetName);
     }, Noop);
-
-    ko.applyBindings(mainWindowVm);
 }
 
 window.PageLoaded = Initialize;

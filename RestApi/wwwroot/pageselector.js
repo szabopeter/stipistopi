@@ -1,12 +1,6 @@
-﻿function PageSelectorViewModel(pageSelector) {
-    if (pageSelector == null) {
-        this.selectables = ko.observableArray();
-        this.selected = ko.observable();
-    } else {
-        this.selectables = pageSelector.selectables;
-        this.selected = pageSelector.selected;
-    }
-
+﻿function PageSelectorViewModel() {
+    this.selectables = ko.observableArray();
+    this.selected = ko.observable();
     this.add = function (item) {
         this.selectables().push(item);
         if (this.selected() == null)
@@ -14,11 +8,13 @@
     };
 }
 
-function pageSelectorRegisterWidget(template) {
-    ko.components.register("page-selector", {
-        viewModel: PageSelectorViewModel,
+function pageSelectorRegisterWidget(template, viewModel) {
+    let widgetName = "page-selector";
+    ko.components.register(widgetName, {
+        viewModel: function() {return viewModel;},
         template: template,
     });
+    return widgetName;
 }
 
 export {

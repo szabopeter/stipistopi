@@ -10,9 +10,8 @@
 </head>
 
 <body onload="window.PageLoaded()">
-    <div id="area-left" data-bind="with: pageSelectorVm()">
-        <div data-bind="component: {name: 'page-selector', params: $data}"></div>
-        <page-selector params=22></page-selector>
+    <div id="area-left" data-bind="if: $root.componentManager().has_loaded('page-selector')">
+        <page-selector></page-selector>
     </div>
     <div id="area-main">
         <div data-bind="with: mainContent()">
