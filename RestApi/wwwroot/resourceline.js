@@ -7,8 +7,8 @@
         this.isAvailable = ko.observable("TODO: isAvailable");
         this.lockedBy = ko.observable("TODO: lockedBy");
         this.actions = ko.observableArray([
-            { label: "TODO: lockAction", action: function () { console.log("TODO: lockAction"); } },
-            { label: "TODO: releaseAction", action: function () { console.log("TODO: releaseAction"); } },
+            { label: "TODO: lockAction", execute: function () { console.log("TODO: lockAction"); } },
+            { label: "TODO: releaseAction", execute: function () { console.log("TODO: releaseAction"); } },
         ]);
     } else {
         this.shortName = params.shortName;
@@ -18,6 +18,20 @@
         this.actions = params.actions;
     };
 
+    this.updateActions = function(backend, refresh) {
+        console.log(ko.toJSON(this));
+        let resource = this;
+        let label = resource.isAvailable() ? "Lock" : "Release";
+        let backendAction = resource.isAvailable() ? "lock" : "release";
+        let execute = function () {
+            backend.sendResourceAction(backendAction, resource.shortName(), refresh);
+        };
+        resource.actions([{
+            label: label,
+            backendAction: backendAction,
+            execute: execute,
+        }]);
+    };
 }
 
 ResourceLineViewModel.create = function (source) {
@@ -26,8 +40,8 @@ ResourceLineViewModel.create = function (source) {
     vm.address(source.address);
     vm.isAvailable(source.isAvailable);
     vm.lockedBy(source.lockedBy);
-    vm.actions(source.actions);
-    vm.actions().forEach(function (action) { action.action = action.action.bind(vm); })
+    // vm.actions(source.actions);
+    // vm.actions().forEach(function (action) { action.execute = action.execute.bind(vm); })
     console.log(ko.toJSON(vm));
     return vm;
 }

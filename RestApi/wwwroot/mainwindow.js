@@ -1,6 +1,7 @@
 ﻿import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 import { CredentialsPageViewModel, credentialsPageRegisterWidget } from "./credentialspage.js";
 import { ResourcesPageViewModel, resourcesPageRegisterWidget } from "./resourcespage.js";
+import { Backend } from "./backend.js";
 
 
 function ComponentManager() {
@@ -30,12 +31,14 @@ function ComponentManager() {
 }
 
 export function MainWindowViewModel() {
+    this.backend = Backend();
     this.componentManager = ko.observable(new ComponentManager());
     this.mainContent = ko.observable();
     this.pageSelector = new PageSelectorViewModel();
     this.pageSelectorVm = ko.observable();
     this.credentialsPageVm = new CredentialsPageViewModel();
     this.resourcesPageVm = new ResourcesPageViewModel();
+    this.resourcesPageVm.main = this;
     this.debug = function () {
         console.log("Current state of mainContent:");
         console.log(ko.toJSON(this.mainContent()));

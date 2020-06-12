@@ -1,8 +1,11 @@
-﻿import { ResourceLineViewModel } from "./resourceline.js";
+﻿import { AjaxLoad, AjaxPost, Noop } from "./util.js";
+import { ResourceLineViewModel } from "./resourceline.js";
 
 
 function ResourcesPageViewModel(params) {
+    let self = this;
     if (params == null) {
+        this.main = null;
         this.resources = ko.observableArray([
             ResourceLineViewModel.create(
                 {
@@ -28,11 +31,20 @@ function ResourcesPageViewModel(params) {
                 }),
             ]);
     } else {
+        this.main = params.main;
         this.resources = params.resources;
     };
 
+    function UpdateResourceList(resources) {
+        self.resources(resources.map(function(resource) {
+            let vm = ResourceLineViewModel.create(resource);
+            vm.updateActions(self.main.backend, self.refresh);
+            return vm;
+        }));
+    };
+
     this.refresh = function () {
-        console.log("TODO1: refresh...");
+        AjaxLoad("./stipistopi/resources", "json", UpdateResourceList, function () { });
     };
 }
 
