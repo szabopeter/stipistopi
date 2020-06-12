@@ -133,45 +133,47 @@ function PageLoaded() {
     templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
 }
 
-window.PageLoaded = function () {
+function Initialize() {
+    let mainWindowVm = new MainWindowViewModel();
+    mainWindowVm.credentialsPageVm.userName("prefill name");
+    mainWindowVm.resourcesPageVm.refresh();
+
+
+    AjaxLoad("./credentialspage.html", "text", function (content) {
+        let widgetName = credentialsPageRegisterWidget(content);
+        let pageSelectorItem = new PageSelectorItemViewModel(
+            "Credentials",
+            widgetName,
+            mainWindowVm.credentialsPageVm
+        );
+        pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
+        mainWindowVm.pageSelector.add(pageSelectorItem);
+    }, Noop);
+
+    AjaxLoad("./resourcespage.html", "text", function (content) {
+        let widgetName = resourcesPageRegisterWidget(content);
+        let pageSelectorItem = new PageSelectorItemViewModel(
+            "Resources",
+            widgetName,
+            mainWindowVm.resourcesPageVm,
+        );
+        pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
+        mainWindowVm.pageSelector.add(pageSelectorItem);
+        mainWindowVm.pageSelector.selected(pageSelectorItem);
+    }, Noop);
+
+
+    AjaxLoad("./pageselector.html", "text", function (content) {
+        pageSelectorRegisterWidget(content);
+        mainWindowVm.pageSelectorVm(mainWindowVm.pageSelector);
+    }, Noop);
+
+    AjaxLoad("./resourceline.html", "text", function (template) {
+        let widgetName = resourceLineRegisterWidget(template);
+        mainWindowVm.componentManager().register_loaded(widgetName);
+    }, Noop);
+
+    ko.applyBindings(mainWindowVm);
 }
 
-let mainWindowVm = new MainWindowViewModel();
-mainWindowVm.credentialsPageVm.userName("prefill name");
-
-
-AjaxLoad("./credentialspage.html", "text", function (content) {
-    let widgetName = credentialsPageRegisterWidget(content);
-    let pageSelectorItem = new PageSelectorItemViewModel(
-        "Credentials",
-        widgetName,
-        mainWindowVm.credentialsPageVm
-    );
-    pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
-    mainWindowVm.pageSelector.add(pageSelectorItem);
-}, Noop);
-
-AjaxLoad("./resourcespage.html", "text", function (content) {
-    let widgetName = resourcesPageRegisterWidget(content);
-    let pageSelectorItem = new PageSelectorItemViewModel(
-        "Resources",
-        widgetName,
-        mainWindowVm.resourcesPageVm,
-    );
-    pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
-    mainWindowVm.pageSelector.add(pageSelectorItem);
-    mainWindowVm.pageSelector.selected(pageSelectorItem);
-}, Noop);
-
-
-AjaxLoad("./pageselector.html", "text", function (content) {
-    pageSelectorRegisterWidget(content);
-    mainWindowVm.pageSelectorVm(mainWindowVm.pageSelector);
-}, Noop);
-
-AjaxLoad("./resourceline.html", "text", function (template) {
-    let widgetName = resourceLineRegisterWidget(template);
-    mainWindowVm.componentManager().register_loaded(widgetName);
-}, Noop);
-
-ko.applyBindings(mainWindowVm);
+window.PageLoaded = Initialize;
