@@ -1,5 +1,4 @@
 ﻿function PageSelectorViewModel(pageSelector) {
-    console.log(pageSelector);
     if (pageSelector == null) {
         this.selectables = ko.observableArray();
         this.selected = ko.observable();

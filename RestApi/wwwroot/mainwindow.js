@@ -38,11 +38,7 @@ export function MainWindowViewModel() {
     this.pageSelectorVm = ko.observable();
     this.credentialsPageVm = new CredentialsPageViewModel();
     this.resourcesPageVm = new ResourcesPageViewModel();
+    // TODO Eliminate circular reference
     this.resourcesPageVm.main = this;
-    this.debug = function () {
-        console.log("Current state of mainContent:");
-        console.log(ko.toJSON(this.mainContent()));
-    };
-
     this.pageSelector.selected = this.mainContent;
 }

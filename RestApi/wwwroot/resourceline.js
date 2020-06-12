@@ -1,6 +1,4 @@
 ﻿function ResourceLineViewModel(params) {
-    console.log("Creating resourceline from ");
-    console.log(params);
     if (params == null) {
         this.shortName = ko.observable("TODO: shortName");
         this.address = ko.observable("TODO: address");
@@ -19,7 +17,6 @@
     };
 
     this.updateActions = function(backend, refresh) {
-        console.log(ko.toJSON(this));
         let resource = this;
         let label = resource.isAvailable() ? "Lock" : "Release";
         let backendAction = resource.isAvailable() ? "lock" : "release";
@@ -42,7 +39,6 @@ ResourceLineViewModel.create = function (source) {
     vm.lockedBy(source.lockedBy);
     // vm.actions(source.actions);
     // vm.actions().forEach(function (action) { action.execute = action.execute.bind(vm); })
-    console.log(ko.toJSON(vm));
     return vm;
 }
 
