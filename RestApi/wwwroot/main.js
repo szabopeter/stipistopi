@@ -1,5 +1,6 @@
 import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { TemplateManager } from "./templatemanager.js";
+import { LoadTemplates } from "./util.js";
 import { ResourceActions } from "./resourceactions.js";
 import { MainWindowViewModel } from "./mainwindow.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
@@ -133,14 +134,14 @@ function PageLoaded() {
     templateManager.LoadTemplates(stipistopi.OnTemplatesLoaded);
 }
 
-function Initialize() {
+function Initialize(templates) {
     let mainWindowVm = new MainWindowViewModel();
-    ko.applyBindings(mainWindowVm);
 
     mainWindowVm.credentialsPageVm.userName("prefill name");
     mainWindowVm.resourcesPageVm.refresh();
 
-    AjaxLoad("./credentialspage.html", "text", function (content) {
+    {
+        let content = templates["credentialspage.html"];
         let widgetName = credentialsPageRegisterWidget(content);
         mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
@@ -150,9 +151,10 @@ function Initialize() {
         );
         pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
         mainWindowVm.pageSelectorVm.add(pageSelectorItem);
-    }, Noop);
+    }
 
-    AjaxLoad("./resourcespage.html", "text", function (content) {
+    {
+        let content = templates["resourcespage.html"];
         let widgetName = resourcesPageRegisterWidget(content);
         mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
@@ -163,18 +165,30 @@ function Initialize() {
         pageSelectorItem.activate = () => mainWindowVm.mainContent(pageSelectorItem);
         mainWindowVm.pageSelectorVm.add(pageSelectorItem);
         mainWindowVm.pageSelectorVm.selected(pageSelectorItem);
-    }, Noop);
+    }
 
 
-    AjaxLoad("./pageselector.html", "text", function (content) {
+    {
+        let content = templates["pageselector.html"];
         let widgetName = pageSelectorRegisterWidget(content);
         mainWindowVm.componentManager().register_loaded(widgetName);
-    }, Noop);
+    }
 
-    AjaxLoad("./resourceline.html", "text", function (template) {
+    {
+        let template = templates["resourceline.html"];
         let widgetName = resourceLineRegisterWidget(template);
         mainWindowVm.componentManager().register_loaded(widgetName);
-    }, Noop);
+    }
+
+    ko.applyBindings(mainWindowVm);
 }
 
-window.PageLoaded = Initialize;
+window.PageLoaded = function() {
+    // TODO on failure
+    LoadTemplates([
+        "credentialspage.html",
+        "resourcespage.html",
+        "pageselector.html",
+        "resourceline.html",
+    ], Initialize, Noop);
+}

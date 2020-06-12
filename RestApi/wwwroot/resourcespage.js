@@ -2,7 +2,7 @@
 import { ResourceLineViewModel } from "./resourceline.js";
 
 
-function ResourcesPageViewModel(params) {
+function ResourcesPageViewModel() {
     let self = this;
     this.main = null;
     this.resources = ko.observableArray([]);

@@ -10,13 +10,11 @@
         </tr>
     </thead>
     <tbody data-bind="foreach: resources">
-        <!-- ko if: $root.componentManager().has_loaded('resourceline-widget') -->
-            <!-- ko component: { name:"resourceline-widget", params: $data } -->
-            <!-- /ko -->
+        <!-- ko component: { name:"resourceline-widget", params: $data } -->
         <!-- /ko -->
-        <tr data-bind="ifnot: $root.componentManager().has_loaded('resourceline-widget')">
+        <!-- <tr data-bind="ifnot: $root.componentManager().has_loaded('resourceline-widget')">
             <td colspan="5">loading...</td>
-        </tr>
+        </tr> -->
     </tbody>
 </table>
 <div class="resourceListButtons">
