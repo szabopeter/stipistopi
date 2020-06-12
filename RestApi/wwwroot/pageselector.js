@@ -8,10 +8,10 @@
     };
 }
 
-function pageSelectorRegisterWidget(template, viewModel) {
+function pageSelectorRegisterWidget(template) {
     let widgetName = "page-selector";
     ko.components.register(widgetName, {
-        viewModel: function() {return viewModel;},
+        viewModel: function (params) { return params; },
         template: template,
     });
     return widgetName;

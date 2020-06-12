@@ -6,10 +6,10 @@
     // };
 }
 
-function credentialsPageRegisterWidget(template, viewModel) {
+function credentialsPageRegisterWidget(template) {
     let widgetName = "credentials-page-widget";
     ko.components.register(widgetName, {
-        viewModel: function () {return viewModel;},
+        viewModel: function (params) {return params;},
         template: template,
     });
     return widgetName;

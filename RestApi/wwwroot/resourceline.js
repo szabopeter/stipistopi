@@ -1,20 +1,9 @@
-﻿function ResourceLineViewModel(params) {
-    if (params == null) {
-        this.shortName = ko.observable("TODO: shortName");
-        this.address = ko.observable("TODO: address");
-        this.isAvailable = ko.observable("TODO: isAvailable");
-        this.lockedBy = ko.observable("TODO: lockedBy");
-        this.actions = ko.observableArray([
-            { label: "TODO: lockAction", execute: function () { console.log("TODO: lockAction"); } },
-            { label: "TODO: releaseAction", execute: function () { console.log("TODO: releaseAction"); } },
-        ]);
-    } else {
-        this.shortName = params.shortName;
-        this.address = params.address;
-        this.isAvailable = params.isAvailable;
-        this.lockedBy = params.lockedBy;
-        this.actions = params.actions;
-    };
+﻿function ResourceLineViewModel() {
+    this.shortName = ko.observable("TODO: shortName");
+    this.address = ko.observable("TODO: address");
+    this.isAvailable = ko.observable("TODO: isAvailable");
+    this.lockedBy = ko.observable("TODO: lockedBy");
+    this.actions = ko.observableArray([]);
 
     this.updateActions = function(backend, refresh) {
         let resource = this;
@@ -45,7 +34,7 @@ ResourceLineViewModel.create = function (source) {
 function resourceLineRegisterWidget(template) {
     let widgetName = "resourceline-widget";
     ko.components.register(widgetName, {
-        viewModel: ResourceLineViewModel,
+        viewModel: function(params) {return params;},
         template: template,
     });
     return widgetName;

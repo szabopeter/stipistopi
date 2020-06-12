@@ -10,17 +10,21 @@
 </head>
 
 <body onload="window.PageLoaded()">
-    <div id="area-left" data-bind="if: $root.componentManager().has_loaded('page-selector')">
-        <page-selector></page-selector>
+    <!-- REM ko if: componentManager().all_loaded -->
+    <div id="area-left" data-bind="if: componentManager().has_loaded('page-selector')">
+        <!-- TODO: try to get this to work: <page-selector params="value: pageSelectorVm" /> -->
+        <div data-bind="component: {name: 'page-selector', params: pageSelectorVm}"></div>
     </div>
     <div id="area-main">
         <div data-bind="with: mainContent()">
+            <h2 data-bind="text: componentName()">ajj</h2>
             <div data-bind="component: {
-            name: componentName,
-            params: componentParams
+            name: componentName(),
+            params: componentVm,
             }"></div>
         </div>
     </div>
+    <!-- REM /ko -->
 </body>
 
 </html>

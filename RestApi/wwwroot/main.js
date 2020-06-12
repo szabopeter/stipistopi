@@ -141,7 +141,7 @@ function Initialize() {
     mainWindowVm.resourcesPageVm.refresh();
 
     AjaxLoad("./credentialspage.html", "text", function (content) {
-        let widgetName = credentialsPageRegisterWidget(content, mainWindowVm.credentialsPageVm);
+        let widgetName = credentialsPageRegisterWidget(content);
         mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
             "Credentials",
@@ -167,7 +167,7 @@ function Initialize() {
 
 
     AjaxLoad("./pageselector.html", "text", function (content) {
-        let widgetName = pageSelectorRegisterWidget(content, mainWindowVm.pageSelectorVm);
+        let widgetName = pageSelectorRegisterWidget(content);
         mainWindowVm.componentManager().register_loaded(widgetName);
     }, Noop);
 
