@@ -2,7 +2,6 @@ import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { LoadTemplates } from "./util.js";
 import { MainWindowViewModel } from "./mainwindow.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
-import { PageSelectorItemViewModel } from "./pageselectoritem.js";
 import { CredentialsPageViewModel, credentialsPageRegisterWidget } from "./credentialspage.js"
 import { ResourcesPageViewModel, resourcesPageRegisterWidget } from "./resourcespage.js";
 import { ResourceLineViewModel, resourceLineRegisterWidget } from "./resourceline.js";
@@ -17,63 +16,32 @@ function Initialize(templates) {
     mainWindowVm.credentialsPageVm.password("test");
     mainWindowVm.resourcesPageVm.refresh();
 
-    {
-        let content = templates["credentialspage.html"];
-        let widgetName = credentialsPageRegisterWidget(content);
-        let pageSelectorItem = new PageSelectorItemViewModel(
-            "Credentials",
-            widgetName,
-            mainWindowVm.credentialsPageVm
-        );
-        pageSelectorItem.activate = () => mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
-        mainWindowVm.pageSelectorVm().add(pageSelectorItem);
-    }
+    let credentialsPageWidgetName = credentialsPageRegisterWidget(templates["credentialspage.html"]);
+    let resourcesPageWidgetName = resourcesPageRegisterWidget(templates["resourcespage.html"]);
+    let usersPageWidgetName = usersPageRegisterWidget(templates["userspage.html"]);
+    pageSelectorRegisterWidget(templates["pageselector.html"]);
+    resourceLineRegisterWidget(templates["resourceline.html"]);
+    userLineRegisterWidget(templates["userline.html"]);
 
-    {
-        let content = templates["resourcespage.html"];
-        let widgetName = resourcesPageRegisterWidget(content);
-        let pageSelectorItem = new PageSelectorItemViewModel(
-            "Resources",
-            widgetName,
-            mainWindowVm.resourcesPageVm,
-        );
-        pageSelectorItem.activate = () => {
-            mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
-            mainWindowVm.resourcesPageVm.refresh();
-        }
-        mainWindowVm.pageSelectorVm().add(pageSelectorItem);
-        mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
-    }
+    mainWindowVm.pageSelectorVm().addPage(
+        "Credentials",
+        credentialsPageWidgetName,
+        mainWindowVm.credentialsPageVm
+    );
 
-    {
-        let content = templates["userspage.html"];
-        let widgetName = usersPageRegisterWidget(content);
-        let pageSelectorItem = new PageSelectorItemViewModel(
-            "Users",
-            widgetName,
-            mainWindowVm.usersPageVm,
-        );
-        pageSelectorItem.activate = () => {
-            mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
-            mainWindowVm.usersPageVm.refresh();
-        }
-        mainWindowVm.pageSelectorVm().add(pageSelectorItem);
-    }
+    let defaultPage = mainWindowVm.pageSelectorVm().addPage(
+        "Resources",
+        resourcesPageWidgetName,
+        mainWindowVm.resourcesPageVm,
+    );
 
-    {
-        let content = templates["pageselector.html"];
-        let widgetName = pageSelectorRegisterWidget(content);
-    }
+    mainWindowVm.pageSelectorVm().addPage(
+        "Users",
+        usersPageWidgetName,
+        mainWindowVm.usersPageVm,
+    );
 
-    {
-        let template = templates["resourceline.html"];
-        let widgetName = resourceLineRegisterWidget(template);
-    }
-
-    {
-        let template = templates["userline.html"];
-        let widgetName = userLineRegisterWidget(template);
-    }
+    mainWindowVm.pageSelectorVm().selected(defaultPage);
 
     ko.applyBindings(mainWindowVm);
 }

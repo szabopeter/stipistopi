@@ -19,6 +19,8 @@ function UsersPageViewModel(backend) {
         // TODO: on failure
         self.backend.loadUsers(UpdateUserList, Noop);
     };
+
+    this.pageActivated = this.refresh;
 }
 
 function usersPageRegisterWidget(template) {

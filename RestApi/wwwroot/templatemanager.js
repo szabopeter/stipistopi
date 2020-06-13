@@ -2,12 +2,13 @@ import { LoadTemplates } from "./util.js";
 
 
 export function TemplateManager() {
-    let names = {
-        resourceLine: "resourceline.hbs",
-        resourceList: "resourcelist.hbs",
-        userList: "userlist.hbs",
-        userLine: "userline.hbs",
-        userEditLine: "usereditline.hbs",
+    this.names = {
+        credentialspage: "credentialspage.html",
+        resourcespage: "resourcespage.html",
+        pageselector: "pageselector.html",
+        resourceline: "resourceline.html",
+        userspage: "userspage.html",
+        userline: "userline.html",
     };
 
     let fileNames = []

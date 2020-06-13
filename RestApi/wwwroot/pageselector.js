@@ -1,10 +1,23 @@
-﻿function PageSelectorViewModel() {
+﻿import { PageSelectorItemViewModel } from "./pageselectoritem.js";
+
+
+function PageSelectorViewModel() {
+    let self = this;
     this.selectables = ko.observableArray();
     this.selected = ko.observable();
-    this.add = function (item) {
-        this.selectables().push(item);
-        if (this.selected() == null)
-            this.selected(item);
+    let add = function (item) {
+        self.selectables().push(item);
+        if (self.selected() == null)
+            self.selected(item);
+    };
+    this.addPage = function (title, widgetName, viewModel) {
+        let pageSelectorItem = new PageSelectorItemViewModel(title, widgetName, viewModel);
+        pageSelectorItem.activate = () => {
+            self.selected(pageSelectorItem);
+            viewModel.pageActivated();
+        }
+        add(pageSelectorItem);
+        return pageSelectorItem;
     };
 }
 

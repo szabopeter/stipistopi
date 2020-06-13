@@ -18,6 +18,8 @@ function ResourcesPageViewModel(backend) {
     this.refresh = function () {
         AjaxLoad("./stipistopi/resources", "json", UpdateResourceList, function () { });
     };
+
+    this.pageActivated = this.refresh;
 }
 
 function resourcesPageRegisterWidget(template) {

@@ -2,9 +2,11 @@
     let self = this;
     this.userName = ko.observable("");
     this.password = ko.observable("");
+    this.pageActivated = function () { };
     // this.submitAction = function () {
     //     console.log("TODO1: log in " + this.userName() + " " + this.password());
     // };
+
     function setBackendCredentials() {
         backend.setCredentials(self.userName(), self.password());
     }
