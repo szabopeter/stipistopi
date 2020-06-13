@@ -8,6 +8,8 @@ import { PageSelectorItemViewModel } from "./pageselectoritem.js";
 import { CredentialsPageViewModel, credentialsPageRegisterWidget } from "./credentialspage.js"
 import { ResourcesPageViewModel, resourcesPageRegisterWidget } from "./resourcespage.js";
 import { ResourceLineViewModel, resourceLineRegisterWidget } from "./resourceline.js";
+import { UsersPageViewModel, usersPageRegisterWidget } from "./userspage.js";
+import { UserLineViewModel, userLineRegisterWidget } from "./userline.js";
 import { Backend } from "./backend.js";
 
 function StipiStopi(resourceActions, userActions, templateManager) {
@@ -168,6 +170,18 @@ function Initialize(templates) {
         mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
     }
 
+    {
+        let content = templates["userspage.html"];
+        let widgetName = usersPageRegisterWidget(content);
+        mainWindowVm.componentManager().register_loaded(widgetName);
+        let pageSelectorItem = new PageSelectorItemViewModel(
+            "Users",
+            widgetName,
+            mainWindowVm.usersPageVm,
+        );
+        pageSelectorItem.activate = () => mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
+        mainWindowVm.pageSelectorVm().add(pageSelectorItem);
+    }
 
     {
         let content = templates["pageselector.html"];
@@ -178,6 +192,12 @@ function Initialize(templates) {
     {
         let template = templates["resourceline.html"];
         let widgetName = resourceLineRegisterWidget(template);
+        mainWindowVm.componentManager().register_loaded(widgetName);
+    }
+
+    {
+        let template = templates["userline.html"];
+        let widgetName = userLineRegisterWidget(template);
         mainWindowVm.componentManager().register_loaded(widgetName);
     }
 
@@ -192,6 +212,8 @@ window.PageLoaded = function() {
             "resourcespage.html",
             "pageselector.html",
             "resourceline.html",
+            "userspage.html",
+            "userline.html",
         ], Initialize, Noop);
     }, 2000);
 }

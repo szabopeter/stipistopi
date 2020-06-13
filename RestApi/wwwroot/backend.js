@@ -21,6 +21,10 @@ export function Backend() {
         AjaxPost(url, lockParameter, onSuccess, Noop)
     }
 
+    function loadUsers(onSuccess, onFailure) {
+        AjaxPost("./stipistopi/users", myUser, onSuccess, onFailure);
+    }
+
     function createUserAction(userName, password, role, onSuccess) {
         let newUserParameter = {
             user: { userName: userName, password: password, role: role },
@@ -31,6 +35,7 @@ export function Backend() {
     }
 
     return {
+        loadUsers: loadUsers,
         sendResourceAction: sendResourceAction,
         createUserAction: createUserAction,
         setCredentials: setCredentials,

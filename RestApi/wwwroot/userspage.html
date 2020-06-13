@@ -1,0 +1,26 @@
+<h1>Users</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <!--<tbody>
+        {{#each this}}
+        {{#if isEditing}}
+        {{> userEditLineInList}}
+        {{else}}
+        {{> userLineInList}}
+        {{/if}}
+        {{/ each}}
+    </tbody>-->
+    <tbody data-bind="foreach: users">
+        <!-- ko component: { name:"userline-widget", params: $data } -->
+        <!-- /ko -->
+    </tbody>
+</table>
+<div class="userListButtons">
+    <div id="buttonRefreshUserList" class="button" data-bind="click: refresh">Refresh</div>
+</div>

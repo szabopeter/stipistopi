@@ -1,10 +1,11 @@
 ﻿import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
 import { CredentialsPageViewModel, credentialsPageRegisterWidget } from "./credentialspage.js";
 import { ResourcesPageViewModel, resourcesPageRegisterWidget } from "./resourcespage.js";
+import { UsersPageViewModel, usersPageRegisterWidget } from "./userspage.js";
 import { Backend } from "./backend.js";
 
-
 function ComponentManager() {
+    // TODO: this class should be removed
     let self = this;
     self.widgets = ko.observableArray([]);
     self.all_loaded = ko.observable(false);
@@ -42,4 +43,5 @@ export function MainWindowViewModel() {
     this.pageSelectorVm = ko.observable(new PageSelectorViewModel());
     this.credentialsPageVm = new CredentialsPageViewModel(this.backend);
     this.resourcesPageVm = new ResourcesPageViewModel(this.backend);
+    this.usersPageVm = new UsersPageViewModel(this.backend);
 }
