@@ -7,6 +7,11 @@ export function Backend() {
         password: "test",
     };
 
+    function setCredentials(userName, password) {
+        myUser.userName = userName;
+        myUser.password = password;
+    }
+
     function sendResourceAction(action, resourceName, onSuccess) {
         let url = "./stipistopi/" + action;
         let lockParameter = {
@@ -28,5 +33,6 @@ export function Backend() {
     return {
         sendResourceAction: sendResourceAction,
         createUserAction: createUserAction,
+        setCredentials: setCredentials,
     };
 }

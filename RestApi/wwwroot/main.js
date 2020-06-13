@@ -137,7 +137,8 @@ function PageLoaded() {
 function Initialize(templates) {
     let mainWindowVm = new MainWindowViewModel();
 
-    mainWindowVm.credentialsPageVm.userName("prefill name");
+    mainWindowVm.credentialsPageVm.userName("test");
+    mainWindowVm.credentialsPageVm.password("test");
     mainWindowVm.resourcesPageVm.refresh();
 
     {

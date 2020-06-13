@@ -2,15 +2,15 @@
 import { ResourceLineViewModel } from "./resourceline.js";
 
 
-function ResourcesPageViewModel() {
+function ResourcesPageViewModel(backend) {
     let self = this;
-    this.main = null;
+    this.backend = backend;
     this.resources = ko.observableArray([]);
 
     function UpdateResourceList(resources) {
         self.resources(resources.map(function(resource) {
             let vm = ResourceLineViewModel.create(resource);
-            vm.updateActions(self.main.backend, self.refresh);
+            vm.updateActions(self.backend, self.refresh);
             return vm;
         }));
     };
