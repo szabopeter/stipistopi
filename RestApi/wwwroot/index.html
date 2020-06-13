@@ -11,11 +11,11 @@
 
 <body onload="window.PageLoaded()">
     <div id="area-left">
-        <!-- TODO: try to get this to work: <page-selector params="value: pageSelectorVm" /> -->
-        <div data-bind="component: {name: 'page-selector', params: pageSelectorVm}"></div>
+        <page-selector params="vm: pageSelectorVm()"></page-selector>
+        <div data-bind="component: {name: 'page-selector', params: {vm: pageSelectorVm()}}"></div>
     </div>
     <div id="area-main">
-        <div data-bind="with: mainContent()">
+        <div data-bind="with: pageSelectorVm().selected()">
             <div data-bind="component: {
             name: componentName(),
             params: componentVm,

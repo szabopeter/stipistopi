@@ -11,7 +11,7 @@
 function pageSelectorRegisterWidget(template) {
     let widgetName = "page-selector";
     ko.components.register(widgetName, {
-        viewModel: function (params) { return params; },
+        viewModel: function (params) { return params.vm; },
         template: template,
     });
     return widgetName;

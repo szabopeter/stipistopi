@@ -38,11 +38,9 @@ function ComponentManager() {
 export function MainWindowViewModel() {
     this.backend = Backend();
     this.componentManager = ko.observable(new ComponentManager());
-    this.mainContent = ko.observable();
-    this.pageSelectorVm = new PageSelectorViewModel();
+    this.pageSelectorVm = ko.observable(new PageSelectorViewModel());
     this.credentialsPageVm = new CredentialsPageViewModel();
     this.resourcesPageVm = new ResourcesPageViewModel();
     // TODO Eliminate circular reference
     this.resourcesPageVm.main = this;
-    this.pageSelectorVm.selected = this.mainContent;
 }
