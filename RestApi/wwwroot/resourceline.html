@@ -1,7 +1,7 @@
 <tr class="resourceLineInList"
     data-bind="css: {
-        resourceAvailable: isAvailable,
-        resourceNotAvailable: !isAvailable,
+        resourceAvailable: isAvailable(),
+        resourceNotAvailable: !isAvailable(),
     }">
     <td data-bind="text: shortName"></td>
     <td data-bind="text: address"></td>
