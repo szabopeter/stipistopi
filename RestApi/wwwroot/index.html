@@ -10,9 +10,12 @@
 </head>
 
 <body onload="window.PageLoaded()">
+    <div data-bind="visible: isWelcome">
+        <object data="loading.svg" type="image/svg+xml"></object><br />
+        Loading...<br />
+    </div>
     <div id="area-left">
         <page-selector params="vm: pageSelectorVm()"></page-selector>
-        <div data-bind="component: {name: 'page-selector', params: {vm: pageSelectorVm()}}"></div>
     </div>
     <div id="area-main">
         <div data-bind="with: pageSelectorVm().selected()">

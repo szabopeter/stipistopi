@@ -36,6 +36,7 @@ function ComponentManager() {
 }
 
 export function MainWindowViewModel() {
+    this.isWelcome = false;
     this.backend = Backend();
     this.componentManager = ko.observable(new ComponentManager());
     this.pageSelectorVm = ko.observable(new PageSelectorViewModel());

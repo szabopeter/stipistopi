@@ -185,10 +185,12 @@ function Initialize(templates) {
 
 window.PageLoaded = function() {
     // TODO on failure
-    LoadTemplates([
-        "credentialspage.html",
-        "resourcespage.html",
-        "pageselector.html",
-        "resourceline.html",
-    ], Initialize, Noop);
+    window.setTimeout(function () {
+        LoadTemplates([
+            "credentialspage.html",
+            "resourcespage.html",
+            "pageselector.html",
+            "resourceline.html",
+        ], Initialize, Noop);
+    }, 2000);
 }
