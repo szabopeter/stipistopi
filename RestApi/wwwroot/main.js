@@ -39,7 +39,10 @@ function Initialize(templates) {
             widgetName,
             mainWindowVm.resourcesPageVm,
         );
-        pageSelectorItem.activate = () => mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
+        pageSelectorItem.activate = () => {
+            mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
+            mainWindowVm.resourcesPageVm.refresh();
+        }
         mainWindowVm.pageSelectorVm().add(pageSelectorItem);
         mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
     }
@@ -53,7 +56,10 @@ function Initialize(templates) {
             widgetName,
             mainWindowVm.usersPageVm,
         );
-        pageSelectorItem.activate = () => mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
+        pageSelectorItem.activate = () => {
+            mainWindowVm.pageSelectorVm().selected(pageSelectorItem);
+            mainWindowVm.usersPageVm.refresh();
+        }
         mainWindowVm.pageSelectorVm().add(pageSelectorItem);
     }
 
