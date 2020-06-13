@@ -20,7 +20,6 @@ function Initialize(templates) {
     {
         let content = templates["credentialspage.html"];
         let widgetName = credentialsPageRegisterWidget(content);
-        mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
             "Credentials",
             widgetName,
@@ -33,7 +32,6 @@ function Initialize(templates) {
     {
         let content = templates["resourcespage.html"];
         let widgetName = resourcesPageRegisterWidget(content);
-        mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
             "Resources",
             widgetName,
@@ -50,7 +48,6 @@ function Initialize(templates) {
     {
         let content = templates["userspage.html"];
         let widgetName = usersPageRegisterWidget(content);
-        mainWindowVm.componentManager().register_loaded(widgetName);
         let pageSelectorItem = new PageSelectorItemViewModel(
             "Users",
             widgetName,
@@ -66,19 +63,16 @@ function Initialize(templates) {
     {
         let content = templates["pageselector.html"];
         let widgetName = pageSelectorRegisterWidget(content);
-        mainWindowVm.componentManager().register_loaded(widgetName);
     }
 
     {
         let template = templates["resourceline.html"];
         let widgetName = resourceLineRegisterWidget(template);
-        mainWindowVm.componentManager().register_loaded(widgetName);
     }
 
     {
         let template = templates["userline.html"];
         let widgetName = userLineRegisterWidget(template);
-        mainWindowVm.componentManager().register_loaded(widgetName);
     }
 
     ko.applyBindings(mainWindowVm);
