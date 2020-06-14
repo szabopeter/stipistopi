@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using RestApi.Controllers;
 using ServiceInterfaces.Dto;
@@ -53,6 +54,22 @@ namespace CliClient
             JsonSerializerOptions opts = new JsonSerializerOptions();
             opts.PropertyNameCaseInsensitive = true;
             var resources = await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, opts);
+            return resources;
+        }
+
+        public async Task<IEnumerable<SsUser>> GetUsers()
+        {
+            var requestUri = $"{BaseUri}/stipistopi/users";
+            var requestParam = User;
+            var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
+            var result = await httpClient.PostAsync(requestUri, content);
+            Console.WriteLine(result.StatusCode);
+            var stream = await result.Content.ReadAsStreamAsync();
+            // TODO: use the same options for all requests
+            JsonSerializerOptions opts = new JsonSerializerOptions();
+            opts.PropertyNameCaseInsensitive = true;
+            opts.Converters.Add(new JsonStringEnumConverter());
+            var resources = await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, opts);
             return resources;
         }
 

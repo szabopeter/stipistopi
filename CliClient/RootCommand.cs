@@ -7,7 +7,8 @@ namespace CliClient
         Description = "StipiStopi command line interface"),
         Subcommand(
             typeof(ResourcesCommand),
-            typeof(AddUserCommand)
+            typeof(AddUserCommand),
+            typeof(UsersCommand)
             )]
     public class RootCommand
     {
