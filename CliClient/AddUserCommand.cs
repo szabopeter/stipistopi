@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
+using ServiceInterfaces.Dto;
 
 namespace CliClient
 {
@@ -12,22 +13,24 @@ namespace CliClient
         private async Task OnExecuteAsync(IConsole console)
 #pragma warning restore
         {
-            await Task.Run(() =>
+            if (Password == null)
             {
-                if (Password == null)
-                {
-                    Password = new Random().Next(100000000, 999999999).ToString();
-                }
-                console.WriteLine($"TODO: create user with name {UserName} and password {Password}");
+                Password = new Random().Next(100000000, 999999999).ToString();
+                console.WriteLine($"Using generated password {Password}");
             }
-            ).ConfigureAwait(true);
+
+            var client = new RestClient("https://localhost:8140", "test", "test", true, s => console.WriteLine(s));
+            await client.AddUser(UserName, Password, Role).ConfigureAwait(true);
         }
 
         [Argument(0)]
         [Required]
         public string UserName { get; }
 
-        [Argument(1)]
+        [Option]
         public string Password { get; set; }
+
+        [Option]
+        public UserRole Role { get; }
     }
 }
