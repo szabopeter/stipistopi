@@ -41,7 +41,7 @@ namespace logic
 
         public IEnumerable<SsUser> GetUsers(SsUser user)
         {
-            IEnumerable<SsUser> users = new SsUser[0];
+            IEnumerable<SsUser> users = Array.Empty<SsUser>();
             SsRepository.Transaction(() => {
                 if (Authenticated(user) == null)
                     return;

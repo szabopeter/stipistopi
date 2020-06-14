@@ -43,7 +43,7 @@ namespace LiteDbSsRepositoryService
         }
 
         private LiteDatabase Db = null;
-        private static object transactionLock = new object();
+        private static readonly object transactionLock = new object();
 
         public void Transaction(Action action)
         {
@@ -56,7 +56,10 @@ namespace LiteDbSsRepositoryService
                 }
                 else
                 {
+                    # pragma warning disable IDE0063
+                    // using statement can't be simplified
                     using (var db = new LiteDatabase(Filename))
+                    # pragma warning restore 
                     {
                         Db = db;
                         try
