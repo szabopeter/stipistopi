@@ -10,4 +10,8 @@
     <ProjectReference Include="..\RestApi\RestApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
+  </ItemGroup>
+
 </Project>
