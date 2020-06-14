@@ -11,46 +11,43 @@ using ServiceInterfaces.Dto;
 
 namespace CliClient
 {
+
     public class RestClient
     {
-        public SsUser User { get; }
+        public IRestHttpClient RestHttpClient { get; }
         public string BaseUri { get; }
-        public Action<string> WriteLine { get; }
-        public RestClient(string baseUri, string userName, string password, bool ignoreServerCertificate = false, Action<string> writeLine = null)
-        {
-            BaseUri = baseUri;
-            User = new SsUser(userName, password);
-            WriteLine = writeLine ?? Console.WriteLine;
+        public SsUser User { get; }
 
-            if (ignoreServerCertificate)
-            {
-                var handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
-                httpClient = new HttpClient(handler);
-            }
-            else
-            {
-                httpClient = new HttpClient();
-            }
+        private HttpClient httpClient => RestHttpClient.HttpClient;
+
+        public RestClient(IRestHttpClient restHttpClient, string userName, string password)
+        {
+            RestHttpClient = restHttpClient;
+            User = new SsUser(userName, password);
+        }
+
+        private string GetUri(string withoutBase) 
+        {
+            return $"{RestHttpClient.BaseUri}{withoutBase}";
         }
 
         public async Task AddUser(string userName, string password, UserRole role)
         {
-            var requestUri = $"{BaseUri}/stipistopi/register";
+            var requestUri = GetUri("/stipistopi/register");
             var requestParam = new NewUserParameter
             {
                 Creator = User,
                 User = new SsUser(userName, password, role)
             };
-            WriteLine("Dispatching request...");
+            RestHttpClient.WriteLine("Dispatching request...");
             var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
             var result = await httpClient.PostAsync(requestUri, content);
-            WriteLine($"Server responded with {result.StatusCode}");
+            RestHttpClient.WriteLine($"Server responded with {result.StatusCode}");
         }
 
         public async Task<IEnumerable<ResourceInfo>> GetResources()
         {
-            var requestUri = $"{BaseUri}/stipistopi/resources";
+            var requestUri = GetUri("/stipistopi/resources");
             var stream = await httpClient.GetStreamAsync(requestUri);
             JsonSerializerOptions opts = new JsonSerializerOptions();
             opts.PropertyNameCaseInsensitive = true;
@@ -60,7 +57,7 @@ namespace CliClient
 
         public async Task<IEnumerable<SsUser>> GetUsers()
         {
-            var requestUri = $"{BaseUri}/stipistopi/users";
+            var requestUri = GetUri("/stipistopi/users");
             var requestParam = User;
             var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
             var result = await httpClient.PostAsync(requestUri, content);
@@ -76,7 +73,5 @@ namespace CliClient
             var resources = await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, opts);
             return resources;
         }
-
-        private readonly HttpClient httpClient;
     }
 }

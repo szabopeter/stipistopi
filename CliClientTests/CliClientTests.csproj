@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ServiceInterfaces\ServiceInterfaces.csproj" />
     <ProjectReference Include="..\RestApi\RestApi.csproj" />
+    <ProjectReference Include="..\CliClient\CliClient.csproj" />
     <ProjectReference Include="..\InMemorySsRepositoryService\InMemorySsRepositoryService.csproj" />
   </ItemGroup>
 
