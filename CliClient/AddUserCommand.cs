@@ -19,7 +19,7 @@ namespace CliClient
                 console.WriteLine($"Using generated password {Password}");
             }
 
-            var client = new RestClient("https://localhost:8140", "test", "test", true, s => console.WriteLine(s));
+            var client = Parent.CreateRestClient();
             await client.AddUser(UserName, Password, Role).ConfigureAwait(true);
         }
 
@@ -32,5 +32,7 @@ namespace CliClient
 
         [Option]
         public UserRole Role { get; }
+
+        private RootCommand Parent {get; set;}
     }
 }

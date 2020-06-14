@@ -10,12 +10,14 @@ namespace CliClient
         private async Task OnExecuteAsync(IConsole console)
 #pragma warning restore
         {
-            var client = new RestClient("https://localhost:8140", "test", "test", true);
+            var client = Parent.CreateRestClient();
             var resources = await client.GetResources().ConfigureAwait(true);
             foreach (var resource in resources)
             {
                 console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resource.LockedBy,20}");
             }
         }
+
+        private RootCommand Parent {get; set;}
     }
 }

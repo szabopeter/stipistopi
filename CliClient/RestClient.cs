@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -64,6 +65,9 @@ namespace CliClient
             var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
             var result = await httpClient.PostAsync(requestUri, content);
             Console.WriteLine(result.StatusCode);
+            if (result.StatusCode != HttpStatusCode.OK)
+                return Array.Empty<SsUser>();
+
             var stream = await result.Content.ReadAsStreamAsync();
             // TODO: use the same options for all requests
             JsonSerializerOptions opts = new JsonSerializerOptions();
