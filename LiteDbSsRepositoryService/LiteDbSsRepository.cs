@@ -55,26 +55,26 @@ namespace LiteDbSsRepositoryService
             Db.GetCollection<SsResource>("resources").Upsert(ssResource);
         }
 
-        public void Transaction(Action action)
+        public T Transaction<T>(Func<T> action)
         {
             Contract.Requires(action != null);
             lock (transactionLock)
             {
                 if (Db != null)
                 {
-                    action();
+                    return action();
                 }
                 else
                 {
-                    # pragma warning disable IDE0063
+#pragma warning disable IDE0063
                     // using statement can't be simplified
                     using (var db = OpenDb())
-                    # pragma warning restore 
+#pragma warning restore
                     {
                         Db = db;
                         try
                         {
-                            action();
+                            return action();
                         }
                         finally
                         {

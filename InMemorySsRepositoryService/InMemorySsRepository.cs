@@ -56,7 +56,7 @@ namespace Logic.Repository
 
         public IEnumerable<SsUser> GetUsers()
         {
-            lock(_resourceLock)
+            lock (_resourceLock)
             {
                 return _users.Values.Select(user => new SsUser(user.UserName, "*", user.Role));
             }
@@ -77,11 +77,11 @@ namespace Logic.Repository
                 _usages[resource] = user;
         }
 
-        public void Transaction(Action action)
+        public T Transaction<T>(Func<T> action)
         {
             Contract.Requires(action != null);
             lock (_resourceLock)
-                action();
+                return action();
         }
     }
 }
