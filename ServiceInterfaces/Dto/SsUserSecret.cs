@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ServiceInterfaces.Dto
 {
@@ -62,7 +62,12 @@ namespace ServiceInterfaces.Dto
         public static string HashPassword(string password, string salt)
         {
             var combined = password + salt;
-            return combined.GetHashCode(StringComparison.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+            var bytes = Encoding.UTF8.GetBytes(combined);
+            using (var sha256 = new SHA256Managed())
+            {
+                var hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+            };
         }
 
         public static string NormalizeUserName(string userName)
