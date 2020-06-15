@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 using RestApi.Controllers;
 using ServiceInterfaces.Dto;
 
+#pragma warning disable RCS1090
 namespace CliClient
 {
-
     public class RestClient
     {
         public IRestHttpClient RestHttpClient { get; }
         public string BaseUri { get; }
         public SsUser User { get; }
 
-        private HttpClient httpClient => RestHttpClient.HttpClient;
+        private HttpClient HttpClient => RestHttpClient.HttpClient;
 
         public RestClient(IRestHttpClient restHttpClient, string userName, string password)
         {
@@ -26,9 +26,9 @@ namespace CliClient
             User = new SsUser(userName, password);
         }
 
-        private string GetUri(string withoutBase) 
+        private string GetUri(string withoutBase)
         {
-            return $"{RestHttpClient.BaseUri}{withoutBase}";
+            return RestHttpClient.BaseUri + withoutBase;
         }
 
         public async Task AddUser(string userName, string password, UserRole role)
@@ -41,18 +41,17 @@ namespace CliClient
             };
             RestHttpClient.WriteLine("Dispatching request...");
             var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
-            var result = await httpClient.PostAsync(requestUri, content);
+            var result = await HttpClient.PostAsync(requestUri, content);
             RestHttpClient.WriteLine($"Server responded with {result.StatusCode}");
         }
 
         public async Task<IEnumerable<ResourceInfo>> GetResources()
         {
             var requestUri = GetUri("/stipistopi/resources");
-            var stream = await httpClient.GetStreamAsync(requestUri);
-            JsonSerializerOptions opts = new JsonSerializerOptions();
-            opts.PropertyNameCaseInsensitive = true;
-            var resources = await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, opts);
-            return resources;
+            var stream = await HttpClient.GetStreamAsync(requestUri);
+            JsonSerializerOptions opts = new JsonSerializerOptions
+            { PropertyNameCaseInsensitive = true };
+            return await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, opts);
         }
 
         public async Task<IEnumerable<SsUser>> GetUsers()
@@ -60,18 +59,18 @@ namespace CliClient
             var requestUri = GetUri("/stipistopi/users");
             var requestParam = User;
             var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
-            var result = await httpClient.PostAsync(requestUri, content);
+            var result = await HttpClient.PostAsync(requestUri, content);
             Console.WriteLine(result.StatusCode);
             if (result.StatusCode != HttpStatusCode.OK)
                 return Array.Empty<SsUser>();
 
             var stream = await result.Content.ReadAsStreamAsync();
             // TODO: use the same options for all requests
-            JsonSerializerOptions opts = new JsonSerializerOptions();
-            opts.PropertyNameCaseInsensitive = true;
+            JsonSerializerOptions opts = new JsonSerializerOptions
+            { PropertyNameCaseInsensitive = true };
             opts.Converters.Add(new JsonStringEnumConverter());
-            var resources = await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, opts);
-            return resources;
+            return await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, opts);
         }
     }
 }
+#pragma warning restore
