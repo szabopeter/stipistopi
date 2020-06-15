@@ -39,7 +39,7 @@ namespace RestApi
             if (!services.Any(svc => svc.ServiceType == typeof(ISsRepository)))
                 services.AddSingleton<ISsRepository>(_ => new LiteDbSsRepository("stipistopi.litedb"));
 
-            services.AddSingleton<StipiStopi>();            
+            services.AddSingleton<StipiStopi>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

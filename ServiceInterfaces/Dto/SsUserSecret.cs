@@ -63,11 +63,9 @@ namespace ServiceInterfaces.Dto
         {
             var combined = password + salt;
             var bytes = Encoding.UTF8.GetBytes(combined);
-            using (var sha256 = new SHA256Managed())
-            {
-                var hashBytes = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hashBytes);
-            };
+            using var sha256 = new SHA256Managed();
+            var hashBytes = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hashBytes);
         }
 
         public static string NormalizeUserName(string userName)

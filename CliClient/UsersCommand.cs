@@ -18,6 +18,8 @@ namespace CliClient
             }
         }
 
+#pragma warning disable RCS1170
         private RootCommand Parent { get; set; }
+#pragma warning restore
     }
 }

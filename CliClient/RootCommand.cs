@@ -44,6 +44,8 @@ namespace CliClient
         [Option]
         public bool IgnoreServerCertificate { get; }
 
+#pragma warning disable RCS1170
         private IConsole Console { get; set; }
+#pragma warning restore
     }
 }

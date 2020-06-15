@@ -33,6 +33,8 @@ namespace CliClient
         [Option]
         public UserRole Role { get; }
 
-        private RootCommand Parent {get; set;}
+#pragma warning disable RCS1170
+        private RootCommand Parent { get; set; }
+#pragma warning restore
     }
 }

@@ -10,9 +10,13 @@ using ServiceInterfaces.Dto;
 
 namespace LiteDbSsRepositoryService
 {
-    public class LiteDbSsRepository : ISsRepository
+    public class LiteDbSsRepository : ISsRepository, IDisposable
     {
-        Func<LiteDatabase> OpenDb;
+        private readonly Func<LiteDatabase> OpenDb;
+        private readonly TempStream tempStream;
+        private LiteDatabase Db;
+        private bool disposedValue;
+        private static readonly object transactionLock = new object();
 
         public LiteDbSsRepository(string filename)
         {
@@ -21,7 +25,7 @@ namespace LiteDbSsRepositoryService
 
         public LiteDbSsRepository()
         {
-            var tempStream = new TempStream();
+            tempStream = new TempStream();
             OpenDb = () => new LiteDatabase(tempStream);
         }
 
@@ -50,9 +54,6 @@ namespace LiteDbSsRepositoryService
         {
             Db.GetCollection<SsResource>("resources").Upsert(ssResource);
         }
-
-        private LiteDatabase Db = null;
-        private static readonly object transactionLock = new object();
 
         public void Transaction(Action action)
         {
@@ -125,6 +126,27 @@ namespace LiteDbSsRepositoryService
             {
                 Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    tempStream?.Close();
+                    Db?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 
