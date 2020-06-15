@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using CliClient;
+using Logic.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using RestApi;
+using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using Xunit;
 
@@ -15,19 +18,34 @@ namespace CliClientTests
         [Fact]
         public async void TestAddAndList()
         {
-            var webHostBuilder = new WebHostBuilder().UseStartup<Startup>();
-            var testServer = new TestServer(webHostBuilder);
-            var httpClient = testServer.CreateClient();
-            var restHttpClient = new TestRestHttpClient(httpClient);
-                // TODO There should be a common source for default admin credentials used here and in Populate 
-            var restClient = new RestClient(restHttpClient, "test", "test");
-
+            var restClient = InitRestClient();
+            // TODO: create resources test class
+            var resources = await restClient.GetResources();
+            Assert.Empty(resources);
             await restClient.AddUser("newUserName", "newUserPassword", UserRole.Admin);
-            
             var userList = await restClient.GetUsers();
-            var newUser = userList.Single(u => 
+            var newUser = userList.Single(u =>
                 string.Equals(u.UserName, "newUserName", StringComparison.InvariantCultureIgnoreCase));
             Assert.Equal(UserRole.Admin, newUser.Role);
         }
+
+        private RestClient InitRestClient()
+        {
+            var repo = new InMemorySsRepository();
+            repo.SaveUser(new SsUserSecret(Admin));
+            var webHostBuilder = new WebHostBuilder().UseStartup<Startup>();
+            webHostBuilder.ConfigureServices(services =>
+            {
+                services.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+                    typeof(ISsRepository), sp => repo, ServiceLifetime.Singleton
+                ));
+            });
+            var testServer = new TestServer(webHostBuilder);
+            var restHttpClient = new TestRestHttpClient(testServer.CreateClient());
+            var restClient = new RestClient(restHttpClient, Admin.UserName, Admin.Password);
+            return restClient;
+        }
+
+        public SsUser Admin { get; } = new SsUser("admin", "admin", UserRole.Admin);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using ServiceInterfaces.Exceptions;
@@ -28,6 +29,14 @@ namespace logic
                 SsRepository.SaveResource(ncu140);
                 SsRepository.SetLockingUser(ncu140, testuser);
             });
+        }
+
+        public void EnsureAdminExists()
+        {
+            var userCount = -1;
+            SsRepository.Transaction(() => userCount = SsRepository.GetUsers().Count());
+            if (userCount == 0)
+                Populate();
         }
 
         public List<SsResource> GetResources()

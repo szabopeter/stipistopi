@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using logic;
-using Logic.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ServiceInterfaces;
@@ -21,8 +20,7 @@ namespace RestApi.Controllers
         {
             _logger = logger;
             this.stipiStopi = stipiStopi;
-            if (stipiStopi.GetResources().Count == 0)
-                stipiStopi.Populate();
+            stipiStopi.EnsureAdminExists();
         }
 
         [HttpGet("resources")]
