@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using LiteDB;
+using LiteDB.Engine;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 
@@ -11,11 +12,19 @@ namespace LiteDbSsRepositoryService
 {
     public class LiteDbSsRepository : ISsRepository
     {
-        public string Filename { get; }
+        Func<LiteDatabase> OpenDb;
+
         public LiteDbSsRepository(string filename)
         {
-            Filename = filename;
+            OpenDb = () => new LiteDatabase(filename);
         }
+
+        public LiteDbSsRepository()
+        {
+            var tempStream = new TempStream();
+            OpenDb = () => new LiteDatabase(tempStream);
+        }
+
         public List<SsResource> GetResources()
         {
             return Db.GetCollection<SsResource>("resources").Query().ToList();
@@ -58,7 +67,7 @@ namespace LiteDbSsRepositoryService
                 {
                     # pragma warning disable IDE0063
                     // using statement can't be simplified
-                    using (var db = new LiteDatabase(Filename))
+                    using (var db = OpenDb())
                     # pragma warning restore 
                     {
                         Db = db;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CliClient;
-using Logic.Repository;
+using LiteDbSsRepositoryService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +31,8 @@ namespace CliClientTests
 
         private RestClient InitRestClient()
         {
-            var repo = new InMemorySsRepository();
-            repo.SaveUser(new SsUserSecret(Admin));
+            var repo = new LiteDbSsRepository();
+            repo.Transaction(() => repo.SaveUser(new SsUserSecret(Admin)));
             var webHostBuilder = new WebHostBuilder().UseStartup<Startup>();
             webHostBuilder.ConfigureServices(services =>
             {
