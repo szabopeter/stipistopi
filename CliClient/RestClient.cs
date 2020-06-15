@@ -20,15 +20,13 @@ namespace CliClient
 
         private HttpClient HttpClient => RestHttpClient.HttpClient;
 
+        private readonly JsonSerializerOptions JsonOptions;
+
         public RestClient(IRestHttpClient restHttpClient, string userName, string password)
         {
             RestHttpClient = restHttpClient;
             User = new SsUser(userName, password);
-        }
-
-        private string GetUri(string withoutBase)
-        {
-            return RestHttpClient.BaseUri + withoutBase;
+            JsonOptions = CreateJsonOptions();
         }
 
         public async Task AddUser(string userName, string password, UserRole role)
@@ -49,9 +47,7 @@ namespace CliClient
         {
             var requestUri = GetUri("/stipistopi/resources");
             var stream = await HttpClient.GetStreamAsync(requestUri);
-            JsonSerializerOptions opts = new JsonSerializerOptions
-            { PropertyNameCaseInsensitive = true };
-            return await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, opts);
+            return await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, JsonOptions);
         }
 
         public async Task<IEnumerable<SsUser>> GetUsers()
@@ -65,11 +61,22 @@ namespace CliClient
                 return Array.Empty<SsUser>();
 
             var stream = await result.Content.ReadAsStreamAsync();
-            // TODO: use the same options for all requests
-            JsonSerializerOptions opts = new JsonSerializerOptions
-            { PropertyNameCaseInsensitive = true };
+            return await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, JsonOptions);
+        }
+
+        private static JsonSerializerOptions CreateJsonOptions()
+        {
+            var opts = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
             opts.Converters.Add(new JsonStringEnumConverter());
-            return await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, opts);
+            return opts;
+        }
+
+        private string GetUri(string withoutBase)
+        {
+            return RestHttpClient.BaseUri + withoutBase;
         }
     }
 }
