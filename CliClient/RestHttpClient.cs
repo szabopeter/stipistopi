@@ -1,4 +1,6 @@
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace CliClient
@@ -7,7 +9,7 @@ namespace CliClient
     {
         public string BaseUri { get; }
         public HttpClient HttpClient { get; }
-        public void WriteLine (string line)
+        public void WriteLine(string line)
         {
             Console.WriteLine(line);
         }
@@ -20,8 +22,10 @@ namespace CliClient
             Console = console;
             if (ignoreServerCertificate)
             {
-                var handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = NoCertificateValidation
+                };
                 HttpClient = new HttpClient(handler);
             }
             else
@@ -29,5 +33,12 @@ namespace CliClient
                 HttpClient = new HttpClient();
             }
         }
+
+        private bool NoCertificateValidation(
+            HttpRequestMessage request,
+            X509Certificate2 cert,
+            X509Chain chain,
+            SslPolicyErrors errors
+            ) => true;
     }
 }
