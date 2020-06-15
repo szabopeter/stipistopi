@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using LiteDbSsRepositoryService;
 using logic;
-using Logic.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,8 +35,11 @@ namespace RestApi
                 .AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(
                     new JsonStringEnumConverter()
                 ));
-            services.AddSingleton<ISsRepository>(_ => new InMemorySsRepository());
-            services.AddSingleton<StipiStopi>();
+
+            if (!services.Any(svc => svc.ServiceType == typeof(ISsRepository)))
+                services.AddSingleton<ISsRepository>(_ => new LiteDbSsRepository("stipistopi.litedb"));
+
+            services.AddSingleton<StipiStopi>();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
