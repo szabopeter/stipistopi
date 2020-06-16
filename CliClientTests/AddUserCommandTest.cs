@@ -24,7 +24,7 @@ namespace CliClientTests
             Assert.Empty(resources);
             await restClient.AddUser("newUserName", "newUserPassword", UserRole.Admin);
             var userList = await restClient.GetUsers();
-            var newUser = userList.Single(u =>
+            var newUser = userList.Result.Single(u =>
                 string.Equals(u.UserName, "newUserName", StringComparison.InvariantCultureIgnoreCase));
             Assert.Equal(UserRole.Admin, newUser.Role);
         }
