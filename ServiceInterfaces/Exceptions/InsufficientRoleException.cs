@@ -2,7 +2,7 @@ using System;
 
 namespace ServiceInterfaces.Exceptions
 {
-    public class InsufficientRoleException : Exception
+    public class InsufficientRoleException : StipiStopiException
     {
         public string UserName { get; }
 

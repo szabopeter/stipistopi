@@ -2,7 +2,7 @@ using System;
 
 namespace ServiceInterfaces.Exceptions
 {
-    public class ResourceDoesNotExistException : Exception
+    public class ResourceDoesNotExistException : StipiStopiException
     {
         public string ResourceShortName { get; }
 

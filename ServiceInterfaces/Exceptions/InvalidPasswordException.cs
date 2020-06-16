@@ -2,7 +2,7 @@ using System;
 
 namespace ServiceInterfaces.Exceptions
 {
-    public class InvalidPasswordException : Exception
+    public class InvalidPasswordException : StipiStopiException
     {
         public string UserName { get; }
 

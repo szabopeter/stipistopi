@@ -2,7 +2,7 @@ using System;
 
 namespace ServiceInterfaces.Exceptions
 {
-    public class UserDoesNotExistException : Exception
+    public class UserDoesNotExistException : StipiStopiException
     {
         public string UserName { get; }
 
