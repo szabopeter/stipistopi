@@ -55,18 +55,62 @@ namespace CliClient
             return await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, JsonOptions);
         }
 
-        public async Task<IEnumerable<SsUser>> GetUsers()
+        public async Task<RestClientResult<IEnumerable<SsUser>>> GetUsers()
         {
-            var requestUri = GetUri("/stipistopi/users");
-            var requestParam = User;
-            var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
-            var result = await HttpClient.PostAsync(requestUri, content);
-            Console.WriteLine(result.StatusCode);
-            if (result.StatusCode != HttpStatusCode.OK)
-                return Array.Empty<SsUser>();
+            return await GenericRequest<SsUser, IEnumerable<SsUser>>(
+                new RestClientCommand<SsUser, IEnumerable<SsUser>>(
+                    "/stipistopi/users",
+                    User));
+        }
 
-            var stream = await result.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<IEnumerable<SsUser>>(stream, JsonOptions);
+        public async Task<RestClientResult<TResponse>> GenericRequest<TRequest, TResponse>(RestClientCommand<TRequest, TResponse> restClientCommand)
+        {
+            var requestUri = GetUri(restClientCommand.Uri);
+            var content = new StringContent(JsonSerializer.Serialize(restClientCommand.RequestParam), Encoding.UTF8, "application/json");
+            var response = await HttpClient.PostAsync(requestUri, content);
+            Console.WriteLine(response.StatusCode);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var error = await JsonSerializer.DeserializeAsync<RestError>(stream, JsonOptions);
+                return new RestClientResult<TResponse>(error);
+            }
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<TResponse>(stream, JsonOptions);
+                return new RestClientResult<TResponse>(result);
+            }
+        }
+
+        public class RestClientCommand<TRequest, TResponse>
+        {
+            public string Uri { get; }
+            public TRequest RequestParam { get; }
+            public RestClientCommand(string uri, TRequest requestParam)
+            {
+                Uri = uri;
+                RequestParam = requestParam;
+            }
+        }
+
+        public class RestClientResult<TResponse>
+        {
+            public bool Success { get; }
+            public TResponse Result => Success ? result : throw new NullReferenceException();
+            public RestError Error => !Success ? error : throw new NullReferenceException();
+            private readonly TResponse result;
+            private readonly RestError error;
+            public RestClientResult(TResponse response)
+            {
+                Success = true;
+                result = response;
+            }
+
+            public RestClientResult(RestError error)
+            {
+                Success = false;
+                this.error = error;
+            }
         }
 
         private static JsonSerializerOptions CreateJsonOptions()

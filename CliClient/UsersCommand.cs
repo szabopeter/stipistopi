@@ -11,10 +11,15 @@ namespace CliClient
 #pragma warning restore
         {
             var client = Parent.CreateRestClient();
-            var users = await client.GetUsers().ConfigureAwait(true);
-            foreach (var user in users)
+            var result = await client.GetUsers().ConfigureAwait(true);
+            if (!result.Success)
+                console.WriteLine("Error: " + result.Error.Message);
+            else
             {
-                console.WriteLine($"{user.UserName,20} {user.Role,20}");
+                foreach (var user in result.Result)
+                {
+                    console.WriteLine($"{user.UserName,20} {user.Role,20}");
+                }
             }
         }
 
