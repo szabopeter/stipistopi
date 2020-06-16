@@ -30,22 +30,17 @@ namespace CliClient
             JsonOptions = CreateJsonOptions();
         }
 
-        public async Task<RestError> AddUser(string userName, string password, UserRole role)
+        public async Task<RestClientResult<SsUser>> AddUser(string userName, string password, UserRole role)
         {
-            var requestUri = GetUri("/stipistopi/register");
-            var requestParam = new NewUserParameter
-            {
-                Creator = User,
-                User = new SsUser(userName, password, role)
-            };
-            RestHttpClient.WriteLine("Dispatching request...");
-            var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
-            var result = await HttpClient.PostAsync(requestUri, content);
-            RestHttpClient.WriteLine($"Server responded with {result.StatusCode}");
-            if (result.StatusCode == HttpStatusCode.OK)
-                return null;
-            var stream = await result.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<RestError>(stream, JsonOptions);
+            var request = new RestClientCommand<NewUserParameter, SsUser>(
+                "/stipistopi/register",
+                new NewUserParameter
+                {
+                    Creator = User,
+                    User = new SsUser(userName, password, role)
+                }
+            );
+            return await GenericRequest(request);
         }
 
         public async Task<IEnumerable<ResourceInfo>> GetResources()
