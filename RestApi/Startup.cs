@@ -51,6 +51,7 @@ namespace RestApi
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseFileServer();
             app.UseStaticFiles(ExtendedOptionsForHandlebarsTemplates());

@@ -1,13 +1,19 @@
-function Noop() { }
+function Noop(data) {
+    console.log("TODO: placeholder was called")
+    console.log(data);
+}
 
 function AjaxLoad(url, responseType, onSuccess, onFailure) {
     let xhttp = new XMLHttpRequest();
     xhttp.responseType = responseType;
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState != 4)
+            return;
+
+        if (this.status == 200) {
             onSuccess(xhttp.response);
         } else {
-            onFailure();
+            onFailure(xhttp.response);
         }
     };
     xhttp.open("GET", url, true);
@@ -25,10 +31,13 @@ function AjaxPost(url, data, onSuccess, onFailure) {
     let xhttp = new XMLHttpRequest();
     xhttp.responseType = "json";
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState != 4)
+            return;
+
+        if (this.status == 200) {
             onSuccess(xhttp.response);
         } else {
-            onFailure();
+            onFailure(xhttp.response);
         }
     };
     xhttp.open("POST", url);
