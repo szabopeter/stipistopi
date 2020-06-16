@@ -30,7 +30,7 @@ public class ErrorHandlingMiddleware
 
         if (ex is StipiStopiException) code = HttpStatusCode.BadRequest;
 
-        var result = JsonSerializer.Serialize(new { error = ex.Message });
+        var result = JsonSerializer.Serialize(new { message = ex.Message });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
         return context.Response.WriteAsync(result);

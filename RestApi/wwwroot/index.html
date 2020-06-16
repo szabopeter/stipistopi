@@ -23,11 +23,17 @@
         <page-selector params="vm: pageSelectorVm()"></page-selector>
     </div>
     <div id="area-main">
-        <div data-bind="with: pageSelectorVm().selected()">
+        <div id="main-content" data-bind="with: pageSelectorVm().selected()">
             <div data-bind="component: {
             name: componentName(),
             params: componentVm,
             }"></div>
+        </div>
+
+        <div id="main-messages" data-bind="with: errorMessagesVm">
+            <div data-bind="foreach: errorMessages">
+                <div data-bind="text: message"></div>
+            </div>
         </div>
     </div>
 </body>

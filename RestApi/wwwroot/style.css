@@ -16,8 +16,13 @@ BODY {
     width: 70%;
 }
 
-#area-main > div {
+#main-content {
     display: inline-block;
+}
+
+#main-messages {
+    background-color: beige;
+    color: red;
 }
 
 TABLE {
