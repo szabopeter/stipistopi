@@ -1,4 +1,3 @@
-import { AjaxLoad, AjaxPost, Noop } from "./util.js";
 import { LoadTemplates } from "./util.js";
 import { MainWindowViewModel } from "./mainwindow.js";
 import { PageSelectorViewModel, pageSelectorRegisterWidget } from "./pageselector.js";
@@ -56,7 +55,12 @@ window.PageLoaded = function() {
             "resourceline.html",
             "userspage.html",
             "userline.html",
-        ], Initialize, Noop);
+        ], Initialize, function(filename) {
+            let load_errors = document.getElementById("load_errors");
+            load_errors.style = "display: block;";
+            load_errors.innerHTML += "Could not load " + filename + ". You can try clearing the cache and reloading the page. <br />";
+            document.getElementById("app_loading").style = "display: none;";
+        });
     }
 
     window.setTimeout(delayedInitialization, 2000);

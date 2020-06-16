@@ -11,8 +11,13 @@
 
 <body onload="window.PageLoaded()">
     <div data-bind="visible: isWelcome">
-        <object data="loading.svg" type="image/svg+xml"></object><br />
-        Loading...<br />
+        <div id="app_loading">
+            <object data="loading.svg" type="image/svg+xml"></object><br />
+            Loading...<br />
+        </div>
+        <div id="load_errors" style="display: none;">
+            <h1>Sorry</h1>
+        </div>
     </div>
     <div id="area-left">
         <page-selector params="vm: pageSelectorVm()"></page-selector>

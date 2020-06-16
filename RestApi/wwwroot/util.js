@@ -69,7 +69,10 @@ function LoadTemplates(templateFiles, loadAction, failAction) {
 
             if (toLoadCount == 0)
                 loadAction(contents);
-        }, failAction);
+        }, function(error) {
+            console.log(error);
+            failAction(filename);
+        });
     });
 }
 
