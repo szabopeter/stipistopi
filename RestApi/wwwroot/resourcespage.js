@@ -1,5 +1,4 @@
-﻿import { AjaxLoad, AjaxPost, Noop } from "./util.js";
-import { ResourceLineViewModel } from "./resourceline.js";
+﻿import { ResourceLineViewModel } from "./resourceline.js";
 import { MessageManagerViewModel } from "./messagemanager.js";
 
 
@@ -19,7 +18,7 @@ function ResourcesPageViewModel(backend) {
     };
 
     this.refresh = function () {
-        AjaxLoad("./stipistopi/resources", "json", UpdateResourceList, function () { });
+        self.backend.loadResources(UpdateResourceList, function () {self.resources([])});
     };
 
     this.pageActivated = this.refresh;

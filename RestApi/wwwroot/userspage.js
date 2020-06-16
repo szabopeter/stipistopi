@@ -1,5 +1,4 @@
-﻿import { AjaxLoad, AjaxPost, Noop } from "./util.js";
-import { UserLineViewModel } from "./userline.js";
+﻿import { UserLineViewModel } from "./userline.js";
 
 
 function UsersPageViewModel(backend) {
@@ -16,8 +15,7 @@ function UsersPageViewModel(backend) {
     };
 
     this.refresh = function () {
-        // TODO: on failure
-        self.backend.loadUsers(UpdateUserList, Noop);
+        self.backend.loadUsers(UpdateUserList, function() {self.users([])});
     };
 
     this.pageActivated = this.refresh;

@@ -5,8 +5,7 @@ export function Backend(errorMessagesVm) {
     let self = this;
     this.errorMessagesVm = errorMessagesVm;
 
-    function createAjaxErrorHandler(callBack)
-    {
+    function createAjaxErrorHandler(callBack) {
         return function ajaxErrorHandler(error) {
             self.errorMessagesVm.addError(error);
             callBack(error);
@@ -18,12 +17,12 @@ export function Backend(errorMessagesVm) {
         password: "test",
     };
 
-    function setCredentials(userName, password) {
+    this.setCredentials = function (userName, password) {
         myUser.userName = userName;
         myUser.password = password;
-    }
+    };
 
-    function sendResourceAction(action, resourceName, onSuccess, onFailure) {
+    this.sendResourceAction = function (action, resourceName, onSuccess, onFailure) {
         let url = "./stipistopi/" + action;
         let lockParameter = {
             resourceName: resourceName,
@@ -32,22 +31,19 @@ export function Backend(errorMessagesVm) {
         AjaxPost(url, lockParameter, onSuccess, createAjaxErrorHandler(onFailure))
     }
 
-    function loadUsers(onSuccess, onFailure) {
+    this.loadResources = function (onSuccess, onFailure) {
+        AjaxLoad("./stipistopi/resources", "json", onSuccess, createAjaxErrorHandler(onFailure));
+    }
+
+    this.loadUsers = function (onSuccess, onFailure) {
         AjaxPost("./stipistopi/users", myUser, onSuccess, createAjaxErrorHandler(onFailure));
     }
 
-    function createUserAction(userName, password, role, onSuccess, onFailure) {
+    self.createUserAction = function (userName, password, role, onSuccess, onFailure) {
         let newUserParameter = {
             user: { userName: userName, password: password, role: role },
             creator: myUser,
         };
         AjaxPost("./stipistopi/register", newUserParameter, onSuccess, createAjaxErrorHandler(onFailure));
     }
-
-    return {
-        loadUsers: loadUsers,
-        sendResourceAction: sendResourceAction,
-        createUserAction: createUserAction,
-        setCredentials: setCredentials,
-    };
 }
