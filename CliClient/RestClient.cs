@@ -77,37 +77,6 @@ namespace CliClient
             }
         }
 
-        public class RestClientCommand<TRequest, TResponse>
-        {
-            public string Uri { get; }
-            public TRequest RequestParam { get; }
-            public RestClientCommand(string uri, TRequest requestParam)
-            {
-                Uri = uri;
-                RequestParam = requestParam;
-            }
-        }
-
-        public class RestClientResult<TResponse>
-        {
-            public bool Success { get; }
-            public TResponse Result => Success ? result : throw new NullReferenceException();
-            public RestError Error => !Success ? error : throw new NullReferenceException();
-            private readonly TResponse result;
-            private readonly RestError error;
-            public RestClientResult(TResponse response)
-            {
-                Success = true;
-                result = response;
-            }
-
-            public RestClientResult(RestError error)
-            {
-                Success = false;
-                this.error = error;
-            }
-        }
-
         private static JsonSerializerOptions CreateJsonOptions()
         {
             var opts = new JsonSerializerOptions
