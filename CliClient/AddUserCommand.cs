@@ -20,7 +20,9 @@ namespace CliClient
             }
 
             var client = Parent.CreateRestClient();
-            await client.AddUser(UserName, Password, Role).ConfigureAwait(true);
+            var error = await client.AddUser(UserName, Password, Role).ConfigureAwait(true);
+            if (error != null)
+                console.WriteLine("Error: " + error.Message);
         }
 
         [Argument(0)]

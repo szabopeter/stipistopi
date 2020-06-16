@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using RestApi;
 using RestApi.Controllers;
 using ServiceInterfaces.Dto;
 
@@ -29,7 +30,7 @@ namespace CliClient
             JsonOptions = CreateJsonOptions();
         }
 
-        public async Task AddUser(string userName, string password, UserRole role)
+        public async Task<RestError> AddUser(string userName, string password, UserRole role)
         {
             var requestUri = GetUri("/stipistopi/register");
             var requestParam = new NewUserParameter
@@ -41,6 +42,10 @@ namespace CliClient
             var content = new StringContent(JsonSerializer.Serialize(requestParam), Encoding.UTF8, "application/json");
             var result = await HttpClient.PostAsync(requestUri, content);
             RestHttpClient.WriteLine($"Server responded with {result.StatusCode}");
+            if (result.StatusCode == HttpStatusCode.OK)
+                return null;
+            var stream = await result.Content.ReadAsStreamAsync();
+            return await JsonSerializer.DeserializeAsync<RestError>(stream, JsonOptions);
         }
 
         public async Task<IEnumerable<ResourceInfo>> GetResources()

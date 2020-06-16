@@ -4,35 +4,38 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-public class ErrorHandlingMiddleware
+namespace RestApi
 {
-    private readonly RequestDelegate next;
-    public ErrorHandlingMiddleware(RequestDelegate next)
+    public class ErrorHandlingMiddleware
     {
-        this.next = next;
-    }
-
-    public async Task Invoke(HttpContext context /* other dependencies */)
-    {
-        try
+        private readonly RequestDelegate next;
+        public ErrorHandlingMiddleware(RequestDelegate next)
         {
-            await next(context);
+            this.next = next;
         }
-        catch (Exception ex)
+
+        public async Task Invoke(HttpContext context /* other dependencies */)
         {
-            await HandleExceptionAsync(context, ex);
+            try
+            {
+                await next(context);
+            }
+            catch (Exception ex)
+            {
+                await HandleExceptionAsync(context, ex);
+            }
         }
-    }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception ex)
-    {
-        var code = HttpStatusCode.InternalServerError;
+        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+        {
+            var code = HttpStatusCode.InternalServerError;
 
-        if (ex is StipiStopiException) code = HttpStatusCode.BadRequest;
+            if (ex is StipiStopiException) code = HttpStatusCode.BadRequest;
 
-        var result = JsonSerializer.Serialize(new { message = ex.Message });
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)code;
-        return context.Response.WriteAsync(result);
+            var result = JsonSerializer.Serialize(new RestError { Message = ex.Message });
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)code;
+            return context.Response.WriteAsync(result);
+        }
     }
 }
