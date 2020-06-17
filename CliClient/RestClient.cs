@@ -56,6 +56,15 @@ namespace CliClient
             return await GenericRequest(request);
         }
 
+        public async Task<RestClientResult<bool>> DelResource(string shortName)
+        {
+            var request = new RestClientCommand<string, bool>(
+                "/stipistopi/resource/del",
+                shortName
+            );
+            return await GenericRequest(request);
+        }
+
         public async Task<IEnumerable<ResourceInfo>> GetResources()
         {
             var requestUri = GetUri("/stipistopi/resources");
@@ -79,8 +88,18 @@ namespace CliClient
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var error = await JsonSerializer.DeserializeAsync<RestError>(stream, JsonOptions);
-                return new RestClientResult<TResponse>(error);
+                try
+                {
+                    var error = await JsonSerializer.DeserializeAsync<RestError>(stream, JsonOptions);
+                    return new RestClientResult<TResponse>(error);
+                }
+                catch (JsonException)
+                {
+                    return new RestClientResult<TResponse>(new RestError
+                    {
+                        Message = $"There has been an unexpected error. Status code: {response.StatusCode}"
+                    });
+                }
             }
             {
                 var stream = await response.Content.ReadAsStreamAsync();

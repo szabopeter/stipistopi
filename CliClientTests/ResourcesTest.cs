@@ -26,5 +26,19 @@ namespace CliClientTests
             Assert.Equal(resourceToAdd.ShortName, actual.ShortName);
             Assert.Equal(resourceToAdd.Address, actual.Address);
         }
+
+        [Fact]
+        public async void DelResource()
+        {
+            var restClient = new TestRestClient().RestClient;
+            var resourceToDel = new SsResource("resource", "192.168.10.2");
+            await restClient.AddResource(resourceToDel);
+
+            var result = await restClient.DelResource(resourceToDel.ShortName);
+            Assert.True(result.Success && result.Result);
+
+            var allResources = await restClient.GetResources();
+            Assert.Empty(allResources);
+        }
     }
 }
