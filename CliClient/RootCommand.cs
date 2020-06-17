@@ -8,7 +8,8 @@ namespace CliClient
         Subcommand(
             typeof(ResourcesCommand),
             typeof(AddUserCommand),
-            typeof(UsersCommand)
+            typeof(UsersCommand),
+            typeof(AddResourceCommand)
             )]
     public class RootCommand
     {

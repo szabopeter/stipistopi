@@ -76,7 +76,6 @@ namespace CliClient
             var requestUri = GetUri(restClientCommand.Uri);
             var content = new StringContent(JsonSerializer.Serialize(restClientCommand.RequestParam), Encoding.UTF8, "application/json");
             var response = await HttpClient.PostAsync(requestUri, content);
-            Console.WriteLine(response.StatusCode);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 var stream = await response.Content.ReadAsStreamAsync();
