@@ -9,7 +9,8 @@ namespace CliClient
             typeof(ResourcesCommand),
             typeof(AddUserCommand),
             typeof(UsersCommand),
-            typeof(AddResourceCommand)
+            typeof(AddResourceCommand),
+            typeof(DelResourceCommand)
             )]
     public class RootCommand
     {
