@@ -43,6 +43,19 @@ namespace CliClient
             return await GenericRequest(request);
         }
 
+        public async Task<RestClientResult<SsResource>> AddResource(SsResource resource)
+        {
+            var request = new RestClientCommand<NewResourceParameter, SsResource>(
+                "/stipistopi/resource",
+                new NewResourceParameter
+                {
+                    Creator = User,
+                    Resource = resource
+                }
+            );
+            return await GenericRequest(request);
+        }
+
         public async Task<IEnumerable<ResourceInfo>> GetResources()
         {
             var requestUri = GetUri("/stipistopi/resources");

@@ -13,15 +13,19 @@ namespace CliClientTests
     {
         public RestClient RestClient { get; }
         public SsUser Admin { get; }
-        public TestRestClient()
+        public SsUser User { get; }
+        public TestRestClient(SsUser user = null)
         {
             Admin = new SsUser("admin", "admin", UserRole.Admin);
-            RestClient = InitRestClient(Admin);
+            User = user ?? Admin;
+            RestClient = InitRestClient(Admin, User);
         }
-        private RestClient InitRestClient(SsUser admin)
+        private static RestClient InitRestClient(SsUser admin, SsUser user)
         {
             var repo = new LiteDbSsRepository();
             repo.Transaction(() => repo.SaveUser(new SsUserSecret(admin)));
+            if (user != admin)
+                repo.Transaction(() => repo.SaveUser(new SsUserSecret(user)));
             var webHostBuilder = new WebHostBuilder().UseStartup<Startup>();
             webHostBuilder.ConfigureServices(services =>
             {
@@ -31,7 +35,7 @@ namespace CliClientTests
             });
             var testServer = new TestServer(webHostBuilder);
             var restHttpClient = new TestRestHttpClient(testServer.CreateClient());
-            var restClient = new RestClient(restHttpClient, Admin.UserName, Admin.Password);
+            var restClient = new RestClient(restHttpClient, user.UserName, user.Password);
             return restClient;
         }
     }
