@@ -14,7 +14,7 @@ namespace CliClient
             var client = Parent.CreateRestClient();
             var result = await client.DelResource(ResourceName).ConfigureAwait(true);
             if (result.Success)
-                console.WriteLine("OK");
+                console.WriteLine(result.Result ? "OK" : "Could not delete the resource!");
             else
                 console.WriteLine("Error: " + result.Error.Message);
         }

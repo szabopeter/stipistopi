@@ -51,7 +51,8 @@ namespace logic
         public IEnumerable<SsUser> GetUsers(SsUser user)
         {
             IEnumerable<SsUser> users = Array.Empty<SsUser>();
-            SsRepository.Transaction(() => {
+            SsRepository.Transaction(() =>
+            {
                 if (Authenticated(user) == null)
                     return;
 
@@ -74,6 +75,18 @@ namespace logic
                 SsRepository.SaveResource(ssResource);
             });
             return ssResource;
+        }
+
+        public bool DelResource(string shortName, SsUser creator)
+        {
+            Contract.Requires(shortName != null);
+            return SsRepository.Transaction<bool>(() =>
+            {
+                if (Authenticated(creator)?.Role != UserRole.Admin)
+                    throw new InsufficientRoleException(creator.UserName);
+
+                return SsRepository.DeleteResource(shortName);
+            });
         }
 
         public SsUser NewUser(SsUser newUser, SsUser creator)

@@ -58,9 +58,12 @@ namespace CliClient
 
         public async Task<RestClientResult<bool>> DelResource(string shortName)
         {
-            var request = new RestClientCommand<string, bool>(
-                "/stipistopi/resource/del",
-                shortName
+            var request = new RestClientCommand<NewResourceParameter, bool>(
+                "/stipistopi/resource/delete",
+                new NewResourceParameter{
+                    Creator = User,
+                    Resource = new SsResource{ShortName = shortName}
+                }
             );
             return await GenericRequest(request);
         }

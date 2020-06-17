@@ -16,6 +16,7 @@ namespace ServiceInterfaces
         SsUserSecret GetLockingUser(SsResource resource);
         void SetLockingUser(SsResource resource, SsUserSecret user);
         IEnumerable<SsUser> GetUsers();
+        bool DeleteResource(string shortName);
     }
 
     public static class ISsRepositoryExtensions

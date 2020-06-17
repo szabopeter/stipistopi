@@ -83,5 +83,11 @@ namespace Logic.Repository
             lock (_resourceLock)
                 return action();
         }
+
+        public bool DeleteResource(string shortName)
+        {
+            _resources.Remove(SsResource.NormalizeShortName(shortName));
+            return true;
+        }
     }
 }

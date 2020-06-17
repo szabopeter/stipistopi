@@ -53,9 +53,14 @@ namespace RestApi.Controllers
         public SsResource NewResource(NewResourceParameter newResource)
         {
             _logger.LogInformation($"New resource: {newResource.Resource.ShortName} @ {newResource.Resource.Address}");
-            return stipiStopi.NewResource(
-                new SsResource(newResource.Resource.ShortName, newResource.Resource.Address),
-                newResource.Creator);
+            return stipiStopi.NewResource(newResource.Resource, newResource.Creator);
+        }
+
+        [HttpPost("resource/delete")]
+        public bool DelResource(NewResourceParameter delResource)
+        {
+            _logger.LogInformation($"Deleting resource {delResource.Resource.ShortName}");
+            return stipiStopi.DelResource(delResource.Resource.ShortName, delResource.Creator);
         }
 
         [HttpPost("lock")]

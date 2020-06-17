@@ -148,6 +148,15 @@ namespace LiteDbSsRepositoryService
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        public bool DeleteResource(string shortName)
+        {
+            var resource = GetResource(shortName);
+            if (resource == null)
+                return false;
+            Db.GetCollection<SsResource>("resources").DeleteMany(r => r.ShortName.Equals(resource.ShortName));
+            return true;
+        }
     }
 
     public class ResourceUsage
