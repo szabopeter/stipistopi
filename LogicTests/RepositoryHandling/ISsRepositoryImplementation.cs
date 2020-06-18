@@ -1,6 +1,6 @@
 using ServiceInterfaces;
 
-namespace LogicTest
+namespace LogicTests.RepositoryHandling
 {
     public interface ISsRepositoryImplementation
     {

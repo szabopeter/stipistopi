@@ -3,7 +3,7 @@ using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using System;
 
-namespace LogicTest
+namespace LogicTests.RepositoryHandling
 {
     public class StipiStopiWrapper<TSsRepositoryImplementation> where TSsRepositoryImplementation : ISsRepositoryImplementation
     {

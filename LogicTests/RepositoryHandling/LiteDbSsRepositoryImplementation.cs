@@ -2,7 +2,7 @@ using System.IO;
 using LiteDbSsRepositoryService;
 using ServiceInterfaces;
 
-namespace LogicTest
+namespace LogicTests.RepositoryHandling
 {
     public class LiteDbSsRepositoryImplementation : ISsRepositoryImplementation
     {

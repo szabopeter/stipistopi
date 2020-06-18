@@ -1,3 +1,4 @@
+using LogicTests.RepositoryHandling;
 using ServiceInterfaces.Dto;
 using System;
 using Xunit;

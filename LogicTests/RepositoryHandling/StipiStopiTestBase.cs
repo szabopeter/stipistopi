@@ -2,7 +2,7 @@
 using ServiceInterfaces.Dto;
 using System;
 
-namespace LogicTest
+namespace LogicTests.RepositoryHandling
 {
     public abstract class StipiStopiTestBase<TSsRepositoryImplementation> : IDisposable where TSsRepositoryImplementation : ISsRepositoryImplementation
     {

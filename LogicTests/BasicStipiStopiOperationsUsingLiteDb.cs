@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using LiteDbSsRepositoryService;
-using ServiceInterfaces;
+﻿using LogicTests.RepositoryHandling;
 
 namespace LogicTest
 {

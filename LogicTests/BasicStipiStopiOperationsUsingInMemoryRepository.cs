@@ -1,5 +1,4 @@
-﻿using Logic.Repository;
-using ServiceInterfaces;
+﻿using LogicTest.RepositoryHandling;
 
 namespace LogicTest
 {

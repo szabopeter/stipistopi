@@ -1,7 +1,8 @@
 using Logic.Repository;
+using LogicTests.RepositoryHandling;
 using ServiceInterfaces;
 
-namespace LogicTest
+namespace LogicTest.RepositoryHandling
 {
     public class InMemorySsRepositoryImplementation : ISsRepositoryImplementation
     {
