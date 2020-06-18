@@ -1,8 +1,8 @@
-﻿using LogicTests.RepositoryHandling;
+using LogicTests.RepositoryHandling;
 
 namespace LogicTests
 {
-    public class BasicStipiStopiOperationsUsingLiteDb : BasicStipiStopiOperations
+    public class LockingTestsUsingLiteDb : LockingTests
     {
         public override ISsRepositoryImplementation SsRepositoryImplementation =>
             new LiteDbSsRepositoryImplementation();

@@ -3,7 +3,7 @@ using ServiceInterfaces.Dto;
 using System;
 using Xunit;
 
-namespace LogicTest
+namespace LogicTests
 {
     public abstract class BasicStipiStopiOperations: StipiStopiTestBase
     {
@@ -29,7 +29,10 @@ namespace LogicTest
             var user = Sut.NewUser(new SsUser("Alice", "pass"), AdminUser);
             Assert.ThrowsAny<Exception>(() => Sut.NewUser(user, AdminUser));
         }
+    }
 
+    public abstract class LockingTests : StipiStopiTestBase
+    {
         [Fact]
         public void Locked_resource_Should_not_be_locked_again()
         {
@@ -63,11 +66,6 @@ namespace LogicTest
             Assert.True(releaseSuccess, "Release by the locking user should succeed but it did not.");
             Assert.True(Sut.IsFree(res), "Resource should be free but it is not.");
             Assert.True(Sut.LockResource(res, userCharlie), "Locking again should succeed but it did not.");
-        }
-
-        public SsUser CreateUser(string userName = "any", string password = "any")
-        {
-            return Sut.NewUser(new SsUser(userName, password), AdminUser);
         }
     }
 }
