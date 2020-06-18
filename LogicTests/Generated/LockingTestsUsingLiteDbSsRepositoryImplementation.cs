@@ -1,8 +1,10 @@
+
 using LogicTests.RepositoryHandling;
 
-namespace LogicTests
+namespace LogicTests.Generated
 {
-    public class LockingTestsUsingLiteDb : LockingTests
+    // This is generated code, modifications will be overwritten!
+    public class LockingTestsUsingLiteDbSsRepositoryImplementation : LockingTests
     {
         public override ISsRepositoryImplementation SsRepositoryImplementation =>
             new LiteDbSsRepositoryImplementation();
