@@ -5,7 +5,7 @@ using Xunit;
 
 namespace LogicTest
 {
-    public abstract class BasicStipiStopiOperations<TSsRepositoryImplementation> : StipiStopiTestBase<TSsRepositoryImplementation> where TSsRepositoryImplementation : ISsRepositoryImplementation
+    public abstract class BasicStipiStopiOperations: StipiStopiTestBase
     {
         [Fact]
         public void Empty_repository_Should_deliver_empty_resourcelist()

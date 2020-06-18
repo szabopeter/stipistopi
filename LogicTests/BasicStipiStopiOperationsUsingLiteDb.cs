@@ -2,7 +2,9 @@
 
 namespace LogicTest
 {
-    public class BasicStipiStopiOperationsUsingLiteDb : BasicStipiStopiOperations<LiteDbSsRepositoryImplementation>
+    public class BasicStipiStopiOperationsUsingLiteDb : BasicStipiStopiOperations
     {
+        public override ISsRepositoryImplementation SsRepositoryImplementation =>
+            new LiteDbSsRepositoryImplementation();
     }
 }

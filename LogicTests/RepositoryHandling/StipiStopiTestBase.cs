@@ -4,10 +4,10 @@ using System;
 
 namespace LogicTests.RepositoryHandling
 {
-    public abstract class StipiStopiTestBase<TSsRepositoryImplementation> : IDisposable where TSsRepositoryImplementation : ISsRepositoryImplementation
+    public abstract class StipiStopiTestBase : IDisposable
     {
-        public StipiStopiWrapper<TSsRepositoryImplementation> StipiStopiWrapper { get; }
-            = new StipiStopiWrapper<TSsRepositoryImplementation>();
+        public abstract ISsRepositoryImplementation SsRepositoryImplementation { get; }
+        public StipiStopiWrapper StipiStopiWrapper => stipiStopiWrapper ??= new StipiStopiWrapper(SsRepositoryImplementation);
 
         public StipiStopi Sut => StipiStopiWrapper.Service;
 
@@ -17,5 +17,7 @@ namespace LogicTests.RepositoryHandling
         {
             StipiStopiWrapper.SsRepositoryImplementation.DisposeRepository();
         }
+
+        private StipiStopiWrapper stipiStopiWrapper;
     }
 }

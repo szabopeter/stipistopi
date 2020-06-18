@@ -5,7 +5,7 @@ using System;
 
 namespace LogicTests.RepositoryHandling
 {
-    public class StipiStopiWrapper<TSsRepositoryImplementation> where TSsRepositoryImplementation : ISsRepositoryImplementation
+    public class StipiStopiWrapper
     {
         public StipiStopi Service => service ??= CreateSut();
 
@@ -13,9 +13,9 @@ namespace LogicTests.RepositoryHandling
 
         public ISsRepositoryImplementation SsRepositoryImplementation { get; }
 
-        public StipiStopiWrapper()
+        public StipiStopiWrapper(ISsRepositoryImplementation ssRepositoryImplementation)
         {
-            SsRepositoryImplementation = (ISsRepositoryImplementation)Activator.CreateInstance(typeof(TSsRepositoryImplementation));
+            SsRepositoryImplementation = ssRepositoryImplementation;
         }
 
         private StipiStopi CreateSut()
