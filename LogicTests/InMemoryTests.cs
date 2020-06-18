@@ -3,11 +3,7 @@ using ServiceInterfaces;
 
 namespace LogicTest
 {
-    public class InMemoryTests : StipiStopiTestBase
+    public class InMemoryTests : StipiStopiTestBase<InMemorySsRepositoryImplementation>
     {
-        protected override ISsRepository CreateRepository()
-        {
-            return new InMemorySsRepository();
-        }
     }
 }

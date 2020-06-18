@@ -1,27 +1,18 @@
 ﻿using logic;
-using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using System;
 using Xunit;
 
 namespace LogicTest
 {
-    public abstract class StipiStopiTestBase
+    public abstract class StipiStopiTestBase<TSsRepositoryImplementation> : IDisposable where TSsRepositoryImplementation : ISsRepositoryImplementation
     {
-        private StipiStopi sut;
+        public StipiStopiWrapper<TSsRepositoryImplementation> StipiStopiWrapper { get; }
+            = new StipiStopiWrapper<TSsRepositoryImplementation>();
 
-        public StipiStopi Sut => sut ??= CreateSut();
+        public StipiStopi Sut => StipiStopiWrapper.Service;
 
-        private StipiStopi CreateSut()
-        {
-            var repository = CreateRepository();
-            repository.Transaction(() => repository.SaveUser(new SsUserSecret(AdminUser)));
-            return new StipiStopi(repository);
-        }
-
-        protected abstract ISsRepository CreateRepository();
-
-        public SsUser AdminUser { get; } = new SsUser("testadmin", "testpassword", UserRole.Admin);
+        public SsUser AdminUser => StipiStopiWrapper.AdminUser;
 
         [Fact]
         public void Empty_repository_Should_deliver_empty_resourcelist()
@@ -84,6 +75,11 @@ namespace LogicTest
         public SsUser CreateUser(string userName = "any", string password = "any")
         {
             return Sut.NewUser(new SsUser(userName, password), AdminUser);
+        }
+
+        public void Dispose()
+        {
+            StipiStopiWrapper.SsRepositoryImplementation.DisposeRepository();
         }
     }
 }
