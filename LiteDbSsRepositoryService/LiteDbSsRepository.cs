@@ -10,14 +10,9 @@ using ServiceInterfaces.Dto;
 
 namespace LiteDbSsRepositoryService
 {
+    [SuppressMessage("Microsoft.Design", "CA1307")] // LiteDb requires field.Equals 
     public class LiteDbSsRepository : ISsRepository, IDisposable
     {
-        private readonly Func<LiteDatabase> OpenDb;
-        private readonly TempStream tempStream;
-        private LiteDatabase Db;
-        private bool disposedValue;
-        private static readonly object transactionLock = new object();
-
         public LiteDbSsRepository(string filename)
         {
             OpenDb = () => new LiteDatabase(filename);
@@ -55,6 +50,56 @@ namespace LiteDbSsRepositoryService
             Db.GetCollection<SsResource>("resources").Upsert(ssResource);
         }
 
+        public SsUserSecret GetUser(string userName)
+        {
+            return Db.GetCollection<SsUserSecret>("users")
+                .Query()
+                .Where(user => user.UserName.Equals(SsUserSecret.NormalizeUserName(userName)))
+                .SingleOrDefault();
+        }
+
+        public void SaveUser(SsUserSecret user)
+        {
+            Db.GetCollection<SsUserSecret>("users").Upsert(user);
+        }
+
+        public SsUserSecret GetLockingUser(SsResource resource)
+        {
+            var usage = Db.GetCollection<ResourceUsage>()
+                .Query()
+                .Where(ru => ru.ResourceShortName.Equals(resource.ShortName))
+                .SingleOrDefault();
+            if (usage == null)
+                return null;
+            return GetUser(usage.UserName);
+        }
+
+        public void SetLockingUser(SsResource resource, SsUserSecret user)
+        {
+            Contract.Requires(resource != null);
+            if (user != null)
+            {
+                Db.GetCollection<ResourceUsage>().Insert(new ResourceUsage
+                {
+                    ResourceShortName = resource.ShortName,
+                    UserName = user.UserName
+                });
+            }
+            else
+            {
+                Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
+            }
+        }
+
+        public bool DeleteResource(string shortName)
+        {
+            var resource = GetResource(shortName);
+            if (resource == null)
+                return false;
+            Db.GetCollection<SsResource>("resources").DeleteMany(r => r.ShortName.Equals(resource.ShortName));
+            return true;
+        }
+
         public T Transaction<T>(Func<T> action)
         {
             Contract.Requires(action != null);
@@ -85,49 +130,7 @@ namespace LiteDbSsRepositoryService
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1307")] // LiteDb requires field.Equals 
-        public SsUserSecret GetUser(string userName)
-        {
-            return Db.GetCollection<SsUserSecret>("users")
-                .Query()
-                .Where(user => user.UserName.Equals(SsUserSecret.NormalizeUserName(userName)))
-                .SingleOrDefault();
-        }
-
-        public void SaveUser(SsUserSecret user)
-        {
-            Db.GetCollection<SsUserSecret>("users").Upsert(user);
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1307")] // LiteDb requires field.Equals 
-        public SsUserSecret GetLockingUser(SsResource resource)
-        {
-            var usage = Db.GetCollection<ResourceUsage>()
-                .Query()
-                .Where(ru => ru.ResourceShortName.Equals(resource.ShortName))
-                .SingleOrDefault();
-            if (usage == null)
-                return null;
-            return GetUser(usage.UserName);
-        }
-
-        public void SetLockingUser(SsResource resource, SsUserSecret user)
-        {
-            Contract.Requires(resource != null);
-            if (user != null)
-            {
-                Db.GetCollection<ResourceUsage>().Insert(new ResourceUsage
-                {
-                    ResourceShortName = resource.ShortName,
-                    UserName = user.UserName
-                });
-            }
-            else
-            {
-                Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
-            }
-        }
-
+        #region IDisposable
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -144,24 +147,17 @@ namespace LiteDbSsRepositoryService
 
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+        #endregion IDisposable
 
-        public bool DeleteResource(string shortName)
-        {
-            var resource = GetResource(shortName);
-            if (resource == null)
-                return false;
-            Db.GetCollection<SsResource>("resources").DeleteMany(r => r.ShortName.Equals(resource.ShortName));
-            return true;
-        }
-    }
-
-    public class ResourceUsage
-    {
-        public string ResourceShortName { get; set; }
-        public string UserName { get; set; }
+        #region Private fields
+        private readonly Func<LiteDatabase> OpenDb;
+        private readonly TempStream tempStream;
+        private LiteDatabase Db;
+        private bool disposedValue;
+        private static readonly object transactionLock = new object();
+        #endregion Private fields
     }
 }
