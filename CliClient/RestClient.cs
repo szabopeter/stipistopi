@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -69,10 +68,10 @@ namespace CliClient
             return await GenericRequest(request);
         }
 
-        public async Task<RestClientResult<bool>> UpdateResourceDescription(
+        public async Task<RestClientResult<SsResource>> UpdateResourceDescription(
             string resourceName, string oldDescription, string newDescription)
         {
-            var request = new RestClientCommand<SetResourceDescriptionParameter, bool>(
+            var request = new RestClientCommand<SetResourceDescriptionParameter, SsResource>(
                 "/stipistopi/resource/description",
                 new SetResourceDescriptionParameter
                 {
@@ -105,9 +104,9 @@ namespace CliClient
             var requestUri = GetUri(restClientCommand.Uri);
             var content = new StringContent(JsonSerializer.Serialize(restClientCommand.RequestParam), Encoding.UTF8, "application/json");
             var response = await HttpClient.PostAsync(requestUri, content);
+            var stream = await response.Content.ReadAsStreamAsync();
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                var stream = await response.Content.ReadAsStreamAsync();
                 try
                 {
                     var error = await JsonSerializer.DeserializeAsync<RestError>(stream, JsonOptions);
@@ -121,11 +120,9 @@ namespace CliClient
                     });
                 }
             }
-            {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var result = await JsonSerializer.DeserializeAsync<TResponse>(stream, JsonOptions);
-                return new RestClientResult<TResponse>(result);
-            }
+
+            var result = await JsonSerializer.DeserializeAsync<TResponse>(stream, JsonOptions);
+            return new RestClientResult<TResponse>(result);
         }
 
         private static JsonSerializerOptions CreateJsonOptions()

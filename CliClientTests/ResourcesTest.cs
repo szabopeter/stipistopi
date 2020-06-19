@@ -54,14 +54,16 @@ namespace CliClientTests
 
             var result = await restClient.UpdateResourceDescription(
                 resource.ShortName, "original", "new description");
-            Assert.True(result.Success && result.Result);
+            Assert.True(result.Success);
+            Assert.Equal("new description", result.Result.Description);
 
             var dbResource = (await restClient.GetResources()).Single().Resource;
             Assert.Equal("new description", dbResource.Description);
 
             result = await restClient.UpdateResourceDescription(
                 resource.ShortName, "original", "rejected description");
-            Assert.True(result.Success && !result.Result);
+            Assert.True(result.Success);
+            Assert.Equal("new description", result.Result.Description);
 
             dbResource = (await restClient.GetResources()).Single().Resource;
             Assert.Equal("new description", dbResource.Description);

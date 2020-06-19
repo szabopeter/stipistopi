@@ -17,14 +17,15 @@ export function DescriptionEditorViewModel(backend, messageManagerVm, updateButt
         );
     };
     this.saveFailed = function () { };
-    this.saveSucceeded = function (result) {
+    this.saveSucceeded = function (serverResource) {
         console.log("Server responded:");
-        console.log(result);
-        if (result == false) {
-            self.messageManagerVm.showMessageWithOk("Sorry, someone else made conflicting changes. You'll have to refresh.");
+        console.log(serverResource);
+        let descriptionOnServer = serverResource.description;
+        self.oldDescription(descriptionOnServer);
+        if (descriptionOnServer != self.newDescription()) {
+            self.messageManagerVm.showMessageWithOk("Sorry, someone else made conflicting changes. Please check and try again.");
         }
         else {
-            self.oldDescription(self.newDescription());
             self.cancelEditing();
         }
     };

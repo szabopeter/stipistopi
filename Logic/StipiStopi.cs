@@ -47,17 +47,18 @@ namespace logic
             return resources;
         }
 
-        public bool UpdateResourceDescription(string shortName, string oldDescription, string newDescription, SsUser user)
+        public SsResource UpdateResourceDescription(string shortName, string oldDescription, string newDescription, SsUser user)
         {
-            return SsRepository.Transaction<bool>(() =>
+            return SsRepository.Transaction<SsResource>(() =>
             {
                 Authenticated(user);
                 var dbResource = GetExistingResource(shortName);
-                if (dbResource.Description != oldDescription)
-                    return false;
-                dbResource.Description = newDescription;
-                SsRepository.SaveResource(dbResource);
-                return true;
+                if (dbResource.Description == oldDescription)
+                {
+                    dbResource.Description = newDescription;
+                    SsRepository.SaveResource(dbResource);
+                }
+                return dbResource;
             }
             );
         }
