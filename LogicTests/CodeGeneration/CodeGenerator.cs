@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using LogicTests.RepositoryHandling;
 using Microsoft.CodeAnalysis.CSharp;
@@ -33,9 +34,13 @@ namespace LogicTests.Generated
             var entries = new[] {
                 new TestGenerationEntry(nameof(LockingTests), nameof(InMemorySsRepositoryImplementation)),
                 new TestGenerationEntry(nameof(LockingTests), nameof(LiteDbSsRepositoryImplementation)),
-                new TestGenerationEntry(nameof(BasicStipiStopiOperations), nameof(InMemorySsRepositoryImplementation)),
-                new TestGenerationEntry(nameof(BasicStipiStopiOperations), nameof(LiteDbSsRepositoryImplementation)),
+                new TestGenerationEntry(nameof(UserManagementTests), nameof(InMemorySsRepositoryImplementation)),
+                new TestGenerationEntry(nameof(UserManagementTests), nameof(LiteDbSsRepositoryImplementation)),
+                new TestGenerationEntry(nameof(ResourceManagementTests), nameof(InMemorySsRepositoryImplementation)),
+                new TestGenerationEntry(nameof(ResourceManagementTests), nameof(LiteDbSsRepositoryImplementation)),
             };
+
+            var filesToDelete = new HashSet<string>(Directory.GetFiles(PathRoot));
             foreach (var entry in entries)
             {
                 var code = Template
@@ -44,15 +49,21 @@ namespace LogicTests.Generated
                 var syntax = CSharpSyntaxTree.ParseText(code);
                 code = syntax.ToString();
                 var targetFilename = Path.Combine(PathRoot, entry.Filename);
-                var targetContent = File.Exists(targetFilename)
-                    ? File.ReadAllText(targetFilename)
-                    : "";
+                var targetContent = "";
+                if (File.Exists(targetFilename))
+                {
+                    targetContent = File.ReadAllText(targetFilename);
+                    filesToDelete.Remove(targetFilename);
+                }
                 if (targetContent == code)
                     continue;
 
                 File.WriteAllText(targetFilename, code);
                 wasUpToDate = false;
             }
+            foreach(var filename in filesToDelete)
+                File.Delete(filename);
+            wasUpToDate = wasUpToDate && filesToDelete.Count == 0;
             return wasUpToDate;
         }
     }

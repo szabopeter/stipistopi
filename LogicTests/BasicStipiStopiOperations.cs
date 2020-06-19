@@ -5,7 +5,7 @@ using Xunit;
 
 namespace LogicTests
 {
-    public abstract class BasicStipiStopiOperations: StipiStopiTestBase
+    public abstract class ResourceManagementTests : StipiStopiTestBase
     {
         [Fact]
         public void Empty_repository_Should_deliver_empty_resourcelist()
@@ -22,7 +22,10 @@ namespace LogicTests
             Assert.ThrowsAny<Exception>(() => Sut.NewResource(new SsResource("NCU", "127.0.0.1"), AdminUser));
             Assert.Single(Sut.GetResources());
         }
+    }
 
+    public abstract class UserManagementTests: StipiStopiTestBase
+    {
         [Fact]
         public void Create_User()
         {
