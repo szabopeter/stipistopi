@@ -16,12 +16,21 @@ namespace LiteDbSsRepositoryService
         public LiteDbSsRepository(string filename)
         {
             OpenDb = () => new LiteDatabase(filename);
+            SetupBsonMapping();
         }
 
         public LiteDbSsRepository()
         {
             tempStream = new TempStream();
             OpenDb = () => new LiteDatabase(tempStream);
+            SetupBsonMapping();
+        }
+
+        private static void SetupBsonMapping()
+        {
+            var mapper = BsonMapper.Global;
+            mapper.Entity<SsResource>()
+                .Id(r => r.ShortName);
         }
 
         public List<SsResource> GetResources()

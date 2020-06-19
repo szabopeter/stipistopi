@@ -41,11 +41,24 @@ namespace logic
 
         public List<SsResource> GetResources()
         {
-            // TODO : only for Authenticated users!
             List<SsResource> resources = null;
             SsRepository.Transaction(() =>
                 resources = SsRepository.GetResources());
             return resources;
+        }
+
+        public void UpdateResourceDescription(SsResource resourceWithOldDescription, string newDescription, SsUser user)
+        {
+            SsRepository.Transaction(() =>
+            {
+                Authenticated(user);
+                var dbResource = SsRepository.GetResource(resourceWithOldDescription.ShortName);
+                if (dbResource.Description != resourceWithOldDescription.Description)
+                    throw new OptimisticLockingException();
+                dbResource.Description = newDescription;
+                SsRepository.SaveResource(dbResource);
+            }
+            );
         }
 
         public IEnumerable<SsUser> GetUsers(SsUser user)
@@ -53,9 +66,7 @@ namespace logic
             IEnumerable<SsUser> users = Array.Empty<SsUser>();
             SsRepository.Transaction(() =>
             {
-                if (Authenticated(user) == null)
-                    return;
-
+                Authenticated(user);
                 users = SsRepository.GetUsers();
             });
             return users;

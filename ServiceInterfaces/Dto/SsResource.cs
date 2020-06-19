@@ -14,6 +14,14 @@ namespace ServiceInterfaces.Dto
 
         public string Address { get; set; }
 
+        public string Description
+        {
+            get => description ?? "";
+            set => description = value;
+        }
+
+        private string description;
+
         /// <summary>For serialization</summary>
         public SsResource()
         {
@@ -23,6 +31,7 @@ namespace ServiceInterfaces.Dto
         {
             ShortName = shortName;
             Address = address;
+            Description = "";
         }
 
         public static string NormalizeShortName(string shortName)
