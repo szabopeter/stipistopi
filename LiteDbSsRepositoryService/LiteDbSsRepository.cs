@@ -114,7 +114,9 @@ namespace LiteDbSsRepositoryService
             var user = GetUser(userName);
             if (user == null)
                 return false;
-            Db.GetCollection<SsUserSecret>("users").DeleteMany(r => r.UserName.Equals(user.UserName));
+            userName = user.UserName; // normalized
+            Db.GetCollection<SsUserSecret>("users").DeleteMany(r => r.UserName.Equals(userName));
+            Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.UserName.Equals(userName));
             return true;
         }
 

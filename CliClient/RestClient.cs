@@ -112,6 +112,20 @@ namespace CliClient
                     User));
         }
 
+        public async Task<RestClientResult<bool>> LockOperation(string type, string resourceName)
+        {
+            return await GenericRequest(
+                new RestClientCommand<LockParameter, bool>(
+                    $"/stipistopi/{type}",
+                    new LockParameter
+                    {
+                        ResourceName = resourceName,
+                        User = User,
+                    }
+                )
+            );
+        }
+
         public async Task<RestClientResult<TResponse>> GenericRequest<TRequest, TResponse>(RestClientCommand<TRequest, TResponse> restClientCommand)
         {
             var requestUri = GetUri(restClientCommand.Uri);
