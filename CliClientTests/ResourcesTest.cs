@@ -40,5 +40,25 @@ namespace CliClientTests
             var allResources = await restClient.GetResources();
             Assert.Empty(allResources);
         }
+
+        [Fact]
+        public async void UpdateResourceDescription()
+        {
+            var restClient = new TestRestClient().RestClient;
+            var resource = new SsResource("resource", "192.168.10.3");
+            await restClient.AddResource(resource);
+
+            var result = await restClient.UpdateResourceDescription(resource, "new description");
+            Assert.True(result.Success && result.Result);
+
+            var dbResource = (await restClient.GetResources()).Single();
+            Assert.Equal("new description", dbResource.Description);
+
+            result = await restClient.UpdateResourceDescription(resource, "rejected description");
+            Assert.True(result.Success && !result.Result);
+            
+            dbResource = (await restClient.GetResources()).Single();
+            Assert.Equal("new description", dbResource.Description);
+        }
     }
 }

@@ -31,6 +31,7 @@ namespace RestApi.Controllers
             {
                 ShortName = ssr.ShortName,
                 Address = ssr.Address,
+                Description = ssr.Description,
                 IsAvailable = stipiStopi.IsFree(ssr),
                 LockedBy = stipiStopi.GetLockedBy(ssr)?.UserName,
             });
@@ -63,6 +64,15 @@ namespace RestApi.Controllers
             return stipiStopi.DelResource(delResource.Resource.ShortName, delResource.Creator);
         }
 
+        [HttpPost("resource/description")]
+        public bool SetResourceDescription(SetResourceDescriptionParameter parameter)
+        {
+            _logger.LogInformation(
+                $"Changing resource description of {parameter.Resource.ShortName} " +
+                $"from {parameter.Resource.Description} to {parameter.Description}");
+            return stipiStopi.UpdateResourceDescription(parameter.Resource, parameter.Description, parameter.User);
+        }
+
         [HttpPost("lock")]
         public bool LockResource(LockParameter @lock)
         {
@@ -90,6 +100,13 @@ namespace RestApi.Controllers
         public SsUser Creator { get; set; }
     }
 
+    public class SetResourceDescriptionParameter
+    {
+        public SsResource Resource { get; set; }
+        public string Description { get; set; }
+        public SsUser User { get; set; }
+    }
+
     public class NewUserParameter
     {
         public SsUser User { get; set; }
@@ -104,6 +121,7 @@ namespace RestApi.Controllers
 
     public class ResourceInfo : SsResource
     {
+        // TODO: should have an SsResource instance instead of deriving from it
         public bool IsAvailable { get; set; }
         public string LockedBy { get; set; }
     }

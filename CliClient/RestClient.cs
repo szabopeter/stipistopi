@@ -60,9 +60,25 @@ namespace CliClient
         {
             var request = new RestClientCommand<NewResourceParameter, bool>(
                 "/stipistopi/resource/delete",
-                new NewResourceParameter{
+                new NewResourceParameter
+                {
                     Creator = User,
-                    Resource = new SsResource{ShortName = shortName}
+                    Resource = new SsResource { ShortName = shortName }
+                }
+            );
+            return await GenericRequest(request);
+        }
+
+        public async Task<RestClientResult<bool>> UpdateResourceDescription(
+            SsResource resource, string description)
+        {
+            var request = new RestClientCommand<SetResourceDescriptionParameter, bool>(
+                "/stipistopi/resource/description",
+                new SetResourceDescriptionParameter
+                {
+                    Resource = resource,
+                    Description = description,
+                    User = User,
                 }
             );
             return await GenericRequest(request);

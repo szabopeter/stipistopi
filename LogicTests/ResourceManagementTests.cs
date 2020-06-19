@@ -32,13 +32,14 @@ namespace LogicTests
             var resource = Sut.NewResource(new SsResource("my host", "192.168.42.1"), AdminUser);
             Assert.Equal("", Reget(resource).Description);
 
-            Sut.UpdateResourceDescription(resource, "Resource description", regularUser);
+            var success = Sut.UpdateResourceDescription(resource, "Resource description", regularUser);
+            Assert.True(success);
             Assert.Equal("Resource description", Reget(resource).Description);
 
             var staleResource = resource;
-            Assert.ThrowsAny<OptimisticLockingException>(() =>
-                Sut.UpdateResourceDescription(staleResource, "Description #2", regularUser)
-            );
+            success = Sut.UpdateResourceDescription(staleResource, "Description #2", regularUser);
+            Assert.False(success);
+            Assert.Equal("Resource description", Reget(resource).Description);
         }
 
         private SsResource Reget(SsResource resource)
