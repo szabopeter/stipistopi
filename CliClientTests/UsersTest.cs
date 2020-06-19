@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CliClientTests
 {
-    public class AddUserCommandTest
+    public class UsersTest
     {
         [Fact]
         public async void TestAddAndList()
@@ -23,6 +23,7 @@ namespace CliClientTests
         [Fact]
         public async void TestRemoval()
         {
+            // TODO test releasing resources
             var testHost = new TestRestClient();
             var restClient = testHost.RestClient;
             async Task<int> CountUsers() => (await restClient.GetUsers()).Result.Count();
