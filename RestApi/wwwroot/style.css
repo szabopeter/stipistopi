@@ -17,7 +17,7 @@ BODY {
 }
 
 #main-content {
-    display: inline-block;
+    display: block;
 }
 
 #main-messages {
@@ -28,6 +28,16 @@ BODY {
 TABLE {
     margin: 10px;
     margin: auto;
+    border-collapse: collapse;
+}
+
+TABLE TH {
+    white-space: nowrap;
+}
+
+TABLE TD {
+    padding-left: 3px;
+    width: 88%;
 }
 
 .resourceAvailable {
@@ -40,6 +50,40 @@ TABLE {
 
 .resourceListButtons, .userListButtons {
     display: inline-block;
+}
+
+.resourceLineInList {
+    border-top: white 2px solid;
+}
+
+.resourceLineInList TD:first-child {
+    border-top-left-radius: 8px;
+}
+
+.resourceLineInList TD:last-child {
+    border-top-right-radius: 8px;
+}
+
+.resourceDescriptionDisplay {
+    white-space: pre;
+}
+
+.resourceDescriptionEditing {
+    background-color: white;
+    text-align: left;
+    margin: 2px;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.resourceDescriptionActions {
+}
+
+.resourceDescriptionInput {
+    display: block;
+    width: 98%;
+    height: 5em;
+    border: 0;
 }
 
 .button {

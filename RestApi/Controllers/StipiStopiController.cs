@@ -65,6 +65,7 @@ namespace RestApi.Controllers
         [HttpPost("resource/description")]
         public bool SetResourceDescription(SetResourceDescriptionParameter parameter)
         {
+            // TODO: return updated description string instead of bool
             _logger.LogInformation(
                 $"Changing resource description of {parameter.ResourceName} " +
                 $"from {parameter.OldDescription} to {parameter.NewDescription}");

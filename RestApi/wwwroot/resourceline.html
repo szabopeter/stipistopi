@@ -8,8 +8,53 @@
     <td data-bind="text: isAvailable"></td>
     <td data-bind="text: lockedBy"></td>
     <td data-bind="foreach: actions">
+        <!-- ko if: $parent.actionsEnabled -->
         <div class="button" 
              data-bind="click: execute, text: label" >
         </div>
+        <!-- /ko -->
+        <!-- ko if: !$parent.actionsEnabled -->
+        <div class="button disabled" 
+             data-bind="text: label" >
+        </div>
+        <!-- /ko -->
     </td>
+</tr>
+<!-- move descriptionEditor part to separate component -->
+<tr data-bind="css: {
+        resourceAvailable: isAvailable(),
+        resourceNotAvailable: !isAvailable(),
+    },
+        with: descriptionEditorVm">
+    <td colspan="4">
+        <div class="resourceDescriptionDisplay" data-bind="text: oldDescription"></div>
+    </td>
+    <td>
+        <div class="resourceDescriptionActions" data-bind="foreach: actions, visible: !isEditing()">
+            <div class="button" 
+                 data-bind="click: callback, text: label" >
+            </div>
+        </div>
+    </td>
+</tr>
+<tr data-bind="css: {
+    resourceAvailable: isAvailable(),
+    resourceNotAvailable: !isAvailable(),
+},
+    with: descriptionEditorVm">
+    <!-- ko if: isEditing() -->
+    <td colspan="3">
+        <div class="resourceDescriptionEditing" data-bind="visible: isEditing">
+            Enter new description:<br />
+            <textarea class="resourceDescriptionInput" , data-bind="textInput: newDescription"></textarea>
+        </div>
+    </td>
+    <td colspan="2">
+        <div class="resourceDescriptionActions" data-bind="foreach: actions">
+            <div class="button" 
+                 data-bind="click: callback, text: label" >
+            </div>
+        </div>
+    </td>
+    <!-- /ko -->
 </tr>

@@ -7,12 +7,22 @@ function ResourcesPageViewModel(backend) {
     this.backend = backend;
     this.resources = ko.observableArray([]);
     this.messageManagerVm = new MessageManagerViewModel();
+    this.buttonsEnabled = ko.observable(true);
+
+    this.updateButtonsState = function () {
+        let isEditing = false;
+        self.resources().forEach(resource => {
+            if (resource.descriptionEditorVm.isEditing())
+                isEditing = true;
+        });
+        self.resources().forEach(resource => resource.actionsEnabled(!isEditing));
+    };
 
     function UpdateResourceList(resourceInfos) {
         self.resources(resourceInfos.map(function (resourceInfo) {
-            let vm = ResourceLineViewModel.create(resourceInfo);
+            let vm = ResourceLineViewModel.create(resourceInfo, self.backend, self.messageManagerVm, self.updateButtonsState);
             vm.messageManagerVm = self.messageManagerVm;
-            vm.updateActions(self.backend, self.refresh);
+            vm.updateActions(self.refresh);
             return vm;
         }));
     };

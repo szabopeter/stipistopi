@@ -1,19 +1,25 @@
-﻿function ResourceLineViewModel() {
+﻿import { DescriptionEditorViewModel } from "./descriptioneditor.js";
+
+function ResourceLineViewModel(backend, messageManagerVm, updateButtonsState) {
     let self = this;
+    this.backend = backend;
+    this.messageManagerVm = messageManagerVm;
+    this.updateButtonsState = updateButtonsState;
     this.shortName = ko.observable("TODO: shortName");
     this.address = ko.observable("TODO: address");
-    this.description = ko.observable("");
+    this.descriptionEditorVm = new DescriptionEditorViewModel(backend, messageManagerVm, updateButtonsState);
     this.isAvailable = ko.observable("TODO: isAvailable");
     this.lockedBy = ko.observable("TODO: lockedBy");
     this.actions = ko.observableArray([]);
     this.messageManagerVm = null;
+    this.actionsEnabled = ko.observable(true);
 
-    this.updateActions = function (backend, refresh) {
+    this.updateActions = function (refresh) {
         let resource = this;
         let label = resource.isAvailable() ? "Lock" : "Release";
         let backendAction = resource.isAvailable() ? "lock" : "release";
         let execute = function () {
-            backend.sendResourceAction(backendAction, resource.shortName(), function (data) {
+            self.backend.sendResourceAction(backendAction, resource.shortName(), function (data) {
                 refresh();
                 if (data == true) {
                     self.messageManagerVm.showDisappearingMessage("OK");
@@ -30,11 +36,13 @@
     };
 }
 
-ResourceLineViewModel.create = function (resourceInfo) {
-    let vm = new ResourceLineViewModel();
+ResourceLineViewModel.create = function (resourceInfo, backend, messageManagerVm, updateButtonsState) {
+    let vm = new ResourceLineViewModel(backend, messageManagerVm, updateButtonsState);
     vm.shortName(resourceInfo.resource.shortName);
     vm.address(resourceInfo.resource.address);
-    vm.description(resourceInfo.resource.description)
+    vm.descriptionEditorVm.resourceName = resourceInfo.resource.shortName;
+    vm.descriptionEditorVm.oldDescription(resourceInfo.resource.description);
+    vm.descriptionEditorVm.newDescription(resourceInfo.resource.description);
     vm.isAvailable(resourceInfo.isAvailable);
     vm.lockedBy(resourceInfo.lockedBy);
     // vm.actions(source.actions);

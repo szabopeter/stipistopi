@@ -31,6 +31,17 @@ export function Backend(errorMessagesVm) {
         AjaxPost(url, lockParameter, onSuccess, createAjaxErrorHandler(onFailure))
     }
 
+    this.updateResourceDescription = function (resourceName, oldDescription, newDescription, onSuccess, onFailure) {
+        let url = "./stipistopi/resource/description";
+        let parameter = {
+            resourceName: resourceName,
+            oldDescription: oldDescription,
+            newDescription: newDescription,
+            user: myUser,
+        };
+        AjaxPost(url, parameter, onSuccess, createAjaxErrorHandler(onFailure));
+    }
+
     this.loadResources = function (onSuccess, onFailure) {
         AjaxLoad("./stipistopi/resources", "json", onSuccess, createAjaxErrorHandler(onFailure));
     }
