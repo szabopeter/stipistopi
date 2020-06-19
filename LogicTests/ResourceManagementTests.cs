@@ -1,4 +1,4 @@
-using LogicTests.RepositoryHandling;
+﻿using LogicTests.RepositoryHandling;
 using ServiceInterfaces.Dto;
 using System;
 using Xunit;
@@ -21,16 +21,6 @@ namespace LogicTests
             Sut.NewResource(new SsResource("NCU", "127.0.0.1"), AdminUser);
             Assert.ThrowsAny<Exception>(() => Sut.NewResource(new SsResource("NCU", "127.0.0.1"), AdminUser));
             Assert.Single(Sut.GetResources());
-        }
-    }
-
-    public abstract class UserManagementTests: StipiStopiTestBase
-    {
-        [Fact]
-        public void Create_User()
-        {
-            var user = Sut.NewUser(new SsUser("Alice", "pass"), AdminUser);
-            Assert.ThrowsAny<Exception>(() => Sut.NewUser(user, AdminUser));
         }
     }
 }
