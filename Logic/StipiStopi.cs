@@ -124,6 +124,9 @@ namespace logic
             {
                 if (Authenticated(creator)?.Role != UserRole.Admin)
                     throw new InsufficientRoleException(creator.UserName);
+                
+                if (SsUserSecret.NormalizeUserName(userName) == creator.UserName)
+                    return false;
 
                 return SsRepository.DeleteUser(userName);
             });

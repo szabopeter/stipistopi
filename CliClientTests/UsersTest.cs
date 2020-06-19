@@ -29,9 +29,11 @@ namespace CliClientTests
             async Task<int> CountUsers() => (await restClient.GetUsers()).Result.Count();
             Assert.Equal(1, await CountUsers());
             await restClient.AddUser("newUserName", "newUserPassword", UserRole.Admin);
+            var result = await restClient.DelUser(testHost.Admin.UserName);
+            Assert.True(result.Success && !result.Result);
             Assert.Equal(2, await CountUsers());
 
-            var result = await restClient.DelUser("newUserName");
+            result = await restClient.DelUser("newUserName");
             Assert.True(result.Success && result.Result);
             var userList = (await restClient.GetUsers()).Result;
             var remainingUser = userList.Single();
