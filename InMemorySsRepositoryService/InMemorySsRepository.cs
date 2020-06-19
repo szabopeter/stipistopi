@@ -94,5 +94,11 @@ namespace Logic.Repository
             _resources.Remove(SsResource.NormalizeShortName(shortName));
             return true;
         }
+
+        public bool DeleteUser(string userName)
+        {
+            _users.Remove(SsUserSecret.NormalizeUserName(userName));
+            return true;
+        }
     }
 }

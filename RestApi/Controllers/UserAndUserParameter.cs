@@ -1,8 +1,8 @@
-using ServiceInterfaces.Dto;
+﻿using ServiceInterfaces.Dto;
 
 namespace RestApi.Controllers
 {
-    public class NewUserParameter
+    public class UserAndUserParameter
     {
         public SsUser User { get; set; }
         public SsUser Creator { get; set; }

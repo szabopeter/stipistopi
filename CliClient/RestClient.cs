@@ -31,12 +31,25 @@ namespace CliClient
 
         public async Task<RestClientResult<SsUser>> AddUser(string userName, string password, UserRole role)
         {
-            var request = new RestClientCommand<NewUserParameter, SsUser>(
+            var request = new RestClientCommand<UserAndUserParameter, SsUser>(
                 "/stipistopi/register",
-                new NewUserParameter
+                new UserAndUserParameter
                 {
                     Creator = User,
                     User = new SsUser(userName, password, role)
+                }
+            );
+            return await GenericRequest(request);
+        }
+
+        public async Task<RestClientResult<bool>> DelUser(string userName)
+        {
+            var request = new RestClientCommand<UserAndUserParameter, bool>(
+                "/stipistopi/user/delete",
+                new UserAndUserParameter
+                {
+                    Creator = User,
+                    User = new SsUser { UserName = userName }
                 }
             );
             return await GenericRequest(request);

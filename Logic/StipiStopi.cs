@@ -117,6 +117,18 @@ namespace logic
             return newUser;
         }
 
+        public bool DelUser(string userName, SsUser creator)
+        {
+            Contract.Requires(userName != null);
+            return SsRepository.Transaction<bool>(() =>
+            {
+                if (Authenticated(creator)?.Role != UserRole.Admin)
+                    throw new InsufficientRoleException(creator.UserName);
+
+                return SsRepository.DeleteUser(userName);
+            });
+        }
+
         public SsUser GetLockedBy(SsResource ssr)
         {
             // TODO Returning the username only should be sufficient

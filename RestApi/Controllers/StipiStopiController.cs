@@ -40,10 +40,17 @@ namespace RestApi.Controllers
         }
 
         [HttpPost("register")]
-        public SsUser NewUser(NewUserParameter newUser)
+        public SsUser NewUser(UserAndUserParameter newUser)
         {
             _logger.LogInformation($"Registering {newUser.User.UserName} with a password of length {newUser.User.Password.Length}");
             return stipiStopi.NewUser(newUser.User, newUser.Creator);
+        }
+
+        [HttpPost("user/delete")]
+        public bool DelUser(UserAndUserParameter delUser)
+        {
+            _logger.LogInformation($"Deleting resource {delUser.User.UserName}");
+            return stipiStopi.DelUser(delUser.User.UserName, delUser.Creator);
         }
 
         [HttpPost("resource")]
