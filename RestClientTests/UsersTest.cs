@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ServiceInterfaces.Dto;
 using Xunit;
 
-namespace CliClientTests
+namespace RestClientTests
 {
     public class UsersTest
     {

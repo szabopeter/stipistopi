@@ -1,4 +1,5 @@
 using McMaster.Extensions.CommandLineUtils;
+using RestClient;
 
 namespace CliClient
 {
@@ -28,10 +29,10 @@ namespace CliClient
             return 0;
         }
 
-        public RestClient CreateRestClient()
+        public RestClient.RestClient CreateRestClient()
         {
-            var restHttpClient = new RestHttpClient(BaseUrl ?? "https://localhost:8140", IgnoreServerCertificate, Console);
-            var client = new RestClient(restHttpClient, UserName ?? "test", Password ?? "test");
+            var restHttpClient = new RestHttpClient(BaseUrl ?? "https://localhost:8140", IgnoreServerCertificate, s => Console.WriteLine(s));
+            var client = new RestClient.RestClient(restHttpClient, UserName ?? "test", Password ?? "test");
             return client;
         }
 

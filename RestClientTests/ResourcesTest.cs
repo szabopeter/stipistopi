@@ -2,7 +2,7 @@ using System.Linq;
 using ServiceInterfaces.Dto;
 using Xunit;
 
-namespace CliClientTests
+namespace RestClientTests
 {
     public class ResourcesTest
     {

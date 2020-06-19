@@ -1,11 +1,12 @@
+using System;
 using System.Net.Http;
 
-namespace CliClient
+namespace RestClient
 {
     public interface IRestHttpClient
     {
         string BaseUri { get; }
         HttpClient HttpClient { get; }
-        void WriteLine(string line);
+        Action<string> WriteLine { get; }
     }
 }

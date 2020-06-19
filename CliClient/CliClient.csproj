@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ServiceInterfaces\ServiceInterfaces.csproj" />
-    <ProjectReference Include="..\RestApi\RestApi.csproj" />
+    <ProjectReference Include="..\RestClient\RestClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

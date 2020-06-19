@@ -2,7 +2,7 @@ using System.Linq;
 using ServiceInterfaces.Dto;
 using Xunit;
 
-namespace CliClientTests
+namespace RestClientTests
 {
     public class LockingTest
     {
@@ -13,7 +13,7 @@ namespace CliClientTests
             var adminClient = testRestClient.RestClient;
             var res1 = (await adminClient.AddResource(new SsResource("resource", "address"))).Result;
             var user = (await adminClient.AddUser("user", "pass", UserRole.Regular)).Result;
-            
+
             var userClient = testRestClient.GetAdditionalRestClient("user", "pass");
             var result = await userClient.LockOperation("lock", res1.ShortName);
             Assert.True(result.Success && result.Result);

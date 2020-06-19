@@ -189,7 +189,7 @@ namespace logic
                 var dbResource = GetExistingResource(shortName);
 
                 var lockedBy = SsRepository.GetLockingUser(dbResource);
-                if (lockedBy.Equals(authenticated))
+                if (lockedBy != null && lockedBy.Equals(authenticated))
                 {
                     SsRepository.SetLockingUser(dbResource, null);
                     success = true;

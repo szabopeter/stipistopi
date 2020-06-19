@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using CliClient;
+using RestClient;
 
-namespace CliClientTests
+namespace RestClientTests
 {
     class TestRestHttpClient : IRestHttpClient
     {
@@ -10,16 +11,14 @@ namespace CliClientTests
 
         public HttpClient HttpClient { get; }
 
-        public void WriteLine(string line)
-        {
-            Lines.Add(line);
-        }
+        public Action<string> WriteLine { get; }
 
         public List<string> Lines { get; } = new List<string>();
 
         public TestRestHttpClient(HttpClient httpClient)
         {
             HttpClient = httpClient;
+            WriteLine = line => Lines.Add(line);
         }
     }
 }

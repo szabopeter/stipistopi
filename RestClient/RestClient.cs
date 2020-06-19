@@ -10,7 +10,7 @@ using RestApi.Controllers;
 using ServiceInterfaces.Dto;
 
 #pragma warning disable RCS1090
-namespace CliClient
+namespace RestClient
 {
     public class RestClient
     {
@@ -106,7 +106,7 @@ namespace CliClient
 
         public async Task<RestClientResult<IEnumerable<SsUser>>> GetUsers()
         {
-            return await GenericRequest<SsUser, IEnumerable<SsUser>>(
+            return await GenericRequest(
                 new RestClientCommand<SsUser, IEnumerable<SsUser>>(
                     "/stipistopi/users",
                     User));

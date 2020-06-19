@@ -1,4 +1,4 @@
-using CliClient;
+using RestClient;
 using LiteDbSsRepositoryService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -7,11 +7,11 @@ using RestApi;
 using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 
-namespace CliClientTests
+namespace RestClientTests
 {
     public class TestRestClient
     {
-        public RestClient RestClient { get; }
+        public RestClient.RestClient RestClient { get; }
         public SsUser Admin { get; }
         public SsUser User { get; }
         private TestRestHttpClient RestHttpClient { get; }
@@ -21,12 +21,12 @@ namespace CliClientTests
             Admin = new SsUser("admin", "admin", UserRole.Admin);
             User = user ?? Admin;
             RestHttpClient = InitRestHttpClient(Admin, User);
-            RestClient = new RestClient(RestHttpClient, User.UserName, User.Password);
+            RestClient = new RestClient.RestClient(RestHttpClient, User.UserName, User.Password);
         }
 
-        public RestClient GetAdditionalRestClient(string userName, string password)
+        public RestClient.RestClient GetAdditionalRestClient(string userName, string password)
         {
-            return new RestClient(RestHttpClient, userName, password);
+            return new RestClient.RestClient(RestHttpClient, userName, password);
         }
 
         private static TestRestHttpClient InitRestHttpClient(SsUser admin, SsUser user)
@@ -38,7 +38,7 @@ namespace CliClientTests
             var webHostBuilder = new WebHostBuilder().UseStartup<Startup>();
             webHostBuilder.ConfigureServices(services =>
             {
-                services.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+                services.Add(new ServiceDescriptor(
                     typeof(ISsRepository), sp => repo, ServiceLifetime.Singleton
                 ));
             });

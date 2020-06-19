@@ -1,25 +1,20 @@
+using System;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using McMaster.Extensions.CommandLineUtils;
 
-namespace CliClient
+namespace RestClient
 {
     public class RestHttpClient : IRestHttpClient
     {
         public string BaseUri { get; }
         public HttpClient HttpClient { get; }
-        public void WriteLine(string line)
-        {
-            Console.WriteLine(line);
-        }
+        public Action<string> WriteLine { get; }
 
-        public IConsole Console;
-
-        public RestHttpClient(string baseUri, bool ignoreServerCertificate, IConsole console)
+        public RestHttpClient(string baseUri, bool ignoreServerCertificate, Action<string> consoleWriteLine)
         {
             BaseUri = baseUri;
-            Console = console;
+            WriteLine = consoleWriteLine;
             if (ignoreServerCertificate)
             {
                 var handler = new HttpClientHandler
