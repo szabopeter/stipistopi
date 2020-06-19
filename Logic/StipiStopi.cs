@@ -52,7 +52,7 @@ namespace logic
             return SsRepository.Transaction<bool>(() =>
             {
                 Authenticated(user);
-                var dbResource = SsRepository.GetResource(resourceWithOldDescription.ShortName);
+                var dbResource = GetExistingResource(resourceWithOldDescription.ShortName);
                 if (dbResource.Description != resourceWithOldDescription.Description)
                     return false;
                 dbResource.Description = newDescription;
@@ -150,11 +150,7 @@ namespace logic
             SsRepository.Transaction(() =>
             {
                 var authenticated = Authenticated(user);
-
-                // TODO Should extract a GetResource
-                SsResource dbResource = SsRepository.GetResource(shortName);
-                if (dbResource == null)
-                    throw new ResourceDoesNotExistException(shortName);
+                var dbResource = GetExistingResource(shortName);
 
                 var lockedBy = SsRepository.GetLockingUser(dbResource);
                 if (lockedBy != null)
@@ -178,11 +174,7 @@ namespace logic
             SsRepository.Transaction(() =>
             {
                 var authenticated = Authenticated(user);
-
-                // TODO Should extract a GetResource
-                SsResource dbResource = SsRepository.GetResource(shortName);
-                if (dbResource == null)
-                    throw new ResourceDoesNotExistException(shortName);
+                var dbResource = GetExistingResource(shortName);
 
                 var lockedBy = SsRepository.GetLockingUser(dbResource);
                 if (lockedBy.Equals(authenticated))
@@ -209,6 +201,14 @@ namespace logic
         public bool IsFree(SsResource res)
         {
             return !IsLocked(res);
+        }
+
+        private SsResource GetExistingResource(string shortName)
+        {
+            SsResource dbResource = SsRepository.GetResource(shortName);
+            if (dbResource == null)
+                throw new ResourceDoesNotExistException(shortName);
+            return dbResource;
         }
     }
 }
