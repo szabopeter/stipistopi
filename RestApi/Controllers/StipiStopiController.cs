@@ -29,9 +29,7 @@ namespace RestApi.Controllers
             // TODO Avoid repeated queries
             return stipiStopi.GetResources().Select(ssr => new ResourceInfo
             {
-                ShortName = ssr.ShortName,
-                Address = ssr.Address,
-                Description = ssr.Description,
+                Resource = ssr,
                 IsAvailable = stipiStopi.IsFree(ssr),
                 LockedBy = stipiStopi.GetLockedBy(ssr)?.UserName,
             });
@@ -115,9 +113,9 @@ namespace RestApi.Controllers
         public string ResourceName { get; set; }
     }
 
-    public class ResourceInfo : SsResource
+    public class ResourceInfo
     {
-        // TODO: should have an SsResource instance instead of deriving from it
+        public SsResource Resource { get; set; }
         public bool IsAvailable { get; set; }
         public string LockedBy { get; set; }
     }

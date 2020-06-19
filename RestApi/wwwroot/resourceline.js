@@ -2,6 +2,7 @@
     let self = this;
     this.shortName = ko.observable("TODO: shortName");
     this.address = ko.observable("TODO: address");
+    this.description = ko.observable("");
     this.isAvailable = ko.observable("TODO: isAvailable");
     this.lockedBy = ko.observable("TODO: lockedBy");
     this.actions = ko.observableArray([]);
@@ -18,7 +19,7 @@
                     self.messageManagerVm.showDisappearingMessage("OK");
                 } else {
                     self.messageManagerVm.showMessageWithOk("Failed!");
-                };                                
+                };
             }, refresh);
         };
         resource.actions([{
@@ -29,12 +30,13 @@
     };
 }
 
-ResourceLineViewModel.create = function (source) {
+ResourceLineViewModel.create = function (resourceInfo) {
     let vm = new ResourceLineViewModel();
-    vm.shortName(source.shortName);
-    vm.address(source.address);
-    vm.isAvailable(source.isAvailable);
-    vm.lockedBy(source.lockedBy);
+    vm.shortName(resourceInfo.resource.shortName);
+    vm.address(resourceInfo.resource.address);
+    vm.description(resourceInfo.resource.description)
+    vm.isAvailable(resourceInfo.isAvailable);
+    vm.lockedBy(resourceInfo.lockedBy);
     // vm.actions(source.actions);
     // vm.actions().forEach(function (action) { action.execute = action.execute.bind(vm); })
     return vm;

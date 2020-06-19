@@ -8,9 +8,9 @@ function ResourcesPageViewModel(backend) {
     this.resources = ko.observableArray([]);
     this.messageManagerVm = new MessageManagerViewModel();
 
-    function UpdateResourceList(resources) {
-        self.resources(resources.map(function (resource) {
-            let vm = ResourceLineViewModel.create(resource);
+    function UpdateResourceList(resourceInfos) {
+        self.resources(resourceInfos.map(function (resourceInfo) {
+            let vm = ResourceLineViewModel.create(resourceInfo);
             vm.messageManagerVm = self.messageManagerVm;
             vm.updateActions(self.backend, self.refresh);
             return vm;
@@ -18,7 +18,7 @@ function ResourcesPageViewModel(backend) {
     };
 
     this.refresh = function () {
-        self.backend.loadResources(UpdateResourceList, function () {self.resources([])});
+        self.backend.loadResources(UpdateResourceList, function () { self.resources([]) });
     };
 
     this.pageActivated = this.refresh;
