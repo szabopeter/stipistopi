@@ -44,9 +44,9 @@ namespace CliClient
 
         public async Task<RestClientResult<SsResource>> AddResource(SsResource resource)
         {
-            var request = new RestClientCommand<NewResourceParameter, SsResource>(
+            var request = new RestClientCommand<ResourceAndUserParameter, SsResource>(
                 "/stipistopi/resource",
-                new NewResourceParameter
+                new ResourceAndUserParameter
                 {
                     Creator = User,
                     Resource = resource
@@ -57,9 +57,9 @@ namespace CliClient
 
         public async Task<RestClientResult<bool>> DelResource(string shortName)
         {
-            var request = new RestClientCommand<NewResourceParameter, bool>(
+            var request = new RestClientCommand<ResourceAndUserParameter, bool>(
                 "/stipistopi/resource/delete",
-                new NewResourceParameter
+                new ResourceAndUserParameter
                 {
                     Creator = User,
                     Resource = new SsResource { ShortName = shortName }
@@ -71,9 +71,9 @@ namespace CliClient
         public async Task<RestClientResult<SsResource>> UpdateResourceDescription(
             string resourceName, string oldDescription, string newDescription)
         {
-            var request = new RestClientCommand<SetResourceDescriptionParameter, SsResource>(
+            var request = new RestClientCommand<ResourceDescriptionParameter, SsResource>(
                 "/stipistopi/resource/description",
-                new SetResourceDescriptionParameter
+                new ResourceDescriptionParameter
                 {
                     ResourceName = resourceName,
                     OldDescription = oldDescription,

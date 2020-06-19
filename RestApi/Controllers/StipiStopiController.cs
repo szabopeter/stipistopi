@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using logic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 
 namespace RestApi.Controllers
@@ -49,21 +47,21 @@ namespace RestApi.Controllers
         }
 
         [HttpPost("resource")]
-        public SsResource NewResource(NewResourceParameter newResource)
+        public SsResource NewResource(ResourceAndUserParameter newResource)
         {
             _logger.LogInformation($"New resource: {newResource.Resource.ShortName} @ {newResource.Resource.Address}");
             return stipiStopi.NewResource(newResource.Resource, newResource.Creator);
         }
 
         [HttpPost("resource/delete")]
-        public bool DelResource(NewResourceParameter delResource)
+        public bool DelResource(ResourceAndUserParameter delResource)
         {
             _logger.LogInformation($"Deleting resource {delResource.Resource.ShortName}");
             return stipiStopi.DelResource(delResource.Resource.ShortName, delResource.Creator);
         }
 
         [HttpPost("resource/description")]
-        public SsResource SetResourceDescription(SetResourceDescriptionParameter parameter)
+        public SsResource SetResourceDescription(ResourceDescriptionParameter parameter)
         {
             _logger.LogInformation(
                 $"Changing resource description of {parameter.ResourceName} " +
@@ -85,38 +83,5 @@ namespace RestApi.Controllers
             _logger.LogInformation($"Trying to release {@lock.ResourceName} for {@lock.User.UserName}");
             return stipiStopi.ReleaseResource(@lock.ResourceName, new SsUser(@lock.User.UserName, @lock.User.Password));
         }
-    }
-
-    public class NewResourceParameter
-    {
-        public SsResource Resource { get; set; }
-        public SsUser Creator { get; set; }
-    }
-
-    public class SetResourceDescriptionParameter
-    {
-        public string ResourceName { get; set; }
-        public string OldDescription { get; set; }
-        public string NewDescription { get; set; }
-        public SsUser User { get; set; }
-    }
-
-    public class NewUserParameter
-    {
-        public SsUser User { get; set; }
-        public SsUser Creator { get; set; }
-    }
-
-    public class LockParameter
-    {
-        public SsUser User { get; set; }
-        public string ResourceName { get; set; }
-    }
-
-    public class ResourceInfo
-    {
-        public SsResource Resource { get; set; }
-        public bool IsAvailable { get; set; }
-        public string LockedBy { get; set; }
     }
 }
