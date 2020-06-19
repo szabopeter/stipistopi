@@ -68,29 +68,24 @@ namespace RestApi.Controllers
         public bool SetResourceDescription(SetResourceDescriptionParameter parameter)
         {
             _logger.LogInformation(
-                $"Changing resource description of {parameter.Resource.ShortName} " +
-                $"from {parameter.Resource.Description} to {parameter.Description}");
-            return stipiStopi.UpdateResourceDescription(parameter.Resource, parameter.Description, parameter.User);
+                $"Changing resource description of {parameter.ResourceName} " +
+                $"from {parameter.OldDescription} to {parameter.NewDescription}");
+            return stipiStopi.UpdateResourceDescription(
+                parameter.ResourceName, parameter.OldDescription, parameter.NewDescription, parameter.User);
         }
 
         [HttpPost("lock")]
         public bool LockResource(LockParameter @lock)
         {
             _logger.LogInformation($"Trying to lock {@lock.ResourceName} for {@lock.User.UserName}");
-            var resource = stipiStopi.GetResources()
-                .SingleOrDefault(r => string.Equals(r.ShortName, @lock.ResourceName, StringComparison.InvariantCultureIgnoreCase));
-            _logger.LogInformation($"Identified resource {resource.ShortName} @ {resource.Address}");
-            return stipiStopi.LockResource(resource, new SsUser(@lock.User.UserName, @lock.User.Password));
+            return stipiStopi.LockResource(@lock.ResourceName, new SsUser(@lock.User.UserName, @lock.User.Password));
         }
 
         [HttpPost("release")]
         public bool ReleaseResource(LockParameter @lock)
         {
             _logger.LogInformation($"Trying to release {@lock.ResourceName} for {@lock.User.UserName}");
-            var resource = stipiStopi.GetResources()
-                .SingleOrDefault(r => string.Equals(r.ShortName, @lock.ResourceName, StringComparison.InvariantCultureIgnoreCase));
-            _logger.LogInformation($"Identified resource {resource.ShortName} @ {resource.Address}");
-            return stipiStopi.ReleaseResource(resource, new SsUser(@lock.User.UserName, @lock.User.Password));
+            return stipiStopi.ReleaseResource(@lock.ResourceName, new SsUser(@lock.User.UserName, @lock.User.Password));
         }
     }
 
@@ -102,8 +97,9 @@ namespace RestApi.Controllers
 
     public class SetResourceDescriptionParameter
     {
-        public SsResource Resource { get; set; }
-        public string Description { get; set; }
+        public string ResourceName { get; set; }
+        public string OldDescription { get; set; }
+        public string NewDescription { get; set; }
         public SsUser User { get; set; }
     }
 

@@ -70,14 +70,15 @@ namespace CliClient
         }
 
         public async Task<RestClientResult<bool>> UpdateResourceDescription(
-            SsResource resource, string description)
+            string resourceName, string oldDescription, string newDescription)
         {
             var request = new RestClientCommand<SetResourceDescriptionParameter, bool>(
                 "/stipistopi/resource/description",
                 new SetResourceDescriptionParameter
                 {
-                    Resource = resource,
-                    Description = description,
+                    ResourceName = resourceName,
+                    OldDescription = oldDescription,
+                    NewDescription = newDescription,
                     User = User,
                 }
             );

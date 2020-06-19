@@ -47,13 +47,13 @@ namespace logic
             return resources;
         }
 
-        public bool UpdateResourceDescription(SsResource resourceWithOldDescription, string newDescription, SsUser user)
+        public bool UpdateResourceDescription(string shortName, string oldDescription, string newDescription, SsUser user)
         {
             return SsRepository.Transaction<bool>(() =>
             {
                 Authenticated(user);
-                var dbResource = GetExistingResource(resourceWithOldDescription.ShortName);
-                if (dbResource.Description != resourceWithOldDescription.Description)
+                var dbResource = GetExistingResource(shortName);
+                if (dbResource.Description != oldDescription)
                     return false;
                 dbResource.Description = newDescription;
                 SsRepository.SaveResource(dbResource);
@@ -142,10 +142,8 @@ namespace logic
             return userSecret;
         }
 
-        public bool LockResource(SsResource resource, SsUser user)
+        public bool LockResource(string shortName, SsUser user)
         {
-            var shortName = resource?.ShortName;
-            // TODO shortName would be sufficient
             bool success = false;
             SsRepository.Transaction(() =>
             {
@@ -166,10 +164,8 @@ namespace logic
             return success;
         }
 
-        public bool ReleaseResource(SsResource resource, SsUser user)
+        public bool ReleaseResource(string shortName, SsUser user)
         {
-            var shortName = resource?.ShortName;
-            // TODO shortname should be sufficient
             bool success = false;
             SsRepository.Transaction(() =>
             {
