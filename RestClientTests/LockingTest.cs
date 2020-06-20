@@ -19,14 +19,12 @@ namespace RestClientTests
             Assert.True(result.Success && result.Result);
 
             var resource = (await adminClient.GetResources()).Single();
-            Assert.False(resource.IsAvailable);
             Assert.Equal("USER", resource.Locking.LockedBy.UserName);
 
             var delUserResult = await adminClient.DelUser("user");
             Assert.True(delUserResult.Success && delUserResult.Result);
 
             resource = (await adminClient.GetResources()).Single();
-            Assert.True(resource.IsAvailable);
             Assert.Null(resource.Locking);
 
             var user2 = (await adminClient.AddUser("user2", "pass", UserRole.Regular)).Result;
@@ -35,7 +33,6 @@ namespace RestClientTests
             Assert.True(result.Success && result.Result);
 
             resource = (await adminClient.GetResources()).Single();
-            Assert.False(resource.IsAvailable);
             Assert.Equal("USER2", resource.Locking.LockedBy.UserName);
         }
     }

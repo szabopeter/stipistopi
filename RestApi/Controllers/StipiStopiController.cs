@@ -22,16 +22,9 @@ namespace RestApi.Controllers
         }
 
         [HttpGet("resources")]
-        public IEnumerable<ResourceInfo> GetResources()
+        public IEnumerable<SsResource> GetResources()
         {
-            return stipiStopi.GetResources().Select(resource =>
-            new ResourceInfo
-            {
-                Resource = resource,
-                IsAvailable = resource.Locking == null,
-                LockedBy = resource.Locking?.LockedBy?.UserName,
-                Locking = resource.Locking,
-            });
+            return stipiStopi.GetResources();
         }
 
         [HttpPost("users")]

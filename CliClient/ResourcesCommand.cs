@@ -12,10 +12,9 @@ namespace CliClient
         {
             var client = Parent.CreateRestClient();
             var resources = await client.GetResources().ConfigureAwait(true);
-            foreach (var resourceInfo in resources)
+            foreach (var resource in resources)
             {
-                var resource = resourceInfo.Resource;
-                console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resourceInfo.Locking.LockedBy?.UserName,20} {resourceInfo.Locking.LockedAt, 20}");
+                console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resource.Locking?.LockedBy?.UserName,20} {resource.Locking?.LockedAt, 20}");
             }
         }
 

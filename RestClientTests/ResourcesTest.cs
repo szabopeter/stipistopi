@@ -21,10 +21,11 @@ namespace RestClientTests
             SsResource resourceToAdd = new SsResource("resource", "192.168.10.2") { Description = "descr" };
             var result = await restClient.AddResource(resourceToAdd);
             Assert.True(result.Success);
-            var actual = (await restClient.GetResources()).Single().Resource;
+            var actual = (await restClient.GetResources()).Single();
             Assert.Equal(resourceToAdd.ShortName, actual.ShortName);
             Assert.Equal(resourceToAdd.Address, actual.Address);
             Assert.Equal(resourceToAdd.Description, actual.Description);
+            Assert.Null(actual.Locking);
         }
 
         [Fact]
@@ -56,7 +57,7 @@ namespace RestClientTests
             Assert.True(result.Success);
             Assert.Equal("new description", result.Result.Description);
 
-            var dbResource = (await restClient.GetResources()).Single().Resource;
+            var dbResource = (await restClient.GetResources()).Single();
             Assert.Equal("new description", dbResource.Description);
 
             result = await restClient.UpdateResourceDescription(
@@ -64,7 +65,7 @@ namespace RestClientTests
             Assert.True(result.Success);
             Assert.Equal("new description", result.Result.Description);
 
-            dbResource = (await restClient.GetResources()).Single().Resource;
+            dbResource = (await restClient.GetResources()).Single();
             Assert.Equal("new description", dbResource.Description);
         }
     }

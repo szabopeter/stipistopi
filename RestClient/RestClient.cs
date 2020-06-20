@@ -97,11 +97,11 @@ namespace RestClient
             return await GenericRequest(request);
         }
 
-        public async Task<IEnumerable<ResourceInfo>> GetResources()
+        public async Task<IEnumerable<SsResource>> GetResources()
         {
             var requestUri = GetUri("/stipistopi/resources");
             var stream = await HttpClient.GetStreamAsync(requestUri);
-            return await JsonSerializer.DeserializeAsync<IEnumerable<ResourceInfo>>(stream, JsonOptions);
+            return await JsonSerializer.DeserializeAsync<IEnumerable<SsResource>>(stream, JsonOptions);
         }
 
         public async Task<RestClientResult<IEnumerable<SsUser>>> GetUsers()
