@@ -18,9 +18,9 @@ function ResourcesPageViewModel(backend) {
         self.resources().forEach(resource => resource.actionsEnabled(!isEditing));
     };
 
-    function UpdateResourceList(resourceInfos) {
-        self.resources(resourceInfos.map(function (resourceInfo) {
-            let vm = ResourceLineViewModel.create(resourceInfo, self.backend, self.messageManagerVm, self.updateButtonsState);
+    function UpdateResourceList(ssResources) {
+        self.resources(ssResources.map(function (ssResource) {
+            let vm = ResourceLineViewModel.create(ssResource, self.backend, self.messageManagerVm, self.updateButtonsState);
             vm.messageManagerVm = self.messageManagerVm;
             vm.updateActions(self.refresh);
             return vm;

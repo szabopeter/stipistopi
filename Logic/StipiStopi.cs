@@ -174,8 +174,7 @@ namespace logic
                 var authenticated = Authenticated(user);
                 var dbResource = GetExistingResource(shortName);
 
-                var locking = SsRepository.GetLocking(dbResource);
-                var lockedBy = locking.LockedBy;
+                var lockedBy = SsRepository.GetLocking(dbResource)?.LockedBy;
                 if (lockedBy != null && lockedBy.UserName.Equals(user.UserName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     SsRepository.Release(dbResource);

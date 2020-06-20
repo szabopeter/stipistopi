@@ -8,8 +8,8 @@ function ResourceLineViewModel(backend, messageManagerVm, updateButtonsState) {
     this.shortName = ko.observable("TODO: shortName");
     this.address = ko.observable("TODO: address");
     this.descriptionEditorVm = new DescriptionEditorViewModel(backend, messageManagerVm, updateButtonsState);
-    this.isAvailable = ko.observable("TODO: isAvailable");
-    this.lockedBy = ko.observable("TODO: lockedBy");
+    this.isAvailable = ko.observable(true);
+    this.lockedBy = ko.observable("");
     this.actions = ko.observableArray([]);
     this.messageManagerVm = null;
     this.actionsEnabled = ko.observable(true);
@@ -36,15 +36,17 @@ function ResourceLineViewModel(backend, messageManagerVm, updateButtonsState) {
     };
 }
 
-ResourceLineViewModel.create = function (resourceInfo, backend, messageManagerVm, updateButtonsState) {
+ResourceLineViewModel.create = function (ssResource, backend, messageManagerVm, updateButtonsState) {
     let vm = new ResourceLineViewModel(backend, messageManagerVm, updateButtonsState);
-    vm.shortName(resourceInfo.resource.shortName);
-    vm.address(resourceInfo.resource.address);
-    vm.descriptionEditorVm.resourceName = resourceInfo.resource.shortName;
-    vm.descriptionEditorVm.oldDescription(resourceInfo.resource.description);
-    vm.descriptionEditorVm.newDescription(resourceInfo.resource.description);
-    vm.isAvailable(resourceInfo.isAvailable);
-    vm.lockedBy(resourceInfo.lockedBy);
+    vm.shortName(ssResource.shortName);
+    vm.address(ssResource.address);
+    vm.descriptionEditorVm.resourceName = ssResource.shortName;
+    vm.descriptionEditorVm.oldDescription(ssResource.description);
+    vm.descriptionEditorVm.newDescription(ssResource.description);
+    if (ssResource.locking != null) {
+        vm.isAvailable(false);
+        vm.lockedBy(ssResource.locking.lockedBy.userName);
+    }
     // vm.actions(source.actions);
     // vm.actions().forEach(function (action) { action.execute = action.execute.bind(vm); })
     return vm;
