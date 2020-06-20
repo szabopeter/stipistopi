@@ -13,6 +13,7 @@ namespace CliClient
             typeof(AddResourceCommand),
             typeof(DelResourceCommand),
             typeof(DelUserCommand)
+            // TODO Lock + Release
             )]
     public class RootCommand
     {

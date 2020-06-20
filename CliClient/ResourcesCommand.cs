@@ -15,7 +15,7 @@ namespace CliClient
             foreach (var resourceInfo in resources)
             {
                 var resource = resourceInfo.Resource;
-                console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resourceInfo.LockedBy,20}");
+                console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resourceInfo.Locking.LockedBy?.UserName,20} {resourceInfo.Locking.LockedAt, 20}");
             }
         }
 

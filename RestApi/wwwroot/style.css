@@ -56,6 +56,10 @@ TABLE TD {
     border-top: white 2px solid;
 }
 
+.userLineInList {
+    border-top: lightgray 1px dotted;
+}
+
 .resourceLineInList TD:first-child {
     border-top-left-radius: 8px;
 }
@@ -106,7 +110,7 @@ TABLE TD {
 }
 
 .table-form {
-    display: table;
+    display: inline-block;
     text-align: left;
 }
 

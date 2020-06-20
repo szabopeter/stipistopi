@@ -73,5 +73,10 @@ namespace ServiceInterfaces.Dto
             Contract.Requires(userName != null);
             return userName.ToUpperInvariant();
         }
+
+        public SsUser AsUser()
+        {
+            return new SsUser(UserName, "****", Role);
+        }
     }
 }

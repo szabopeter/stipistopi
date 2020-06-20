@@ -27,7 +27,7 @@ namespace logic
                 SsRepository.SaveResource(ncu139);
                 var ncu140 = new SsResource("ncu2", "10.10.148.9");
                 SsRepository.SaveResource(ncu140);
-                SsRepository.SetLockingUser(ncu140, testuser);
+                SsRepository.Lock(ncu140, testuser.UserName, "");
             });
         }
 
@@ -45,6 +45,24 @@ namespace logic
             SsRepository.Transaction(() =>
                 resources = SsRepository.GetResources());
             return resources;
+        }
+
+        public List<LockingInfo> GetLockingInfos()
+        {
+            return SsRepository.Transaction<List<LockingInfo>>(() =>
+            {
+                // TODO Avoid repeated queries
+                return SsRepository.GetResources()
+                    .Select(r => new
+                    {
+                        Resource = r,
+                        LockingInfo = SsRepository.GetLocking(r),
+                    })
+                    .Select(pair =>
+                        pair.LockingInfo
+                        ?? new LockingInfo { Resource = pair.Resource })
+                    .ToList();
+            });
         }
 
         public SsResource UpdateResourceDescription(string shortName, string oldDescription, string newDescription, SsUser user)
@@ -124,26 +142,12 @@ namespace logic
             {
                 if (Authenticated(creator)?.Role != UserRole.Admin)
                     throw new InsufficientRoleException(creator.UserName);
-                
+
                 if (SsUserSecret.NormalizeUserName(userName) == creator.UserName)
                     return false;
 
                 return SsRepository.DeleteUser(userName);
             });
-        }
-
-        public SsUser GetLockedBy(SsResource ssr)
-        {
-            // TODO Returning the username only should be sufficient
-            // TODO Request should require a valid user
-            SsUser lockingUser = null;
-            SsRepository.Transaction(() =>
-            {
-                var user = SsRepository.GetLockingUser(ssr);
-                if (user != null)
-                    lockingUser = new SsUser(user.UserName, "", user.Role);
-            });
-            return lockingUser;
         }
 
         private SsUserSecret Authenticated(SsUser user)
@@ -158,7 +162,7 @@ namespace logic
             return userSecret;
         }
 
-        public bool LockResource(string shortName, SsUser user)
+        public bool LockResource(string shortName, SsUser user, string comment = "")
         {
             bool success = false;
             SsRepository.Transaction(() =>
@@ -166,14 +170,14 @@ namespace logic
                 var authenticated = Authenticated(user);
                 var dbResource = GetExistingResource(shortName);
 
-                var lockedBy = SsRepository.GetLockingUser(dbResource);
+                var lockedBy = SsRepository.GetLocking(dbResource)?.LockedBy;
                 if (lockedBy != null)
                 {
                     success = false;
                 }
                 else
                 {
-                    SsRepository.SetLockingUser(dbResource, authenticated);
+                    SsRepository.Lock(dbResource, authenticated.UserName, comment);
                     success = true;
                 }
             });
@@ -188,10 +192,11 @@ namespace logic
                 var authenticated = Authenticated(user);
                 var dbResource = GetExistingResource(shortName);
 
-                var lockedBy = SsRepository.GetLockingUser(dbResource);
-                if (lockedBy != null && lockedBy.Equals(authenticated))
+                var locking = SsRepository.GetLocking(dbResource);
+                var lockedBy = locking.LockedBy;
+                if (lockedBy != null && lockedBy.UserName.Equals(user.UserName, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    SsRepository.SetLockingUser(dbResource, null);
+                    SsRepository.Release(dbResource);
                     success = true;
                 }
                 else
@@ -205,9 +210,9 @@ namespace logic
         public bool IsLocked(SsResource res)
         {
             // TODO: this operation should require a valid user
-            bool result = false;
-            SsRepository.Transaction(() => result = SsRepository.GetLockingUser(res) != null);
-            return result;
+            return SsRepository.Transaction<bool>(() =>
+                SsRepository.GetLocking(res) != null
+            );
         }
 
         public bool IsFree(SsResource res)

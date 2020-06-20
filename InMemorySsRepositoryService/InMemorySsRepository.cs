@@ -18,7 +18,7 @@ namespace Logic.Repository
 
         private readonly Dictionary<string, SsResource> _resources = new Dictionary<string, SsResource>();
         private readonly Dictionary<string, SsUserSecret> _users = new Dictionary<string, SsUserSecret>();
-        private readonly ConcurrentDictionary<string, SsUserSecret> _usages = new ConcurrentDictionary<string, SsUserSecret>();
+        private readonly ConcurrentDictionary<string, LockingInfo> _usages = new ConcurrentDictionary<string, LockingInfo>();
 
         public SsResource GetResource(string shortName)
         {
@@ -65,21 +65,30 @@ namespace Logic.Repository
             }
         }
 
-        public SsUserSecret GetLockingUser(SsResource resource)
+        public LockingInfo GetLocking(SsResource resource)
         {
             Contract.Requires(resource != null);
-            if (_usages.TryGetValue(resource.ShortName, out var lockingUser))
-                return lockingUser;
+            if (_usages.TryGetValue(resource.ShortName, out var locking))
+                return locking;
             return null;
         }
 
-        public void SetLockingUser(SsResource resource, SsUserSecret user)
+        public void Release(SsResource resource)
         {
             Contract.Requires(resource != null);
-            if (user == null)
-                _usages.Remove(resource.ShortName, out var _);
-            else
-                _usages[resource.ShortName] = user;
+            _usages.Remove(resource.ShortName, out var _);
+        }
+
+        public void Lock(SsResource resource, string userName, string comment)
+        {
+            Contract.Requires(resource != null);
+            _usages[resource.ShortName] = new LockingInfo
+            {
+                Resource = resource,
+                LockedBy = GetUser(userName).AsUser(),
+                Comment = comment,
+                LockedAt = TimeService.Instance.Now
+            };
         }
 
         public T Transaction<T>(Func<T> action)

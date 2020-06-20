@@ -72,32 +72,40 @@ namespace LiteDbSsRepositoryService
             Db.GetCollection<SsUserSecret>("users").Upsert(user);
         }
 
-        public SsUserSecret GetLockingUser(SsResource resource)
+        public LockingInfo GetLocking(SsResource resource)
         {
             var usage = Db.GetCollection<ResourceUsage>()
                 .Query()
                 .Where(ru => ru.ResourceShortName.Equals(resource.ShortName))
                 .SingleOrDefault();
+
             if (usage == null)
                 return null;
-            return GetUser(usage.UserName);
+
+            return new LockingInfo
+            {
+                Resource = resource,
+                LockedBy = GetUser(usage.UserName).AsUser(),
+                LockedAt = usage.LockedAt,
+                Comment = usage.Comment
+            };
         }
 
-        public void SetLockingUser(SsResource resource, SsUserSecret user)
+        public void Lock(SsResource resource, string userName, string comment)
         {
             Contract.Requires(resource != null);
-            if (user != null)
+            Db.GetCollection<ResourceUsage>().Insert(new ResourceUsage
             {
-                Db.GetCollection<ResourceUsage>().Insert(new ResourceUsage
-                {
-                    ResourceShortName = resource.ShortName,
-                    UserName = user.UserName
-                });
-            }
-            else
-            {
-                Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
-            }
+                ResourceShortName = resource.ShortName,
+                UserName = userName,
+                Comment = comment,
+                LockedAt = TimeService.Instance.Now
+            });
+        }
+
+        public void Release(SsResource resource)
+        {
+            Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
         }
 
         public bool DeleteResource(string shortName)
@@ -170,6 +178,7 @@ namespace LiteDbSsRepositoryService
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
         #endregion IDisposable
 
         #region Private fields
