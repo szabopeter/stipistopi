@@ -22,6 +22,8 @@ namespace ServiceInterfaces.Dto
 
         private string description;
 
+        public LockingInfo Locking { get; set; }
+
         /// <summary>For serialization</summary>
         public SsResource()
         {

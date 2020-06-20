@@ -26,16 +26,41 @@ namespace LiteDbSsRepositoryService
             SetupBsonMapping();
         }
 
+        private static bool IsBsonMapperConfigured = false;
+        private static object BsonConfigurationLock = new object();
         private static void SetupBsonMapping()
         {
-            var mapper = BsonMapper.Global;
-            mapper.Entity<SsResource>()
-                .Id(r => r.ShortName);
+            lock (BsonConfigurationLock)
+            {
+                if (IsBsonMapperConfigured)
+                    return;
+
+                var mapper = BsonMapper.Global;
+                mapper.Entity<SsResource>()
+                    .Id(r => r.ShortName)
+                    .Ignore(r => r.Locking);
+                IsBsonMapperConfigured = true;
+            }
         }
 
         public List<SsResource> GetResources()
         {
-            return Db.GetCollection<SsResource>("resources").Query().ToList();
+            var usages = Db.GetCollection<ResourceUsage>().Query().ToList().ToDictionary(ru => ru.ResourceShortName);
+            var resources = Db.GetCollection<SsResource>("resources").Query().ToList();
+            var users = GetUsers().ToDictionary(u => u.UserName);
+            foreach (var resource in resources)
+            {
+                var usage = usages.GetValueOrDefault(resource.ShortName, null);
+                if (usage == null)
+                    continue;
+                resource.Locking = new LockingInfo
+                {
+                    LockedBy = users[usage.UserName],
+                    LockedAt = usage.LockedAt,
+                    Comment = usage.Comment,
+                };
+            }
+            return resources;
         }
 
         public IEnumerable<SsUser> GetUsers()
@@ -48,10 +73,28 @@ namespace LiteDbSsRepositoryService
 
         public SsResource GetResource(string shortName)
         {
-            return Db.GetCollection<SsResource>("resources")
+            var resource = Db.GetCollection<SsResource>("resources")
                 .Query()
                 .Where(res => res.ShortName == SsResource.NormalizeShortName(shortName))
                 .SingleOrDefault();
+            if (resource == null)
+                return null;
+
+            shortName = resource.ShortName;
+            var usage = Db.GetCollection<ResourceUsage>()
+                .Query()
+                .Where(ru => ru.ResourceShortName.Equals(shortName))
+                .SingleOrDefault();
+            if (usage == null)
+                return resource;
+
+            resource.Locking = new LockingInfo
+            {
+                Comment = usage.Comment,
+                LockedAt = usage.LockedAt,
+                LockedBy = GetUser(usage.UserName).AsUser()
+            };
+            return resource;
         }
 
         public void SaveResource(SsResource ssResource)
@@ -84,7 +127,6 @@ namespace LiteDbSsRepositoryService
 
             return new LockingInfo
             {
-                Resource = resource,
                 LockedBy = GetUser(usage.UserName).AsUser(),
                 LockedAt = usage.LockedAt,
                 Comment = usage.Comment

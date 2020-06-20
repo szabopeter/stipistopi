@@ -84,7 +84,6 @@ namespace Logic.Repository
             Contract.Requires(resource != null);
             _usages[resource.ShortName] = new LockingInfo
             {
-                Resource = resource,
                 LockedBy = GetUser(userName).AsUser(),
                 Comment = comment,
                 LockedAt = TimeService.Instance.Now

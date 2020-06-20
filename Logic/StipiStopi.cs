@@ -47,24 +47,6 @@ namespace logic
             return resources;
         }
 
-        public List<LockingInfo> GetLockingInfos()
-        {
-            return SsRepository.Transaction<List<LockingInfo>>(() =>
-            {
-                // TODO Avoid repeated queries
-                return SsRepository.GetResources()
-                    .Select(r => new
-                    {
-                        Resource = r,
-                        LockingInfo = SsRepository.GetLocking(r),
-                    })
-                    .Select(pair =>
-                        pair.LockingInfo
-                        ?? new LockingInfo { Resource = pair.Resource })
-                    .ToList();
-            });
-        }
-
         public SsResource UpdateResourceDescription(string shortName, string oldDescription, string newDescription, SsUser user)
         {
             return SsRepository.Transaction<SsResource>(() =>

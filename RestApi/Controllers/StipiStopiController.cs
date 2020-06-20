@@ -24,14 +24,13 @@ namespace RestApi.Controllers
         [HttpGet("resources")]
         public IEnumerable<ResourceInfo> GetResources()
         {
-            // TODO: this should just return the LockingInfos
-            return stipiStopi.GetLockingInfos().Select(locking =>
+            return stipiStopi.GetResources().Select(resource =>
             new ResourceInfo
             {
-                Resource = locking.Resource,
-                IsAvailable = locking.LockedBy == null,
-                LockedBy = locking.LockedBy?.UserName,
-                Locking = locking,
+                Resource = resource,
+                IsAvailable = resource.Locking == null,
+                LockedBy = resource.Locking?.LockedBy?.UserName,
+                Locking = resource.Locking,
             });
         }
 

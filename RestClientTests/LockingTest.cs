@@ -27,7 +27,7 @@ namespace RestClientTests
 
             resource = (await adminClient.GetResources()).Single();
             Assert.True(resource.IsAvailable);
-            Assert.Null(resource.Locking.LockedBy);
+            Assert.Null(resource.Locking);
 
             var user2 = (await adminClient.AddUser("user2", "pass", UserRole.Regular)).Result;
             var user2Client = testRestClient.GetAdditionalRestClient("user2", "pass");
