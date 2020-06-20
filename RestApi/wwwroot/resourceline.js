@@ -10,6 +10,7 @@ function ResourceLineViewModel(backend, messageManagerVm, updateButtonsState) {
     this.descriptionEditorVm = new DescriptionEditorViewModel(backend, messageManagerVm, updateButtonsState);
     this.isAvailable = ko.observable(true);
     this.lockedBy = ko.observable("");
+    this.lockedAt = ko.observable("");
     this.actions = ko.observableArray([]);
     this.messageManagerVm = null;
     this.actionsEnabled = ko.observable(true);
@@ -46,6 +47,7 @@ ResourceLineViewModel.create = function (ssResource, backend, messageManagerVm, 
     if (ssResource.locking != null) {
         vm.isAvailable(false);
         vm.lockedBy(ssResource.locking.lockedBy.userName);
+        vm.lockedAt(ssResource.ui.lockedAt);
     }
     // vm.actions(source.actions);
     // vm.actions().forEach(function (action) { action.execute = action.execute.bind(vm); })

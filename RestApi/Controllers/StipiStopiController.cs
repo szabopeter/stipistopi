@@ -24,7 +24,11 @@ namespace RestApi.Controllers
         [HttpGet("resources")]
         public IEnumerable<SsResource> GetResources()
         {
-            return stipiStopi.GetResources();
+            foreach(var resource in stipiStopi.GetResources())
+            {
+                resource.LoadUiProperty();
+                yield return resource;
+            }
         }
 
         [HttpPost("users")]

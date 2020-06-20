@@ -14,7 +14,11 @@ namespace CliClient
             var resources = await client.GetResources().ConfigureAwait(true);
             foreach (var resource in resources)
             {
-                console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resource.Locking?.LockedBy?.UserName,20} {resource.Locking?.LockedAt, 20}");
+                resource.LoadUiProperty();
+                console.WriteLine($"{resource.ShortName,20} {resource.Address,20} {resource.Locking?.LockedBy?.UserName,20} {resource.Ui.LockedAt, 20}");
+                console.WriteLine(resource.Description);
+                if (!string.IsNullOrWhiteSpace(resource.Description))
+                    console.WriteLine();
             }
         }
 

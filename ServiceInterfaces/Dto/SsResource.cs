@@ -24,6 +24,9 @@ namespace ServiceInterfaces.Dto
 
         public LockingInfo Locking { get; set; }
 
+        public SsResourceUi Ui { get; private set; }
+        public void LoadUiProperty() => Ui = new SsResourceUi(this);
+
         /// <summary>For serialization</summary>
         public SsResource()
         {

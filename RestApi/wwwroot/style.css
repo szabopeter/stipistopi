@@ -101,6 +101,11 @@ TABLE TD {
     background-color: beige;
 }
 
+.button.disabled {
+    cursor: not-allowed;
+    color: gray;
+}
+
 #screenselector li {
     list-style-type: none;
 }

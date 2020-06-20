@@ -7,13 +7,14 @@
     <td data-bind="text: address"></td>
     <td data-bind="text: isAvailable"></td>
     <td data-bind="text: lockedBy"></td>
+    <td data-bind="text: lockedAt" style="white-space: nowrap;"></td>
     <td data-bind="foreach: actions">
         <!-- ko if: $parent.actionsEnabled -->
         <div class="button" 
              data-bind="click: execute, text: label" >
         </div>
         <!-- /ko -->
-        <!-- ko if: !$parent.actionsEnabled -->
+        <!-- ko if: !$parent.actionsEnabled() -->
         <div class="button disabled" 
              data-bind="text: label" >
         </div>
@@ -26,7 +27,7 @@
         resourceNotAvailable: !isAvailable(),
     },
         with: descriptionEditorVm">
-    <td colspan="4">
+    <td colspan="5">
         <div class="resourceDescriptionDisplay" data-bind="text: oldDescription"></div>
     </td>
     <td>
@@ -43,13 +44,13 @@
 },
     with: descriptionEditorVm">
     <!-- ko if: isEditing() -->
-    <td colspan="3">
+    <td colspan="5">
         <div class="resourceDescriptionEditing" data-bind="visible: isEditing">
             Enter new description:<br />
             <textarea class="resourceDescriptionInput" , data-bind="textInput: newDescription"></textarea>
         </div>
     </td>
-    <td colspan="2">
+    <td colspan="1">
         <div class="resourceDescriptionActions" data-bind="foreach: actions">
             <div class="button" 
                  data-bind="click: callback, text: label" >
