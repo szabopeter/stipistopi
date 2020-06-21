@@ -10,9 +10,6 @@ import { UserLineViewModel, userLineRegisterWidget } from "./userline.js";
 
 function Initialize(templates) {
     let mainWindowVm = new MainWindowViewModel();
-
-    mainWindowVm.credentialsPageVm.userName("test");
-    mainWindowVm.credentialsPageVm.password("test");
     mainWindowVm.resourcesPageVm.refresh();
 
     let credentialsPageWidgetName = credentialsPageRegisterWidget(templates["credentialspage.html"]);
@@ -46,7 +43,6 @@ function Initialize(templates) {
 }
 
 window.PageLoaded = function() {
-    // TODO on failure
     function delayedInitialization() {
         LoadTemplates([
             "credentialspage.html",
