@@ -112,6 +112,25 @@ namespace logic
             return newUser;
         }
 
+        public bool ChangePassword(SsUser user, SsUser creator)
+        {
+            Contract.Requires(user != null);
+            var userName = user.UserName;
+            return SsRepository.Transaction<bool>(() => {
+                var authenticated = Authenticated(creator);
+                var isMyPassword = userName == authenticated.UserName;
+                var isAdmin = authenticated.Role == UserRole.Admin;
+                if (!isMyPassword && !isAdmin)
+                    throw new InsufficientRoleException(creator.UserName);
+                var dbUser = SsRepository.GetUser(userName);
+                if (dbUser == null)
+                    throw new UserDoesNotExistException(userName);
+                dbUser.SetPassword(user.Password);
+                SsRepository.SaveUser(dbUser);
+                return true;
+            });
+        }
+
         public bool DbImport(SsUser admin, string content)
         {
             return SsRepository.Transaction<bool>(() =>

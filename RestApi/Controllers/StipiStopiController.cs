@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using logic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +44,13 @@ namespace RestApi.Controllers
         {
             _logger.LogInformation($"Registering {newUser.User.UserName} with a password of length {newUser.User.Password.Length}");
             return stipiStopi.NewUser(newUser.User, newUser.Creator);
+        }
+
+        [HttpPost("user/password")]
+        public bool ChangePassword(UserAndUserParameter changeParameter)
+        {
+            _logger.LogInformation($"{changeParameter.Creator.UserName} is changing the password for {changeParameter.User.UserName}");
+            return stipiStopi.ChangePassword(changeParameter.User, changeParameter.Creator);
         }
 
         [HttpPost("user/delete")]

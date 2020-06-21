@@ -249,7 +249,7 @@ namespace LiteDbSsRepositoryService
             mapper.Entity<SsResource>()
                 .Id(r => r.ShortName)
                 .Ignore(r => r.Locking);
-            mapper.Entity<SsUser>()
+            mapper.Entity<SsUserSecret>()
                 .Id(u => u.UserName);
             return mapper;
         }

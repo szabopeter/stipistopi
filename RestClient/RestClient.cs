@@ -69,6 +69,19 @@ namespace RestClient
             return await GenericRequest(request);
         }
 
+        public Task<RestClientResult<bool>> ChangePassword(SsUser target)
+        {
+            var request = new RestClientCommand<UserAndUserParameter, bool>(
+                "/stipistopi/user/password",
+                new UserAndUserParameter
+                {
+                    User = target,
+                    Creator = User,
+                }
+            );
+            return GenericRequest(request);
+        }
+
         public async Task<RestClientResult<bool>> DelResource(string shortName)
         {
             var request = new RestClientCommand<ResourceAndUserParameter, bool>(
@@ -141,10 +154,11 @@ namespace RestClient
             return await GenericRequest(
                 new RestClientCommand<DbImportParameter, bool>(
                     "/stipistopi/db/import",
-                    new DbImportParameter{
+                    new DbImportParameter
+                    {
                         User = User,
                         Content = content
-                        })
+                    })
             );
         }
 

@@ -74,6 +74,11 @@ namespace ServiceInterfaces.Dto
             return userName.ToUpperInvariant();
         }
 
+        public void SetPassword(string password)
+        {
+            PasswordHash = HashPassword(password, Salt);
+        }
+
         public SsUser AsUser()
         {
             return new SsUser(UserName, "****", Role);
