@@ -15,44 +15,14 @@ namespace LiteDbSsRepositoryService
     {
         public LiteDbSsRepository(string filename)
         {
-            OpenEngine = () => new LiteEngine(filename);
-            OpenDb = (engine) => new LiteDatabase(engine);
-            SetupBsonMapping();
+            OpenDb = () => new LiteDatabase(filename, SetupBsonMapper());
         }
 
         public LiteDbSsRepository()
         {
             tempStream = new TempStream();
-            OpenEngine = () => new LiteEngine(new EngineSettings { DataStream = tempStream });
-            OpenDb = (engine) => new LiteDatabase(engine);
-            SetupBsonMapping();
+            OpenDb = () => new LiteDatabase(tempStream, SetupBsonMapper());
         }
-
-        private static bool IsBsonMapperConfigured = false;
-        private static object BsonConfigurationLock = new object();
-        private static void SetupBsonMapping()
-        {
-            lock (BsonConfigurationLock)
-            {
-                if (IsBsonMapperConfigured)
-                    return;
-
-                var mapper = BsonMapper.Global;
-                mapper.Entity<SsResource>()
-                    .Id(r => r.ShortName)
-                    .Ignore(r => r.Locking);
-                mapper.Entity<SsUser>()
-                    .Id(u => u.UserName);
-                IsBsonMapperConfigured = true;
-            }
-        }
-
-        private const string ResourceCollectionName = "resources";
-        private const string UserCollectionName = "users";
-        private const string LockCollectionName = "locks";
-        private ILiteCollection<SsResource> ResourceCollection => Db.GetCollection<SsResource>(ResourceCollectionName);
-        private ILiteCollection<SsUserSecret> UserCollection => Db.GetCollection<SsUserSecret>(UserCollectionName);
-        private ILiteCollection<ResourceUsage> LockCollection => Db.GetCollection<ResourceUsage>(LockCollectionName);
 
         public List<SsResource> GetResources()
         {
@@ -226,11 +196,9 @@ namespace LiteDbSsRepositoryService
                 {
 #pragma warning disable IDE0063
                     // using statement can't be simplified
-                    using (var engine = OpenEngine())
-                    using (var db = OpenDb(engine))
+                    using (var db = OpenDb())
 #pragma warning restore
                     {
-                        Engine = engine;
                         Db = db;
                         try
                         {
@@ -238,7 +206,6 @@ namespace LiteDbSsRepositoryService
                         }
                         finally
                         {
-                            Engine = null;
                             Db = null;
                         }
                     }
@@ -270,13 +237,29 @@ namespace LiteDbSsRepositoryService
         #endregion IDisposable
 
         #region Private fields
-        private readonly Func<ILiteEngine> OpenEngine;
-        private readonly Func<ILiteEngine, LiteDatabase> OpenDb;
+        private readonly Func<LiteDatabase> OpenDb;
         private readonly TempStream tempStream;
-        private ILiteEngine Engine;
         private LiteDatabase Db;
         private bool disposedValue;
         private static readonly object transactionLock = new object();
+
+        private static BsonMapper SetupBsonMapper()
+        {
+            var mapper = new BsonMapper();
+            mapper.Entity<SsResource>()
+                .Id(r => r.ShortName)
+                .Ignore(r => r.Locking);
+            mapper.Entity<SsUser>()
+                .Id(u => u.UserName);
+            return mapper;
+        }
+
+        private const string ResourceCollectionName = "resources";
+        private const string UserCollectionName = "users";
+        private const string LockCollectionName = "locks";
+        private ILiteCollection<SsResource> ResourceCollection => Db.GetCollection<SsResource>(ResourceCollectionName);
+        private ILiteCollection<SsUserSecret> UserCollection => Db.GetCollection<SsUserSecret>(UserCollectionName);
+        private ILiteCollection<ResourceUsage> LockCollection => Db.GetCollection<ResourceUsage>(LockCollectionName);
         #endregion Private fields
     }
 }
