@@ -6,6 +6,7 @@ using ServiceInterfaces;
 using ServiceInterfaces.Dto;
 using ServiceInterfaces.Exceptions;
 
+#pragma warning disable CA1303
 namespace logic
 {
     public class StipiStopi
@@ -17,26 +18,21 @@ namespace logic
             SsRepository = ssRepository;
         }
 
-        public void Populate()
+        public void EnsureAdminExists(string userName, string password)
         {
+            var adminCount = SsRepository.Transaction<int>(() =>
+                SsRepository.GetUsers().Where(u => u.Role == UserRole.Admin).Count());
+            if (adminCount > 0)
+                return;
+
+            if (string.IsNullOrWhiteSpace(userName) ||  string.IsNullOrWhiteSpace(password))
+                throw new NullReferenceException("There are no admins in the database and the app settings does not contain the necessary info to create one!");
+
+            var adminUser = new SsUserSecret(new SsUser(userName, password, UserRole.Admin));
             SsRepository.Transaction(() =>
             {
-                var testuser = new SsUserSecret(new SsUser("test", "test", UserRole.Admin));
-                SsRepository.SaveUser(testuser);
-                var ncu139 = new SsResource("ncu1", "10.10.148.8");
-                SsRepository.SaveResource(ncu139);
-                var ncu140 = new SsResource("ncu2", "10.10.148.9");
-                SsRepository.SaveResource(ncu140);
-                SsRepository.Lock(ncu140, testuser.UserName, "");
+                SsRepository.SaveUser(adminUser);
             });
-        }
-
-        public void EnsureAdminExists()
-        {
-            var userCount = -1;
-            SsRepository.Transaction(() => userCount = SsRepository.GetUsers().Count());
-            if (userCount == 0)
-                Populate();
         }
 
         public List<SsResource> GetResources()
@@ -136,8 +132,8 @@ namespace logic
 
         private void RequiresAdmin(SsUser admin)
         {
-                if (Authenticated(admin)?.Role != UserRole.Admin)
-                    throw new InsufficientRoleException(admin.UserName);
+            if (Authenticated(admin)?.Role != UserRole.Admin)
+                throw new InsufficientRoleException(admin.UserName);
         }
 
         public bool DelUser(string userName, SsUser creator)
@@ -233,3 +229,4 @@ namespace logic
         }
     }
 }
+#pragma warning restore

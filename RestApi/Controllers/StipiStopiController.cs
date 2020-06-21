@@ -2,6 +2,7 @@
 using System.Linq;
 using logic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ServiceInterfaces.Dto;
 
@@ -14,11 +15,13 @@ namespace RestApi.Controllers
         private readonly ILogger<StipiStopiController> _logger;
         private readonly StipiStopi stipiStopi;
 
-        public StipiStopiController(ILogger<StipiStopiController> logger, StipiStopi stipiStopi)
+        public StipiStopiController(ILogger<StipiStopiController> logger, StipiStopi stipiStopi, IConfiguration configuration)
         {
             _logger = logger;
             this.stipiStopi = stipiStopi;
-            stipiStopi.EnsureAdminExists();
+            var defaultAdminUserName = configuration.GetValue<string>("DefaultAdminUserName", null);
+            var defaultAdminPassword = configuration.GetValue<string>("DefaultAdminPassword", null);
+            stipiStopi.EnsureAdminExists(defaultAdminUserName, defaultAdminPassword);
         }
 
         [HttpGet("resources")]
