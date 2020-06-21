@@ -25,6 +25,18 @@ BODY {
     color: red;
 }
 
+#main-messages .time {
+    width: 8%;
+    min-width: 5em;
+    display: inline-block;
+}
+
+#main-messages .message {
+    width: 88%;
+    display: inline-block;
+    text-align: left;
+}
+
 TABLE {
     margin: 10px;
     margin: auto;

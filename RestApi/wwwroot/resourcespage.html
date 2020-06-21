@@ -15,9 +15,14 @@
         <!-- /ko -->
     </tbody>
 </table>
-<!-- ko if: messageManagerVm.message != '' -->
+<!-- ko if: messageManagerVm.message() != '' -->
 <div class="resourceListMessage" data-bind="text: messageManagerVm.message"></div>
 <!-- /ko -->
 <div class="resourceListButtons">
-    <div id="buttonRefreshResourceList" class="button" data-bind="click: refresh">Refresh</div>
+    <!-- ko if: refreshEnabled() -->
+        <div class="button" data-bind="click: refresh">Refresh</div>
+    <!-- /ko -->
+    <!-- ko if: !refreshEnabled() -->
+        <div class="button disabled">Refresh</div>
+    <!-- /ko -->
 </div>

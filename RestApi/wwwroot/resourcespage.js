@@ -8,6 +8,7 @@ function ResourcesPageViewModel(backend) {
     this.resources = ko.observableArray([]);
     this.messageManagerVm = new MessageManagerViewModel();
     this.buttonsEnabled = ko.observable(true);
+    this.refreshEnabled = ko.observable(true);
 
     this.updateButtonsState = function () {
         let isEditing = false;
@@ -25,10 +26,15 @@ function ResourcesPageViewModel(backend) {
             vm.updateActions(self.refresh);
             return vm;
         }));
+        self.refreshEnabled(true);
     };
 
     this.refresh = function () {
-        self.backend.loadResources(UpdateResourceList, function () { self.resources([]) });
+        self.refreshEnabled(false);
+        self.backend.loadResources(UpdateResourceList, function () {
+            self.resources([]);
+            self.refreshEnabled(true);
+        });
     };
 
     this.pageActivated = this.refresh;

@@ -32,7 +32,8 @@
 
         <div id="main-messages" data-bind="with: errorMessagesVm">
             <div data-bind="foreach: errorMessages">
-                <div data-bind="text: message"></div>
+                <div class="time" data-bind="text: time"></div>
+                <div class="message" data-bind="text: message"></div>
             </div>
         </div>
     </div>
