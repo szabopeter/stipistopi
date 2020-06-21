@@ -12,7 +12,9 @@ namespace CliClient
             typeof(UsersCommand),
             typeof(AddResourceCommand),
             typeof(DelResourceCommand),
-            typeof(DelUserCommand)
+            typeof(DelUserCommand),
+            typeof(DbExportCommand),
+            typeof(DbImportCommand)
             // TODO Lock + Release
             )]
     public class RootCommand

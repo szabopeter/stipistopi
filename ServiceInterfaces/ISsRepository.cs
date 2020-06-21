@@ -20,6 +20,8 @@ namespace ServiceInterfaces
         IEnumerable<SsUser> GetUsers();
         bool DeleteResource(string shortName);
         bool DeleteUser(string userName);
+        bool DbImport(string content);
+        string DbExport();
     }
 
     public static class ISsRepositoryExtensions

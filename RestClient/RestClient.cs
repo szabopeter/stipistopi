@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -126,6 +127,27 @@ namespace RestClient
             );
         }
 
+        public async Task<RestClientResult<string>> DbExport()
+        {
+            return await GenericRequest(
+                new RestClientCommand<SsUser, string>(
+                    "/stipistopi/db/export",
+                    User)
+            );
+        }
+
+        public async Task<RestClientResult<bool>> DbImport(string content)
+        {
+            return await GenericRequest(
+                new RestClientCommand<DbImportParameter, bool>(
+                    "/stipistopi/db/import",
+                    new DbImportParameter{
+                        User = User,
+                        Content = content
+                        })
+            );
+        }
+
         public async Task<RestClientResult<TResponse>> GenericRequest<TRequest, TResponse>(RestClientCommand<TRequest, TResponse> restClientCommand)
         {
             var requestUri = GetUri(restClientCommand.Uri);
@@ -147,7 +169,11 @@ namespace RestClient
                     });
                 }
             }
-
+            if (typeof(TResponse) == typeof(string))
+            {
+                object str = new StreamReader(stream).ReadToEnd();
+                return new RestClientResult<TResponse>((TResponse)str);
+            }
             var result = await JsonSerializer.DeserializeAsync<TResponse>(stream, JsonOptions);
             return new RestClientResult<TResponse>(result);
         }

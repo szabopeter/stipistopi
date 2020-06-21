@@ -108,5 +108,15 @@ namespace Logic.Repository
             _users.Remove(SsUserSecret.NormalizeUserName(userName));
             return true;
         }
+
+        public bool DbImport(string content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string DbExport()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

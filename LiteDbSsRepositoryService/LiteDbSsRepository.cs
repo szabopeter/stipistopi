@@ -15,14 +15,16 @@ namespace LiteDbSsRepositoryService
     {
         public LiteDbSsRepository(string filename)
         {
-            OpenDb = () => new LiteDatabase(filename);
+            OpenEngine = () => new LiteEngine(filename);
+            OpenDb = (engine) => new LiteDatabase(engine);
             SetupBsonMapping();
         }
 
         public LiteDbSsRepository()
         {
             tempStream = new TempStream();
-            OpenDb = () => new LiteDatabase(tempStream);
+            OpenEngine = () => new LiteEngine(new EngineSettings { DataStream = tempStream });
+            OpenDb = (engine) => new LiteDatabase(engine);
             SetupBsonMapping();
         }
 
@@ -39,14 +41,23 @@ namespace LiteDbSsRepositoryService
                 mapper.Entity<SsResource>()
                     .Id(r => r.ShortName)
                     .Ignore(r => r.Locking);
+                mapper.Entity<SsUser>()
+                    .Id(u => u.UserName);
                 IsBsonMapperConfigured = true;
             }
         }
 
+        private const string ResourceCollectionName = "resources";
+        private const string UserCollectionName = "users";
+        private const string LockCollectionName = "locks";
+        private ILiteCollection<SsResource> ResourceCollection => Db.GetCollection<SsResource>(ResourceCollectionName);
+        private ILiteCollection<SsUserSecret> UserCollection => Db.GetCollection<SsUserSecret>(UserCollectionName);
+        private ILiteCollection<ResourceUsage> LockCollection => Db.GetCollection<ResourceUsage>(LockCollectionName);
+
         public List<SsResource> GetResources()
         {
-            var usages = Db.GetCollection<ResourceUsage>().Query().ToList().ToDictionary(ru => ru.ResourceShortName);
-            var resources = Db.GetCollection<SsResource>("resources").Query().ToList();
+            var usages = LockCollection.Query().ToList().ToDictionary(ru => ru.ResourceShortName);
+            var resources = ResourceCollection.Query().ToList();
             var users = GetUsers().ToDictionary(u => u.UserName);
             foreach (var resource in resources)
             {
@@ -65,7 +76,7 @@ namespace LiteDbSsRepositoryService
 
         public IEnumerable<SsUser> GetUsers()
         {
-            return Db.GetCollection<SsUserSecret>("users")
+            return UserCollection
                 .Query()
                 .ToList()
                 .Select(user => new SsUser(user.UserName, "*", user.Role));
@@ -73,7 +84,7 @@ namespace LiteDbSsRepositoryService
 
         public SsResource GetResource(string shortName)
         {
-            var resource = Db.GetCollection<SsResource>("resources")
+            var resource = ResourceCollection
                 .Query()
                 .Where(res => res.ShortName == SsResource.NormalizeShortName(shortName))
                 .SingleOrDefault();
@@ -81,7 +92,7 @@ namespace LiteDbSsRepositoryService
                 return null;
 
             shortName = resource.ShortName;
-            var usage = Db.GetCollection<ResourceUsage>()
+            var usage = LockCollection
                 .Query()
                 .Where(ru => ru.ResourceShortName.Equals(shortName))
                 .SingleOrDefault();
@@ -99,12 +110,12 @@ namespace LiteDbSsRepositoryService
 
         public void SaveResource(SsResource ssResource)
         {
-            Db.GetCollection<SsResource>("resources").Upsert(ssResource);
+            ResourceCollection.Upsert(ssResource);
         }
 
         public SsUserSecret GetUser(string userName)
         {
-            return Db.GetCollection<SsUserSecret>("users")
+            return UserCollection
                 .Query()
                 .Where(user => user.UserName.Equals(SsUserSecret.NormalizeUserName(userName)))
                 .SingleOrDefault();
@@ -112,12 +123,12 @@ namespace LiteDbSsRepositoryService
 
         public void SaveUser(SsUserSecret user)
         {
-            Db.GetCollection<SsUserSecret>("users").Upsert(user);
+            UserCollection.Upsert(user);
         }
 
         public LockingInfo GetLocking(SsResource resource)
         {
-            var usage = Db.GetCollection<ResourceUsage>()
+            var usage = LockCollection
                 .Query()
                 .Where(ru => ru.ResourceShortName.Equals(resource.ShortName))
                 .SingleOrDefault();
@@ -136,7 +147,7 @@ namespace LiteDbSsRepositoryService
         public void Lock(SsResource resource, string userName, string comment)
         {
             Contract.Requires(resource != null);
-            Db.GetCollection<ResourceUsage>().Insert(new ResourceUsage
+            LockCollection.Insert(new ResourceUsage
             {
                 ResourceShortName = resource.ShortName,
                 UserName = userName,
@@ -147,7 +158,7 @@ namespace LiteDbSsRepositoryService
 
         public void Release(SsResource resource)
         {
-            Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
+            LockCollection.DeleteMany(ru => ru.ResourceShortName == resource.ShortName);
         }
 
         public bool DeleteResource(string shortName)
@@ -155,7 +166,7 @@ namespace LiteDbSsRepositoryService
             var resource = GetResource(shortName);
             if (resource == null)
                 return false;
-            Db.GetCollection<SsResource>("resources").DeleteMany(r => r.ShortName.Equals(resource.ShortName));
+            ResourceCollection.DeleteMany(r => r.ShortName.Equals(resource.ShortName));
             return true;
         }
 
@@ -165,9 +176,41 @@ namespace LiteDbSsRepositoryService
             if (user == null)
                 return false;
             userName = user.UserName; // normalized
-            Db.GetCollection<SsUserSecret>("users").DeleteMany(r => r.UserName.Equals(userName));
-            Db.GetCollection<ResourceUsage>().DeleteMany(ru => ru.UserName.Equals(userName));
+            UserCollection.DeleteMany(r => r.UserName.Equals(userName));
+            LockCollection.DeleteMany(ru => ru.UserName.Equals(userName));
             return true;
+        }
+
+        public bool DbImport(string content)
+        {
+            var impEx = JsonSerializer.Deserialize(content);
+            foreach (var collectionName in new[] {
+                ResourceCollectionName,
+                UserCollectionName,
+                LockCollectionName,
+            })
+            {
+                var collection = Db.GetCollection(collectionName);
+                collection.DeleteAll();
+                var resources = ((BsonArray)impEx[collectionName]).Cast<BsonDocument>();
+                collection.InsertBulk(resources);
+            }
+            return true;
+        }
+
+        public string DbExport()
+        {
+            var impEx = new BsonDocument();
+            foreach (var collectionName in new[] {
+                ResourceCollectionName,
+                UserCollectionName,
+                LockCollectionName,
+            })
+            {
+                impEx[collectionName] = new BsonArray(
+                    Db.GetCollection(collectionName).Query().ToEnumerable());
+            }
+            return JsonSerializer.Serialize(impEx);
         }
 
         public T Transaction<T>(Func<T> action)
@@ -183,9 +226,11 @@ namespace LiteDbSsRepositoryService
                 {
 #pragma warning disable IDE0063
                     // using statement can't be simplified
-                    using (var db = OpenDb())
+                    using (var engine = OpenEngine())
+                    using (var db = OpenDb(engine))
 #pragma warning restore
                     {
+                        Engine = engine;
                         Db = db;
                         try
                         {
@@ -193,6 +238,7 @@ namespace LiteDbSsRepositoryService
                         }
                         finally
                         {
+                            Engine = null;
                             Db = null;
                         }
                     }
@@ -224,8 +270,10 @@ namespace LiteDbSsRepositoryService
         #endregion IDisposable
 
         #region Private fields
-        private readonly Func<LiteDatabase> OpenDb;
+        private readonly Func<ILiteEngine> OpenEngine;
+        private readonly Func<ILiteEngine, LiteDatabase> OpenDb;
         private readonly TempStream tempStream;
+        private ILiteEngine Engine;
         private LiteDatabase Db;
         private bool disposedValue;
         private static readonly object transactionLock = new object();

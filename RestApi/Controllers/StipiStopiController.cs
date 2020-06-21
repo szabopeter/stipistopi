@@ -88,5 +88,17 @@ namespace RestApi.Controllers
             _logger.LogInformation($"Trying to release {@lock.ResourceName} for {@lock.User.UserName}");
             return stipiStopi.ReleaseResource(@lock.ResourceName, new SsUser(@lock.User.UserName, @lock.User.Password));
         }
+
+        [HttpPost("db/export")]
+        public string DbExport(SsUser admin)
+        {
+            return stipiStopi.DbExport(admin);
+        }
+
+        [HttpPost("db/import")]
+        public bool DbImport(DbImportParameter dbImport)
+        {
+            return stipiStopi.DbImport(dbImport.User, dbImport.Content);
+        }
     }
 }

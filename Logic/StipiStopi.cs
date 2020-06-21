@@ -106,8 +106,7 @@ namespace logic
         {
             SsRepository.Transaction(() =>
             {
-                if (Authenticated(creator)?.Role != UserRole.Admin)
-                    throw new InsufficientRoleException(creator.UserName);
+                RequiresAdmin(creator);
 
                 if (SsRepository.GetUser(newUser.UserName) != null)
                     throw new UserAlreadyExistsException(newUser.UserName);
@@ -115,6 +114,30 @@ namespace logic
                 SsRepository.SaveUser(new SsUserSecret(newUser));
             });
             return newUser;
+        }
+
+        public bool DbImport(SsUser admin, string content)
+        {
+            return SsRepository.Transaction<bool>(() =>
+            {
+                RequiresAdmin(admin);
+                return SsRepository.DbImport(content);
+            });
+        }
+
+        public string DbExport(SsUser admin)
+        {
+            return SsRepository.Transaction<string>(() =>
+            {
+                RequiresAdmin(admin);
+                return SsRepository.DbExport();
+            });
+        }
+
+        private void RequiresAdmin(SsUser admin)
+        {
+                if (Authenticated(admin)?.Role != UserRole.Admin)
+                    throw new InsufficientRoleException(admin.UserName);
         }
 
         public bool DelUser(string userName, SsUser creator)
