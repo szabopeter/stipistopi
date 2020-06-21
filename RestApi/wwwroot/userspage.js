@@ -5,6 +5,8 @@ function UsersPageViewModel(backend, credentialsPageVm) {
     this.backend = backend;
     this.users = ko.observableArray([]);
     this.userEditorVm = ko.observable();
+    this.refreshEnabled = ko.observable(true);
+
     this.editUser = function(userLineVm) {
         self.userEditorVm(userLineVm);
         document.getElementById("userEditorActions").scrollIntoView();
@@ -17,10 +19,16 @@ function UsersPageViewModel(backend, credentialsPageVm) {
             vm.openEditor = function() { self.editUser(vm); }
             return vm;
         }));
+        self.refreshEnabled(true);
     };
 
     this.refresh = function () {
-        self.backend.loadUsers(UpdateUserList, function () { self.users([]) });
+        self.refreshEnabled(false);
+        self.backend.loadUsers(UpdateUserList, function () {
+            self.users([]);
+            self.refreshEnabled(true);
+        });
+        self.userEditorVm(null);
     };
 
     this.pageActivated = this.refresh;
