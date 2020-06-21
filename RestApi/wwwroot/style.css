@@ -70,6 +70,7 @@ TABLE TD {
 
 .userLineInList {
     border-top: lightgray 1px dotted;
+    cursor: pointer;
 }
 
 .resourceLineInList TD:first-child {
@@ -120,6 +121,7 @@ TABLE TD {
 
 #screenselector li {
     list-style-type: none;
+    cursor: pointer;
 }
 
 .screenselector_active_item {
