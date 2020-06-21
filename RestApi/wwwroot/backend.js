@@ -42,6 +42,18 @@ export function Backend(errorMessagesVm) {
         AjaxPost(url, parameter, onSuccess, createAjaxErrorHandler(onFailure));
     }
 
+    this.changePassword = function (targetUserName, targetUserPassword, onSuccess, onFailure) {
+        let url = "./stipistopi/user/password";
+        let parameter = {
+            user: {
+                userName: targetUserName,
+                password: targetUserPassword,
+            },
+            creator: myUser,
+        };
+        AjaxPost(url, parameter, onSuccess, createAjaxErrorHandler(onFailure));
+    }
+
     this.loadResources = function (onSuccess, onFailure) {
         AjaxLoad("./stipistopi/resources", "json", onSuccess, createAjaxErrorHandler(onFailure));
     }

@@ -4,7 +4,7 @@
         <tr>
             <th>Name</th>
             <th>Role</th>
-            <th>Action</th>
+            <!-- <th>Action</th> -->
         </tr>
     </thead>
     <!--<tbody>
@@ -23,4 +23,28 @@
 </table>
 <div class="userListButtons">
     <div id="buttonRefreshUserList" class="button" data-bind="click: refresh">Refresh</div>
+</div>
+<div class="userEditor" data-bind="with: userEditorVm()">
+    <!-- TODO: move this to a separate component -->
+    <h2>Edit user</h2>
+    <div class="table-form">
+        <div class="form-field-pair">
+            <div class="form-field-label">
+                User name:
+            </div>
+            <input class="form-field-value" readonly data-bind="textInput: userName" />
+        </div>
+        <div class="form-field-pair">
+            <div class="form-field-label">
+                Password:
+            </div>
+            <input id="userEditorPassword"
+                   class="form-field-value"
+                   type="password"
+                   data-bind="textInput: password" />
+        </div>
+    </div>
+    <div id="userEditorActions">
+        <div class="button" data-bind="click: changePassword">Change password</div>
+    </div>
 </div>

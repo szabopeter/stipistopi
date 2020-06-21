@@ -13,6 +13,8 @@ export function ErrorMessagesViewModel() {
             message = "Unknown error. The server may not be available.";
         } else if ("message" in error) {
             message = error.message;
+        } else if ("Message" in error) {
+            message = error.Message;
         } else {
             message = JSON.stringify(error);
         }

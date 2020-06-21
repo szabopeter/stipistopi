@@ -13,5 +13,5 @@ export function MainWindowViewModel() {
     this.pageSelectorVm = ko.observable(new PageSelectorViewModel());
     this.credentialsPageVm = new CredentialsPageViewModel(this.backend);
     this.resourcesPageVm = new ResourcesPageViewModel(this.backend);
-    this.usersPageVm = new UsersPageViewModel(this.backend);
+    this.usersPageVm = new UsersPageViewModel(this.backend, this.credentialsPageVm);
 }
