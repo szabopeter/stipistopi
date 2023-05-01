@@ -184,7 +184,7 @@ namespace logic
 
         public bool LockResource(string shortName, SsUser user, string comment = "")
         {
-            bool success = false;
+            bool success = false; // rename the variable name from success to isSuccess
             SsRepository.Transaction(() =>
             {
                 var authenticated = Authenticated(user);
@@ -206,7 +206,7 @@ namespace logic
 
         public bool ReleaseResource(string shortName, SsUser user)
         {
-            bool success = false;
+            bool success = false;// rename the variable name from success to isSuccess
             SsRepository.Transaction(() =>
             {
                 var authenticated = Authenticated(user);
